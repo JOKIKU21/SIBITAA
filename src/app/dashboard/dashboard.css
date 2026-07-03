@@ -865,7 +865,7 @@ textarea.dform-input { resize: vertical; min-height: 80px; }
 .btn-submit:disabled { opacity: 0.7; cursor: not-allowed; }
 
 /* Chat Panel */
-.chat-panel { display: flex; flex-direction: column; min-height: 380px; height: 100%; }
+.chat-panel { display: flex; flex-direction: column; min-height: 380px; height: auto; }
 .chat-body { padding: 18px 24px; display: flex; flex-direction: column; gap: 14px; max-height: 400px; overflow-y: auto; flex: 1; }
 .chat-date { text-align: center; margin-bottom: 4px; }
 .chat-date span { background: #1F2937; color: #fff; font-size: 11px; padding: 3px 12px; border-radius: 12px; }
