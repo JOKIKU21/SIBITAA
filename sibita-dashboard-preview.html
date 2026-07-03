@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SIBITA — Sistem Bimbingan Tugas Akhir</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --blue:      #2B3BAF;
+  --blue-dk:   #1A2580;
+  --blue-lt:   #4A5CDB;
+  --blue-bg:   #EEF1FD;
+  --green:     #16A34A;
+  --green-bg:  #DCFCE7;
+  --yellow:    #B45309;
+  --yellow-bg: #FEF3C7;
+  --red:       #DC2626;
+  --red-bg:    #FEE2E2;
+  --grey:      #6B7280;
+  --grey-bg:   #F3F4F6;
+  --text:      #111827;
+  --muted:     #6B7280;
+  --light:     #9CA3AF;
+  --border:    #E5E7EB;
+  --white:     #ffffff;
+  --radius:    14px;
+  --fd: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --fb: 'Inter', system-ui, sans-serif;
+  --sidebar-w: 260px;
+}
+
+html, body { height: 100%; }
+body { font-family: var(--fb); color: var(--text); background: #F0F2F9; }
+
+/* ═══════════════════════════
+   PAGE LAYER
+═══════════════════════════ */
+.page { display: none !important; }
+.page.active { display: flex !important; min-height: 100vh; }
+/* ═══════════════════════════
+   APP SHELL (sidebar + content)
+═══════════════════════════ */
+.app-shell {
+  display: flex; min-height: 100vh; width: 100%;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: var(--sidebar-w); flex-shrink: 0;
+  background: var(--blue-dk);
+  display: flex; flex-direction: column;
+  padding: 0; position: sticky; top: 0;
+  height: 100vh; overflow-y: auto;
+}
+.sidebar-logo { display: flex; align-items: center; gap: 10px; padding: 24px 20px 20px; border-bottom: 1px solid rgba(255,255,255,.08); }
+.sidebar-logo-mark { width: 36px; height: 36px; border-radius: 10px; background: rgba(255,255,255,.13); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.sidebar-logo-mark svg { width: 19px; height: 19px; }
+.sidebar-logo-txt { font-family: var(--fd); font-weight: 800; font-size: 17px; color: #fff; }
+.sidebar-logo-sub { font-size: 10px; color: rgba(255,255,255,.45); font-weight: 500; margin-top: 1px; }
+.sidebar-nav { padding: 18px 12px 0; flex: 1; }
+.sidebar-section-label { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.35); padding: 0 10px; margin-bottom: 6px; margin-top: 18px; }
+.sn-link {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 14px; border-radius: 10px;
+  font-size: 14px; font-weight: 600; color: rgba(255,255,255,.7);
+  background: transparent; border: none; width: 100%; text-align: left;
+  cursor: pointer; margin-bottom: 4px;
+  transition: background .18s, color .18s;
+}
+.sn-link svg { width: 18px; height: 18px; flex-shrink: 0; opacity: .7; }
+.sn-link:hover { background: rgba(255,255,255,.08); color: #fff; }
+.sn-link:hover svg { opacity: 1; }
+.sn-link.active { background: rgba(255,255,255,.14); color: #fff; }
+.sn-link.active svg { opacity: 1; }
+
+.sidebar-footer { padding: 16px 12px; border-top: 1px solid rgba(255,255,255,.08); }
+.sf-user { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; margin-bottom: 6px; background: rgba(255,255,255,.05); }
+.sf-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg,#6FE3A6,#4A5CDB); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: #fff; flex-shrink: 0; overflow: hidden; }
+.sf-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.sf-info { min-width: 0; }
+.sf-name { font-size: 13px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sf-prodi { font-size: 11px; color: rgba(255,255,255,.5); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.btn-logout { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 14px; border-radius: 10px; background: rgba(220,38,38,.12); color: #fca5a5; font-size: 13.5px; font-weight: 600; border: none; cursor: pointer; transition: background .2s; }
+.btn-logout svg { width: 16px; height: 16px; flex-shrink: 0; }
+.btn-logout:hover { background: rgba(220,38,38,.22); }
+
+/* ═══════════════════════════
+   CONTENT AREA
+═══════════════════════════ */
+.content { flex: 1; min-width: 0; background: #F0F2F9; }
+.content-page { display: none; }
+.content-page.active { display: block; }
+
+/* TOPBAR */
+.topbar { background: #fff; border-bottom: 1px solid var(--border); padding: 0 28px; height: 64px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; }
+.topbar-title { font-family: var(--fd); font-size: 17px; font-weight: 800; color: var(--text); }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+.topbar-notif { width: 36px; height: 36px; border-radius: 9px; background: var(--blue-bg); display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; }
+.topbar-notif svg { width: 18px; height: 18px; }
+.topbar-avatar { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg,#6FE3A6,#4A5CDB); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #fff; cursor: pointer; overflow: hidden; }
+.topbar-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+/* INNER PADDING */
+.content-inner { padding: 28px; }
+
+/* ═══════════════════════════
+   DASHBOARD PAGE — timeline
+═══════════════════════════ */
+.dash-header { margin-bottom: 24px; }
+.dash-header h2 { font-family: var(--fd); font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+.dash-header p { font-size: 14px; color: var(--muted); }
+
+/* STAGE DETAIL PAGE (halaman tersendiri per tahap) */
+.btn-back { display: inline-flex; align-items: center; gap: 6px; background: none; border: none; color: var(--muted); font-size: 13px; font-weight: 600; cursor: pointer; padding: 0; margin-bottom: 18px; transition: color .15s; }
+.btn-back:hover { color: var(--blue); }
+.stage-page-header { border-radius: var(--radius); border: 1px solid var(--border); background: #fff; padding: 24px; margin-bottom: 20px; }
+.stage-page-badge { display: inline-block; background: var(--blue-bg); color: var(--blue); font-family: var(--fd); font-weight: 800; font-size: 14px; padding: 5px 14px; border-radius: 999px; margin-bottom: 10px; }
+.stage-page-title { font-family: var(--fd); font-size: 20px; font-weight: 800; color: var(--text); }
+.stage-page-panel { max-width: 640px; border-radius: var(--radius); border: 1px solid var(--border); background: #fff; padding: 24px; }
+.stage-page-desc { font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 20px; }
+.stage-page-label { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--blue); margin-bottom: 12px; }
+
+/* Overall progress bar card */
+.overall-card {
+  background: linear-gradient(120deg, var(--blue) 0%, #1A2580 100%);
+  border-radius: 16px; padding: 24px 28px;
+  display: flex; align-items: center; gap: 24px;
+  margin-bottom: 28px; flex-wrap: wrap;
+}
+.overall-icon { width: 54px; height: 54px; border-radius: 14px; background: rgba(255,255,255,.14); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.overall-icon svg { width: 26px; height: 26px; }
+.overall-info { flex: 1; min-width: 200px; }
+.overall-info h3 { font-family: var(--fd); font-size: 17px; font-weight: 800; color: #fff; margin-bottom: 4px; }
+.overall-info p { font-size: 13.5px; color: rgba(255,255,255,.78); font-weight: 600; }
+.overall-sim { margin-left: auto; text-align: right; flex-shrink: 0; }
+.sim-day-label { font-size: 12px; color: rgba(255,255,255,.6); margin-bottom: 6px; }
+.sim-day-num { font-family: var(--fd); font-size: 22px; font-weight: 800; color: #fff; margin-bottom: 8px; }
+.sim-btns { display: flex; gap: 6px; }
+.sim-btn { padding: 6px 12px; border-radius: 7px; font-size: 12px; font-weight: 700; border: none; cursor: pointer; transition: background .15s; }
+.sim-btn-minus { background: rgba(255,255,255,.12); color: rgba(255,255,255,.8); }
+.sim-btn-minus:hover { background: rgba(255,255,255,.2); }
+.sim-btn-plus  { background: #6FE3A6; color: #14532D; }
+.sim-btn-plus:hover { background: #4ade80; }
+
+/* TIMELINE */
+.timeline { display: flex; flex-direction: column; }
+.tl-item { display: flex; gap: 0; position: relative; }
+
+/* left column: icon + line */
+.tl-left { display: flex; flex-direction: column; align-items: center; width: 56px; flex-shrink: 0; }
+.tl-icon {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--grey-bg); border: 3px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1; flex-shrink: 0; transition: background .3s, border-color .3s;
+}
+.tl-icon svg { width: 20px; height: 20px; }
+.tl-line { width: 2px; flex: 1; background: var(--border); min-height: 16px; }
+.tl-item:last-child .tl-line { display: none; }
+
+/* States */
+.tl-item.st-done-green  .tl-icon { background: var(--green-bg);  border-color: var(--green);  }
+.tl-item.st-done-yellow .tl-icon { background: var(--yellow-bg); border-color: var(--yellow); }
+.tl-item.st-done-red    .tl-icon { background: var(--red-bg);    border-color: var(--red);    }
+.tl-item.st-active      .tl-icon { background: var(--blue-bg);   border-color: var(--blue);   }
+.tl-item.st-done-green  .tl-line { background: var(--green); }
+.tl-item.st-done-yellow .tl-line { background: var(--yellow); }
+.tl-item.st-done-red    .tl-line { background: var(--red); }
+.tl-item.st-active      .tl-line { background: linear-gradient(to bottom, var(--blue), var(--border)); }
+
+/* right card */
+.tl-card {
+  flex: 1; margin-bottom: 14px; margin-left: 12px;
+  background: #fff; border: 1px solid var(--border);
+  border-radius: 14px; padding: 18px 20px 16px;
+  transition: box-shadow .2s, border-color .2s;
+  cursor: pointer;
+}
+.tl-card:hover { box-shadow: 0 4px 18px rgba(43,59,175,.10); border-color: rgba(43,59,175,.2); }
+.tl-item.st-active .tl-card { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(43,59,175,.08); }
+.tl-card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+.tl-num { font-family: var(--fd); font-size: 22px; font-weight: 800; color: var(--blue); letter-spacing: -.01em; line-height: 1; }
+.tl-badge { font-size: 11.5px; font-weight: 700; padding: 3px 10px; border-radius: 999px; white-space: nowrap; flex-shrink: 0; }
+.badge-grey   { background: var(--grey-bg);   color: var(--grey);   }
+.badge-green  { background: var(--green-bg);  color: var(--green);  }
+.badge-yellow { background: var(--yellow-bg); color: var(--yellow); }
+.badge-red    { background: var(--red-bg);    color: var(--red);    }
+.badge-blue   { background: var(--blue-bg);   color: var(--blue);   }
+.tl-title { font-family: var(--fd); font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+.tl-dates { font-size: 12.5px; color: var(--blue); font-weight: 600; margin-bottom: 8px; }
+.tl-desc  { font-size: 13px; color: var(--muted); line-height: 1.55; }
+.tl-foot  { display: flex; justify-content: flex-end; margin-top: 10px; }
+.tl-days-left { font-size: 11.5px; color: var(--muted); font-weight: 600; }
+
+/* DETAIL PANEL (slide open below card) — isi tahapan */
+.detail-label { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--blue); margin-bottom: 10px; }
+.detail-fields { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+.detail-field { display: flex; align-items: center; gap: 10px; background: #fff; border: 1px solid var(--border); border-radius: 9px; padding: 10px 14px; font-size: 13.5px; font-weight: 500; color: var(--text); }
+.detail-field-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--blue-lt); flex-shrink: 0; }
+.detail-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+.detail-compare-card { border-radius: 10px; padding: 12px 14px; font-size: 12.5px; line-height: 1.55; }
+.detail-compare-old { background: var(--red-bg); border: 1px solid rgba(220,38,38,.18); }
+.detail-compare-new { background: var(--green-bg); border: 1px solid rgba(22,163,74,.18); }
+.detail-compare-card h4 { font-size: 11.5px; font-weight: 700; margin-bottom: 6px; }
+.detail-compare-old h4 { color: var(--red); }
+.detail-compare-new h4 { color: var(--green); }
+.detail-compare-card p { color: var(--text); }
+.detail-actions { display: flex; justify-content: flex-end; gap: 8px; }
+.btn-detail-cancel { background: #fff; border: 1.5px solid var(--border); color: var(--muted); padding: 9px 20px; border-radius: 9px; font-size: 13.5px; font-weight: 600; cursor: pointer; }
+.btn-detail-done   { background: var(--blue); border: none; color: #fff; padding: 9px 20px; border-radius: 9px; font-size: 13.5px; font-weight: 600; cursor: pointer; transition: background .2s; }
+.btn-detail-done:hover { background: var(--blue-dk); }
+
+/* ═══════════════════════════
+   REFERENSI PAGE
+═══════════════════════════ */
+.ref-toolbar { display: flex; gap: 12px; margin-bottom: 22px; flex-wrap: wrap; }
+.ref-search { flex: 1; min-width: 200px; display: flex; align-items: center; gap: 10px; background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 0 14px; height: 42px; }
+.ref-search svg { width: 16px; height: 16px; color: var(--muted); flex-shrink: 0; }
+.ref-search input { border: none; outline: none; font-size: 14px; flex: 1; background: transparent; color: var(--text); }
+.ref-list { display: flex; flex-direction: column; gap: 14px; }
+.ref-card { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 20px 22px; display: flex; align-items: flex-start; gap: 16px; transition: box-shadow .2s; }
+.ref-card:hover { box-shadow: 0 4px 16px rgba(43,59,175,.09); }
+.ref-ico { width: 44px; height: 44px; border-radius: 11px; background: var(--blue-bg); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.ref-ico svg { width: 22px; height: 22px; }
+.ref-body { flex: 1; min-width: 0; }
+.ref-title { font-family: var(--fd); font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+.ref-desc  { font-size: 13px; color: var(--muted); line-height: 1.55; margin-bottom: 10px; }
+.ref-meta  { display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--muted); }
+.ref-tag   { background: var(--blue-bg); color: var(--blue); padding: 2px 9px; border-radius: 999px; font-weight: 600; }
+.btn-ref-dl { display: inline-flex; align-items: center; gap: 6px; background: var(--blue); color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; text-decoration: none; white-space: nowrap; flex-shrink: 0; align-self: flex-start; transition: background .2s; }
+.btn-ref-dl:hover { background: var(--blue-dk); }
+
+/* ═══════════════════════════
+   PROFIL PAGE
+═══════════════════════════ */
+.profil-grid { display: grid; grid-template-columns: 300px 1fr; gap: 22px; align-items: start; }
+.profil-left { background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 30px 24px; text-align: center; }
+.profil-avatar-wrap { position: relative; width: 96px; height: 96px; margin: 0 auto 16px; }
+.profil-avatar-img { width: 96px; height: 96px; border-radius: 50%; background: linear-gradient(135deg,#6FE3A6,#4A5CDB); display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: 700; color: #fff; overflow: hidden; }
+.profil-avatar-img img { width: 100%; height: 100%; object-fit: cover; }
+.profil-avatar-btn { position: absolute; bottom: 2px; right: 2px; width: 30px; height: 30px; border-radius: 50%; background: var(--blue); border: 2px solid #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.profil-avatar-btn svg { width: 14px; height: 14px; color: #fff; }
+.profil-avatar-btn input[type=file] { display: none; }
+.profil-name-big { font-family: var(--fd); font-size: 18px; font-weight: 800; margin-bottom: 4px; }
+.profil-prodi { font-size: 13px; color: var(--muted); margin-bottom: 18px; }
+.profil-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--blue-bg); color: var(--blue); padding: 6px 14px; border-radius: 999px; font-size: 12.5px; font-weight: 700; }
+.profil-right { display: flex; flex-direction: column; gap: 20px; }
+.profil-section { background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 26px; }
+.profil-section h3 { font-family: var(--fd); font-size: 15px; font-weight: 800; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+.pf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.pf-group { display: flex; flex-direction: column; gap: 6px; }
+.pf-group label { font-size: 12.5px; font-weight: 600; color: var(--muted); }
+.pf-group input, .pf-group select { background: #F8F9FF; border: 1.5px solid var(--border); border-radius: 9px; padding: 11px 14px; font-size: 14px; outline: none; transition: border-color .2s; font-family: var(--fb); }
+.pf-group input:focus, .pf-group select:focus { border-color: var(--blue-lt); }
+.pf-group input[readonly] { color: var(--muted); cursor: default; background: var(--grey-bg); }
+.pf-divider { grid-column: 1/-1; border: none; border-top: 1px solid var(--border); }
+.btn-pf-save { background: var(--blue); color: #fff; border: none; padding: 11px 26px; border-radius: 9px; font-size: 14px; font-weight: 700; cursor: pointer; transition: background .2s; }
+.btn-pf-save:hover { background: var(--blue-dk); }
+.pw-fields { display: flex; flex-direction: column; gap: 14px; }
+
+/* Toast */
+.toast { position: fixed; bottom: 24px; right: 24px; background: #111827; color: #fff; padding: 12px 20px; border-radius: 10px; font-size: 13.5px; font-weight: 600; box-shadow: 0 8px 24px rgba(0,0,0,.22); opacity: 0; transform: translateY(12px); transition: opacity .25s, transform .25s; z-index: 999; }
+.toast.show { opacity: 1; transform: translateY(0); }
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  :root { --sidebar-w: 220px; }
+  .profil-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 700px) {
+  .stats-grid { grid-template-columns: repeat(2,1fr); }
+  .stat-box:nth-child(2) { border-right: none; }
+  .stat-box { border-bottom: 1px solid var(--border); }
+  .hero-visual { display: none; }
+  .pf-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .sidebar { display: none; }
+  .content { width: 100%; }
+  .content-inner { padding: 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ════════ TOAST ════════ -->
+<div class="toast" id="toast"></div>
+
+<!-- ════════════════════════════════
+     APP — sidebar + content (dashboard mahasiswa)
+════════════════════════════════ -->
+<div id="page-app" class="page active">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <span class="sidebar-logo-mark">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M4 6.5C4 5.12 5.12 4 6.5 4H17a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H6.5A2.5 2.5 0 0 1 4 17.5v-11Z" stroke="white" stroke-width="1.7" stroke-linejoin="round"/><path d="M4 17.5C4 16.12 5.12 15 6.5 15H18" stroke="white" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+      <div>
+        <div class="sidebar-logo-txt">SIBITA</div>
+        <div class="sidebar-logo-sub">Bimbingan Tugas Akhir</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-label">Menu Utama</div>
+      <button class="sn-link active" data-target="cp-dashboard" onclick="switchContent(this)">
+        <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/><rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/><rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/><rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/></svg>
+        Dashboard
+      </button>
+      <button class="sn-link" data-target="cp-referensi" onclick="switchContent(this)">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 19.5A2.5 2.5 0 0 0 6.5 22H20V2H6.5A2.5 2.5 0 0 0 4 4.5v15Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Referensi
+      </button>
+      <button class="sn-link" data-target="cp-profil" onclick="switchContent(this)">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M4 20c0-4 3.58-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        Profil
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sf-user">
+        <div class="sf-avatar" id="sf-avatar">T</div>
+        <div class="sf-info">
+          <div class="sf-name" id="sf-name">Tih Indriani</div>
+          <div class="sf-prodi" id="sf-prodi">Sistem Informasi</div>
+        </div>
+      </div>
+      <button class="btn-logout" onclick="showToast('Anda telah keluar dari akun')">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Keluar
+      </button>
+    </div>
+  </aside>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- TOP BAR -->
+    <div class="topbar">
+      <span class="topbar-title" id="topbar-title">Dashboard</span>
+      <div class="topbar-right">
+        <button class="topbar-notif">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0" stroke="#2B3BAF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="topbar-avatar" id="topbar-avatar">T</div>
+      </div>
+    </div>
+
+    <!-- ── DASHBOARD CONTENT ── -->
+    <div class="content-page active" id="cp-dashboard">
+      <div class="content-inner">
+
+        <div class="dash-header">
+          <h2>Progress Skripsi</h2>
+          <p>Pantau perkembangan setiap tahapan tugas akhir Anda</p>
+        </div>
+
+        <!-- Overall card -->
+        <div class="overall-card">
+          <div class="overall-icon">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="overall-info">
+            <h3>Progres Keseluruhan</h3>
+            <p id="oc-stages">0 dari 16 tahap selesai</p>
+          </div>
+          <div class="overall-sim">
+            <div class="sim-day-label">Simulasi Hari ke-</div>
+            <div class="sim-day-num" id="sim-val">0</div>
+            <div class="sim-btns">
+              <button class="sim-btn sim-btn-minus" onclick="simDay(-1)">&minus;</button>
+              <button class="sim-btn sim-btn-plus" onclick="simDay(+1)">+1 Hari</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Timeline -->
+        <div class="timeline" id="timeline-root"></div>
+
+      </div>
+    </div><!-- /cp-dashboard -->
+
+    <!-- ── DETAIL TAHAP (halaman tersendiri per tahap, seperti route) ── -->
+    <div class="content-page" id="cp-tahap">
+      <div class="content-inner">
+        <button class="btn-back" onclick="closeStage()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Kembali ke Progress Skripsi
+        </button>
+        <div id="stage-page-root"></div>
+      </div>
+    </div><!-- /cp-tahap -->
+
+    <!-- ── REFERENSI CONTENT ── -->
+    <div class="content-page" id="cp-referensi">
+      <div class="content-inner">
+        <div class="dash-header">
+          <h2>Referensi Buku & Jurnal</h2>
+          <p>Materi pendukung dari dosen pembimbing untuk membantu tugas akhir Anda</p>
+        </div>
+        <div class="ref-toolbar">
+          <div class="ref-search">
+            <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <input type="text" placeholder="Cari referensi..." id="ref-search-inp" oninput="filterRef()"/>
+          </div>
+        </div>
+        <div class="ref-list" id="ref-list"></div>
+      </div>
+    </div><!-- /cp-referensi -->
+
+    <!-- ── PROFIL CONTENT ── -->
+    <div class="content-page" id="cp-profil">
+      <div class="content-inner">
+        <div class="dash-header">
+          <h2>Profil Saya</h2>
+          <p>Kelola informasi akun dan keamanan Anda</p>
+        </div>
+        <div class="profil-grid">
+          <!-- left: avatar -->
+          <div class="profil-left">
+            <div class="profil-avatar-wrap">
+              <div class="profil-avatar-img" id="pf-avatar-big">T</div>
+              <label class="profil-avatar-btn" title="Ubah foto">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2v11Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><circle cx="12" cy="13" r="4" stroke="currentColor" stroke-width="1.7"/></svg>
+                <input type="file" accept="image/*" onchange="changeAvatar(this)"/>
+              </label>
+            </div>
+            <div class="profil-name-big" id="pf-nm-big">Tih Indriani</div>
+            <div class="profil-prodi" id="pf-prodi-big">Sistem Informasi · UIN Mataram</div>
+            <span class="profil-badge">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M22 10 12 5 2 10l10 5 10-5ZM6 12.5v5" stroke="#2B3BAF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Mahasiswa Aktif
+            </span>
+          </div>
+          <!-- right -->
+          <div class="profil-right">
+            <div class="profil-section">
+              <h3>Informasi Pribadi</h3>
+              <div class="pf-grid">
+                <div class="pf-group">
+                  <label>Nama Lengkap</label>
+                  <input type="text" id="pf-nama" value="Tih Indriani"/>
+                </div>
+                <div class="pf-group">
+                  <label>NIM</label>
+                  <input type="text" id="pf-nim" value="200101012" readonly/>
+                </div>
+                <div class="pf-group">
+                  <label>Email</label>
+                  <input type="email" id="pf-email" value="tih.indriani@uin-mataram.ac.id"/>
+                </div>
+                <div class="pf-group">
+                  <label>No. HP</label>
+                  <input type="text" id="pf-hp" value="081234567890"/>
+                </div>
+                <div class="pf-group">
+                  <label>Program Studi</label>
+                  <input type="text" id="pf-prodi" value="Sistem Informasi"/>
+                </div>
+                <div class="pf-group">
+                  <label>Asal Kampus</label>
+                  <input type="text" id="pf-kampus" value="UIN Mataram"/>
+                </div>
+                <div class="pf-group" style="grid-column:1/-1">
+                  <label>Dosen Pembimbing</label>
+                  <input type="text" id="pf-dosen" value="Dr. Ahmad Fauzi, M.T." readonly/>
+                </div>
+              </div>
+              <div style="display:flex;justify-content:flex-end;margin-top:18px">
+                <button class="btn-pf-save" onclick="saveProfil()">Simpan Perubahan</button>
+              </div>
+            </div>
+
+            <div class="profil-section">
+              <h3>Ubah Password</h3>
+              <div class="pw-fields">
+                <div class="pf-group">
+                  <label>Password Saat Ini</label>
+                  <input type="password" id="pw-old" placeholder="••••••••"/>
+                </div>
+                <div class="pf-group">
+                  <label>Password Baru</label>
+                  <input type="password" id="pw-new" placeholder="Minimal 8 karakter"/>
+                </div>
+                <div class="pf-group">
+                  <label>Konfirmasi Password Baru</label>
+                  <input type="password" id="pw-confirm" placeholder="Ulangi password baru"/>
+                </div>
+              </div>
+              <div style="display:flex;justify-content:flex-end;margin-top:18px">
+                <button class="btn-pf-save" onclick="savePassword()">Ubah Password</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /cp-profil -->
+
+  </div><!-- /content -->
+</div><!-- /app -->
+
+
+<script>
+/* ═════════════════════════════════════════
+   DATA
+═════════════════════════════════════════ */
+const STAGES = [
+  { n:1,  name:"Diskusi Konsep dan Judul Penelitian",        days:7,  desc:"Diskusikan topik, permasalahan, dan judul penelitian bersama dosen pembimbing.",
+    fields:["Topik Penelitian","Permasalahan Penelitian","Judul Penelitian","Alasan Penelitian","Unggah Dokumen"] },
+  { n:2,  name:"Penyusunan Proposal Penelitian",              days:14, desc:"Susun BAB I–III sebagai dasar proposal yang akan diajukan ke pembimbing.",
+    fields:["Ringkasan Proposal","Tujuan Penelitian","Kontribusi yang Diharapkan","Unggah Dokumen"] },
+  { n:3,  name:"Konsultasi Dosen Pembimbing (ke-1)",          days:7,  desc:"Ajukan proposal ke pembimbing untuk mendapatkan masukan pertama.",
+    fields:["Catatan Diskusi","Pertanyaan untuk Pembimbing","Unggah Dokumen"] },
+  { n:4,  name:"Revisi Proposal Penelitian",                  days:7,  desc:"Perbaiki proposal sesuai masukan dosen pada konsultasi pertama.",
+    fields:["Ringkasan Revisi","Unggah Dokumen"],
+    compare:{ old:"Bab I masih belum mencakup latar belakang yang komprehensif. Pernyataan masalah kurang spesifik dan tujuan penelitian belum terukur.", new:"Bab I telah diperluas dengan latar belakang yang kuat. Pernyataan masalah diperinci dan tujuan penelitian menggunakan indikator yang terukur." } },
+  { n:5,  name:"Persiapan dan Ujian Proposal",                days:7,  desc:"Siapkan berkas dan presentasi untuk ujian proposal penelitian.",
+    fields:["Pilih Jadwal Ujian","Unggah Proposal Final","Unggah PPT Ujian"] },
+  { n:6,  name:"Penyusunan Instrumen Penelitian",             days:7,  desc:"Buat instrumen (kuesioner/wawancara) sesuai metodologi yang telah disetujui.",
+    fields:["Jenis Instrumen","Metode Validasi","Unggah Dokumen"] },
+  { n:7,  name:"Konsultasi Dosen Pembimbing (ke-2)",          days:7,  desc:"Validasikan instrumen penelitian bersama dosen pembimbing.",
+    fields:["Ringkasan Revisi","Unggah Dokumen"],
+    compare:{ old:"Instrumen penelitian masih belum sepenuhnya mencerminkan indikator pada variabel penelitian. Beberapa butir pertanyaan bersifat ambigu dan berpotensi menimbulkan interpretasi ganda.", new:"Instrumen telah disesuaikan dengan indikator variabel penelitian. Redaksi pertanyaan diperjelas sehingga lebih mudah dipahami dan meminimalkan bias interpretasi." } },
+  { n:8,  name:"Pengambilan Data Penelitian",                 days:21, desc:"Lakukan pengumpulan data di lapangan sesuai instrumen yang telah divalidasi.",
+    fields:["Progres Pengambilan Data","Jumlah Partisipan","Unggah Dokumen"] },
+  { n:9,  name:"Pengolahan Data Penelitian",                  days:7,  desc:"Analisis dan olah data yang telah dikumpulkan menggunakan metode yang dipilih.",
+    fields:["Metode Analisis","Ringkasan Temuan","Unggah Dokumen"] },
+  { n:10, name:"Penyusunan BAB IV (Hasil & Pembahasan)",      days:14, desc:"Tulis hasil analisis dan pembahasan penelitian secara komprehensif.",
+    fields:["Temuan Utama","Ringkasan Pembahasan","Unggah Dokumen"] },
+  { n:11, name:"Konsultasi Dosen Pembimbing (ke-3)",          days:7,  desc:"Konsultasikan BAB IV kepada dosen untuk mendapatkan masukan.",
+    fields:["Ringkasan Revisi","Unggah Dokumen"],
+    compare:{ old:"Tabel dan grafik telah disajikan, namun beberapa visualisasi belum memiliki interpretasi yang memadai. Pembaca masih kesulitan memahami makna dari data yang ditampilkan.", new:"Setiap tabel dan grafik telah dilengkapi dengan interpretasi yang jelas serta penjelasan mengenai implikasi hasil penelitian, sehingga informasi yang disajikan lebih mudah dipahami." } },
+  { n:12, name:"Revisi BAB IV",                               days:7,  desc:"Perbaiki BAB IV berdasarkan masukan dari dosen pembimbing.",
+    fields:["Checklist Revisi: Perbaikan sistematika penulisan hasil penelitian","Checklist Revisi: Penambahan analisis statistik yang diminta","Checklist Revisi: Revisi interpretasi data sesuai masukan","Checklist Revisi: Pembaruan tabel dan grafik","Checklist Revisi: Koreksi referensi pada Bab IV","Unggah Dokumen"] },
+  { n:13, name:"Penyusunan BAB V (Kesimpulan & Saran)",       days:7,  desc:"Tulis kesimpulan dan saran berdasarkan temuan penelitian.",
+    fields:["Ringkasan Kesimpulan","Saran","Unggah Dokumen"] },
+  { n:14, name:"Penyusunan BAB I s.d. BAB V (Draft Final)",   days:7,  desc:"Gabungkan seluruh bab menjadi satu naskah utuh dan periksa konsistensinya.",
+    fields:["Catatan Draft Final","Unggah Dokumen"] },
+  { n:15, name:"Konsultasi Dosen Pembimbing (ke-4)",          days:7,  desc:"Ajukan draft final untuk persetujuan akhir sebelum sidang.",
+    fields:["Ringkasan Revisi","Unggah Dokumen"] },
+  { n:16, name:"Persiapan Ujian Akhir & Revisi Naskah Akhir", days:7,  desc:"Lengkapi administrasi sidang, ikuti ujian akhir, dan revisi naskah sesuai catatan penguji.",
+    fields:["Checklist Ujian: Naskah tugas akhir telah disetujui oleh pembimbing","Checklist Ujian: Dokumen administrasi lengkap","Checklist Ujian: Slide presentasi sudah siap","Checklist Ujian: Formulir pendaftaran sidang telah diisi","Checklist Ujian: Bukti bebas teori","Hasil Ujian","Ringkasan Revisi Akhir","Unggah Dokumen"] },
+];
+
+const REFS = [
+  { id:1, title:"Metodologi Penelitian Kuantitatif",  desc:"Panduan lengkap metodologi penelitian kuantitatif mencakup desain penelitian, pengumpulan data, dan analisis statistik.",    tag:"Metodologi",  file:"metodologi-kuantitatif.pdf",  author:"Prof. Sugiyono",   year:"2023" },
+  { id:2, title:"Penulisan Karya Ilmiah Akademik",    desc:"Buku panduan penulisan skripsi, tesis, dan disertasi sesuai kaidah akademik yang berlaku di perguruan tinggi.",              tag:"Penulisan",    file:"karya-ilmiah.pdf",            author:"Dr. Suharsimi",    year:"2022" },
+  { id:3, title:"Analisis Data dengan SPSS",          desc:"Panduan praktis analisis data kuantitatif menggunakan SPSS dari dasar hingga mahir, disertai contoh kasus nyata.",           tag:"Statistik",    file:"analisis-spss.pdf",           author:"Imam Ghozali",     year:"2023" },
+  { id:4, title:"Tinjauan Pustaka Sistematis",        desc:"Teknik systematic literature review untuk menemukan, mengevaluasi, dan mensintesis penelitian-penelitian terdahulu.",         tag:"Literatur",    file:"tinjauan-pustaka.pdf",        author:"Dr. Ridwan",       year:"2022" },
+  { id:5, title:"Etika Penelitian & Plagiarisme",     desc:"Panduan etika dalam penelitian ilmiah dan cara mencegah plagiarisme, termasuk penggunaan manajemen referensi.",              tag:"Etika",        file:"etika-penelitian.pdf",        author:"Tim Akademik",     year:"2024" },
+  { id:6, title:"Instrumen dan Validitas Penelitian", desc:"Cara membuat, menguji validitas dan reliabilitas instrumen penelitian baik kuantitatif maupun kualitatif.",                  tag:"Instrumen",    file:"instrumen-penelitian.pdf",    author:"Prof. Arikunto",   year:"2021" },
+];
+
+/* ═════════════════════════════════════════
+   STATE
+═════════════════════════════════════════ */
+let simDay = 0;
+const stageCompleteDay = {}; // key: stageN, value: day they were completed (or null)
+STAGES.forEach(s => { stageCompleteDay[s.n] = null; });
+
+function computeWindows() {
+  const w = {};
+  let cur = 0;
+  STAGES.forEach(s => { w[s.n] = { start: cur, end: cur + s.days }; cur += s.days; });
+  return w;
+}
+
+function stageColor(n) {
+  const win = computeWindows()[n];
+  const cd  = stageCompleteDay[n];
+  if (cd === null) {
+    if (simDay < win.start) return 'grey';
+    return 'active';
+  }
+  // completed — check when vs deadline
+  if (cd <= win.end - 2) return 'green';   // selesai >= 2 hari sebelum deadline (>= h-1 = 1 hari sebelum)
+  if (cd <= win.end - 1) return 'yellow';  // selesai 1 hari sebelum deadline (h-1)
+  return 'red';                             // selesai >= deadline (h+0 atau lebih)
+}
+
+function badgeInfo(color) {
+  if (color === 'grey')   return { cls:'badge-grey',   label:'Belum Mulai' };
+  if (color === 'active') return { cls:'badge-blue',   label:'Berlangsung' };
+  if (color === 'green')  return { cls:'badge-green',  label:'Selesai ✓' };
+  if (color === 'yellow') return { cls:'badge-yellow', label:'Selesai (H-1)' };
+  return                          { cls:'badge-red',   label:'Terlambat' };
+}
+
+function tlItemClass(color) {
+  if (color === 'green')  return 'st-done-green';
+  if (color === 'yellow') return 'st-done-yellow';
+  if (color === 'red')    return 'st-done-red';
+  if (color === 'active') return 'st-active';
+  return '';
+}
+
+/* ═════════════════════════════════════════
+   RENDER TIMELINE
+═════════════════════════════════════════ */
+const STAGE_ICONS = [
+  `<svg viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  `<svg viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6ZM14 2v6h6M16 13H8M16 17H8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  `<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M4 20c0-4 3.58-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>`,
+  `<svg viewBox="0 0 24 24" fill="none"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  `<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"/><path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  `<svg viewBox="0 0 24 24" fill="none"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  `<svg viewBox="0 0 24 24" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  `<svg viewBox="0 0 24 24" fill="none"><line x1="18" y1="20" x2="18" y2="10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="12" y1="20" x2="12" y2="4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="6" y1="20" x2="6" y2="14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>`,
+  `<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>`,
+  `<svg viewBox="0 0 24 24" fill="none"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 19.5A2.5 2.5 0 0 0 6.5 22H20V2H6.5A2.5 2.5 0 0 0 4 4.5v15Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  `<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M4 20c0-4 3.58-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>`,
+  `<svg viewBox="0 0 24 24" fill="none"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  `<svg viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6ZM14 2v6h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  `<svg viewBox="0 0 24 24" fill="none"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" stroke="currentColor" stroke-width="1.8"/></svg>`,
+  `<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M4 20c0-4 3.58-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>`,
+  `<svg viewBox="0 0 24 24" fill="none"><path d="M22 10 12 5 2 10l10 5 10-5ZM6 12.5v5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+];
+
+function formatDate(dayOffset) {
+  const d = new Date(2026, 5, 29); // start Jun 29 2026
+  d.setDate(d.getDate() + dayOffset);
+  return d.toLocaleDateString('id-ID', { day:'numeric', month:'long', year:'numeric' });
+}
+
+function renderTimeline() {
+  const root = document.getElementById('timeline-root');
+  const wins = computeWindows();
+  let html = '';
+
+  STAGES.forEach((s, idx) => {
+    const color  = stageColor(s.n);
+    const badge  = badgeInfo(color);
+    const itcls  = tlItemClass(color);
+    const win    = wins[s.n];
+    const dLeft  = win.end - simDay;
+
+    let daysLabel = '';
+    if (color === 'active') daysLabel = dLeft > 0 ? `Sisa ${dLeft} hari` : 'Tenggat hari ini';
+    else if (color === 'grey') daysLabel = `Mulai hari ke-${win.start}`;
+
+    html += `
+    <div class="tl-item ${itcls}" id="tl-item-${s.n}">
+      <div class="tl-left">
+        <div class="tl-icon">${STAGE_ICONS[idx]}</div>
+        <div class="tl-line"></div>
+      </div>
+      <div style="flex:1">
+        <div class="tl-card" onclick="openStage(${s.n})">
+          <div class="tl-card-head">
+            <span class="tl-num">${String(s.n).padStart(2,'0')}</span>
+            <span class="tl-badge ${badge.cls}">${badge.label}</span>
+          </div>
+          <div class="tl-title">${s.name}</div>
+          <div class="tl-dates">${formatDate(win.start)} – ${formatDate(win.end)}</div>
+          <div class="tl-desc">${s.desc}</div>
+          ${color !== 'grey' ? `<div class="tl-foot"><span class="tl-days-left">${daysLabel}</span></div>` : ''}
+        </div>
+      </div>
+    </div>`;
+  });
+
+  root.innerHTML = html;
+  updateOverall();
+}
+
+function updateOverall() {
+  let done = 0;
+  STAGES.forEach(s => {
+    if (stageCompleteDay[s.n] !== null) done++;
+  });
+  document.getElementById('oc-stages').textContent = `${done} dari ${STAGES.length} tahap selesai`;
+}
+
+/* ═════════════════════════════════════════
+   HALAMAN DETAIL TAHAP (disimulasikan seperti route)
+═════════════════════════════════════════ */
+function openStage(n) {
+  const s = STAGES.find(x => x.n === n);
+  const idx = STAGES.findIndex(x => x.n === n);
+  const nextStage = STAGES[idx + 1] || null;
+
+  const fieldsHtml = s.fields.map(f => `<div class="detail-field"><span class="detail-field-dot"></span>${f}</div>`).join('');
+  const compareHtml = s.compare ? `
+    <div class="detail-label">Perbandingan Revisi</div>
+    <div class="detail-compare">
+      <div class="detail-compare-card detail-compare-old"><h4>Versi Sebelumnya</h4><p>${s.compare.old}</p></div>
+      <div class="detail-compare-card detail-compare-new"><h4>Versi Terbaru</h4><p>${s.compare.new}</p></div>
+    </div>` : '';
+
+  document.getElementById('stage-page-root').innerHTML = `
+    <div class="stage-page-header">
+      <span class="stage-page-badge">Tahap ${String(s.n).padStart(2,'0')}</span>
+      <h1 class="stage-page-title">${s.name}</h1>
+    </div>
+    <div class="stage-page-panel">
+      <p class="stage-page-desc">${s.desc}</p>
+      ${compareHtml}
+      <div class="detail-label">Isi Tahapan</div>
+      <div class="detail-fields">${fieldsHtml}</div>
+      <div class="detail-actions">
+        <button class="btn-detail-cancel" onclick="closeStage()">Batal</button>
+        <button class="btn-detail-done" onclick="markDone(${s.n}, ${nextStage ? nextStage.n : 'null'})">Tandai Selesai</button>
+      </div>
+    </div>`;
+
+  document.getElementById('topbar-title').textContent = 'Detail Tahap';
+  goToContent('cp-tahap');
+  window.scrollTo(0, 0);
+}
+
+function closeStage() {
+  document.getElementById('topbar-title').textContent = 'Dashboard';
+  goToContent('cp-dashboard');
+}
+
+function goToContent(target) {
+  document.querySelectorAll('.content-page').forEach(p => p.classList.remove('active'));
+  document.getElementById(target).classList.add('active');
+  document.querySelectorAll('.sn-link').forEach(b => b.classList.remove('active'));
+  const link = document.querySelector(`.sn-link[data-target="${target === 'cp-tahap' ? 'cp-dashboard' : target}"]`);
+  if (link) link.classList.add('active');
+}
+
+function markDone(n, nextN) {
+  stageCompleteDay[n] = simDay;
+  renderTimeline();
+  showToast(`Tahap ${n} ditandai selesai!`);
+  if (nextN) {
+    openStage(nextN);
+  } else {
+    closeStage();
+  }
+}
+
+/* ═════════════════════════════════════════
+   SIMULASI HARI
+═════════════════════════════════════════ */
+function simDay_(delta) {
+  simDay = Math.max(0, simDay + delta);
+  document.getElementById('sim-val').textContent = simDay;
+  renderTimeline();
+}
+
+/* ═════════════════════════════════════════
+   REFERENSI
+═════════════════════════════════════════ */
+function renderRefs(query = '') {
+  const q = query.toLowerCase();
+  const list = document.getElementById('ref-list');
+  const filtered = REFS.filter(r => !q || r.title.toLowerCase().includes(q) || r.desc.toLowerCase().includes(q) || r.tag.toLowerCase().includes(q));
+  list.innerHTML = filtered.map(r => `
+    <div class="ref-card">
+      <div class="ref-ico">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 19.5A2.5 2.5 0 0 0 6.5 22H20V2H6.5A2.5 2.5 0 0 0 4 4.5v15Z" stroke="#2B3BAF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="ref-body">
+        <div class="ref-title">${r.title}</div>
+        <div class="ref-desc">${r.desc}</div>
+        <div class="ref-meta">
+          <span class="ref-tag">${r.tag}</span>
+          <span>${r.author}</span>
+          <span>${r.year}</span>
+        </div>
+      </div>
+      <a class="btn-ref-dl" href="#" onclick="showToast('Mengunduh: ${r.title}');return false;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Unduh
+      </a>
+    </div>
+  `).join('');
+}
+
+function filterRef() {
+  renderRefs(document.getElementById('ref-search-inp').value);
+}
+
+/* ═════════════════════════════════════════
+   PROFIL
+═════════════════════════════════════════ */
+function saveProfil() {
+  const nama  = document.getElementById('pf-nama').value;
+  const prodi = document.getElementById('pf-prodi').value;
+  const kampus = document.getElementById('pf-kampus').value;
+  document.getElementById('pf-nm-big').textContent = nama;
+  document.getElementById('pf-prodi-big').textContent = `${prodi} · ${kampus}`;
+  document.getElementById('sf-name').textContent = nama;
+  document.getElementById('sf-prodi').textContent = prodi;
+  // update initial in avatars
+  const initial = nama.charAt(0).toUpperCase();
+  ['pf-avatar-big','sf-avatar','topbar-avatar'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el && !el.querySelector('img')) el.textContent = initial;
+  });
+  showToast('Profil berhasil disimpan!');
+}
+
+function savePassword() {
+  const old = document.getElementById('pw-old').value;
+  const nw  = document.getElementById('pw-new').value;
+  const cnf = document.getElementById('pw-confirm').value;
+  if (!old || !nw || !cnf) { showToast('Harap isi semua field password'); return; }
+  if (nw !== cnf) { showToast('Password baru tidak cocok'); return; }
+  if (nw.length < 8) { showToast('Password minimal 8 karakter'); return; }
+  document.getElementById('pw-old').value = '';
+  document.getElementById('pw-new').value = '';
+  document.getElementById('pw-confirm').value = '';
+  showToast('Password berhasil diubah!');
+}
+
+function changeAvatar(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const src = e.target.result;
+    ['pf-avatar-big','sf-avatar','topbar-avatar'].forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.innerHTML = `<img src="${src}" alt="avatar"/>`;
+    });
+    showToast('Foto profil berhasil diubah!');
+  };
+  reader.readAsDataURL(file);
+}
+
+/* ═════════════════════════════════════════
+   NAV / ROUTING
+═════════════════════════════════════════ */
+function goTo(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(pageId).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function doLogin() {
+  goTo('page-app');
+  renderTimeline();
+  renderRefs();
+}
+
+function switchContent(btn) {
+  document.querySelectorAll('.sn-link').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const target = btn.dataset.target;
+  document.querySelectorAll('.content-page').forEach(p => p.classList.remove('active'));
+  document.getElementById(target).classList.add('active');
+  const titles = { 'cp-dashboard':'Dashboard','cp-referensi':'Referensi','cp-profil':'Profil' };
+  document.getElementById('topbar-title').textContent = titles[target] || '';
+}
+
+/* ═════════════════════════════════════════
+   UTILS
+═════════════════════════════════════════ */
+function togglePw(id, btn) {
+  const inp = document.getElementById(id);
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// expose simDay func under different name to avoid conflict with variable
+window.simDay = function(delta) { simDay_(delta); };
+
+/* ═════════════════════════════════════════
+   INIT
+═════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+  renderTimeline();
+  renderRefs();
+});
+</script>
+</body>
+</html>
