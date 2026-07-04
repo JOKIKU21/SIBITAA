@@ -35,21 +35,21 @@ export function StageCard({ stage, status, window }: { stage: Stage; status: Sta
   const rawSvg = RAW_ICONS[stage.n - 1] || "";
 
   const getIconClass = (status: StageStatus) => {
-    const base = "w-[44px] h-[44px] rounded-full border-[3px] flex items-center justify-center z-1 shrink-0 transition-[background,border-color] duration-300 [&>svg]:w-[20px] [&>svg]:h-[20px]";
+    const base = "w-11 h-11 rounded-full border-[3px] flex items-center justify-center z-1 shrink-0 transition-[background,border-color] duration-300 [&>svg]:w-5 [&>svg]:h-5";
     if (status === "selesai") return `${base} bg-success-bg border-success text-success`;
     if (status === "berlangsung") return `${base} bg-brand-bg border-brand text-brand`;
     return `${base} bg-[#F3F4F6] border-neutral-border text-neutral-muted`;
   };
 
   const getLineClass = (status: StageStatus) => {
-    const base = "w-[2px] flex-1 min-h-[16px]";
+    const base = "w-0.5 flex-1 min-h-4";
     if (status === "selesai") return `${base} bg-success`;
     if (status === "berlangsung") return `${base} bg-gradient-to-b from-brand to-neutral-border`;
     return `${base} bg-neutral-border`;
   };
 
   const getCardClass = (status: StageStatus) => {
-    const base = "flex-1 mb-[14px] ml-[12px] bg-white border rounded-[14px] py-[18px] px-[20px] pb-[16px] transition-[box-shadow,border-color] duration-200 cursor-pointer hover:shadow-[0_4px_18px_rgba(43,59,175,0.1)] hover:border-brand/20";
+    const base = "flex-1 mb-3.5 ml-3 bg-white border rounded-3.5 py-4.5 px-5 pb-4 transition-[box-shadow,border-color] duration-200 cursor-pointer hover:shadow-[0_4px_18px_rgba(43,59,175,0.1)] hover:border-brand/20";
     if (status === "berlangsung") {
       return `${base} border-brand shadow-[0_0_0_3px_rgba(43,59,175,0.08)]`;
     }
@@ -65,21 +65,21 @@ export function StageCard({ stage, status, window }: { stage: Stage; status: Sta
 
   return (
     <div className="flex gap-0 relative">
-      <div className="flex flex-col items-center w-[56px] shrink-0">
+      <div className="flex flex-col items-center w-14 shrink-0">
         <div className={getIconClass(status)} dangerouslySetInnerHTML={{ __html: rawSvg }} />
         {stage.n !== 16 && <div className={getLineClass(status)} />}
       </div>
       <div className="flex-1">
         <div className={getCardClass(status)} onClick={() => router.push(`/dashboard/mahasiswa/tahap/${stage.slug}`)}>
-          <div className="flex items-center justify-between gap-[10px] mb-[8px]">
-            <span className="font-display text-[22px] font-extrabold text-brand -tracking-[0.01em] leading-none">{String(stage.n).padStart(2, "0")}</span>
-            <span className={`text-[11.5px] font-bold py-[3px] px-[10px] rounded-full whitespace-nowrap shrink-0 ${badge.cls}`}>{badge.label}</span>
+          <div className="flex items-center justify-between gap-2.5 mb-2">
+            <span className="font-display text-5.5 font-extrabold text-brand -tracking-[0.01em] leading-none">{String(stage.n).padStart(2, "0")}</span>
+            <span className={`text-[11.5px] font-bold py-0.75 px-2.5 rounded-full whitespace-nowrap shrink-0 ${badge.cls}`}>{badge.label}</span>
           </div>
-          <div className="font-display text-[15px] font-bold text-neutral-text mb-[3px]">{stage.name}</div>
-          <div className="text-[12.5px] text-brand font-semibold mb-[8px]">{formatStageDate(window.start)} – {formatStageDate(window.end)}</div>
+          <div className="font-display text-[15px] font-bold text-neutral-text mb-0.75">{stage.name}</div>
+          <div className="text-[12.5px] text-brand font-semibold mb-2">{formatStageDate(window.start)} – {formatStageDate(window.end)}</div>
           <div className="text-[13px] text-neutral-muted leading-[1.55]">{stage.desc}</div>
           {status !== "belum-mulai" && (
-            <div className="flex justify-end mt-[10px]">
+            <div className="flex justify-end mt-2.5">
               <span className="text-[11.5px] text-neutral-muted font-semibold">{daysLabel}</span>
             </div>
           )}

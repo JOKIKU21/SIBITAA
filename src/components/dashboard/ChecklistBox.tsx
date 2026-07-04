@@ -18,16 +18,16 @@ export function ChecklistBox({ items }: { items: string[] }) {
 
   return (
     <div>
-      <div className="text-[12px] text-neutral-muted mb-[10px]">
+      <div className="text-3 text-neutral-muted mb-2.5">
         {checkedCount}/{items.length} item selesai
       </div>
-      <div className="flex flex-col gap-[8px]">
+      <div className="flex flex-col gap-2">
         {items.map((item, index) => {
           const isChecked = checkedState[index];
           return (
             <label
               key={index}
-              className={`flex items-center gap-[10px] bg-neutral-bg border-[1.5px] border-transparent rounded-[8px] py-[10px] px-[14px] text-[13.5px] cursor-pointer select-none transition-[border-color] duration-200 ${
+              className={`flex items-center gap-2.5 bg-neutral-bg border-[1.5px] border-transparent rounded-2 py-2.5 px-3.5 text-[13.5px] cursor-pointer select-none transition-[border-color] duration-200 ${
                 isChecked ? "text-neutral-light line-through" : "text-neutral-text hover:border-[#D8DEF5]"
               }`}
             >
@@ -35,7 +35,7 @@ export function ChecklistBox({ items }: { items: string[] }) {
                 type="checkbox"
                 checked={isChecked}
                 onChange={() => handleOnChange(index)}
-                className="w-[16px] h-[16px] accent-brand cursor-pointer shrink-0"
+                className="w-4 h-4 accent-brand cursor-pointer shrink-0"
               />
               {item}
             </label>

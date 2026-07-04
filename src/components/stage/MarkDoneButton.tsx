@@ -20,11 +20,11 @@ export function MarkDoneButton({ stageNumber, nextSlug }: MarkDoneButtonProps) {
   }
 
   return (
-    <div className="flex justify-end gap-[8px] w-full">
+    <div className="flex justify-end gap-2 w-full">
       <button
         type="button"
         onClick={handleClick}
-        className="w-full text-[15px] p-[14px] bg-[#16A34A] text-white border-none font-semibold rounded-[9px] cursor-pointer transition-[background] duration-200 hover:bg-[#15803d]"
+        className="w-full text-[15px] p-3.5 bg-[#16A34A] text-white border-none font-semibold rounded-2.25 cursor-pointer transition-[background] duration-200 hover:bg-[#15803d]"
       >
         Tandai Selesai
       </button>

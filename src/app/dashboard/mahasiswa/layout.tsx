@@ -13,7 +13,7 @@ export default function MahasiswaDashboardLayout({
     <ProgressProvider>
       <div className="flex min-h-screen w-full">
         <Sidebar />
-        <div className="flex-1 min-w-0 bg-[#F0F2F9] max-[600px]:w-full">
+        <div className="flex-1 min-w-0 bg-canvas max-[600px]:w-full">
           <Topbar title="Dashboard" />
           {children}
         </div>

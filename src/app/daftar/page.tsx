@@ -92,15 +92,15 @@ export default function DaftarPage() {
           maxLength={128}
           disabled={loading}
         />
-        <button type="submit" className="w-full bg-brand text-white border-none p-[14px] rounded-[10px] text-[15px] font-bold cursor-pointer mt-[8px] transition-[background,transform] duration-100 no-underline block text-center font-sans hover:bg-brand-dark hover:-translate-y-[1px] disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none" disabled={loading}>
+        <button type="submit" className="w-full bg-brand text-white border-none p-3.5 rounded-2.5 text-[15px] font-bold cursor-pointer mt-2 transition-[background,transform] duration-100 no-underline block text-center font-sans hover:bg-brand-dark hover:-translate-y-px disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none" disabled={loading}>
           {loading ? "Memproses..." : "Daftar Sekarang"}
         </button>
       </form>
 
-      <div className="flex items-center gap-[12px] my-[20px] mx-0 text-neutral-muted text-[13px]">
-        <div className="flex-1 h-[1px] bg-neutral-border" />
+      <div className="flex items-center gap-3 my-5 mx-0 text-neutral-muted text-[13px]">
+        <div className="flex-1 h-px bg-neutral-border" />
         <span>Atau Daftar dengan</span>
-        <div className="flex-1 h-[1px] bg-neutral-border" />
+        <div className="flex-1 h-px bg-neutral-border" />
       </div>
 
       <GoogleButton
@@ -109,7 +109,7 @@ export default function DaftarPage() {
         onClick={handleGoogleLogin}
       />
 
-      <p className="mt-[20px] text-[13px] text-neutral-muted">
+      <p className="mt-5 text-[13px] text-neutral-muted">
         Sudah punya akun?{" "}
         <Link href="/masuk" className="text-brand font-semibold no-underline cursor-pointer hover:underline">
           Masuk di sini

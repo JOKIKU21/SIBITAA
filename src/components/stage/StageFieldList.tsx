@@ -6,7 +6,7 @@ import type { StageField } from "@/lib/stages";
 function FieldRow({ field }: { field: StageField }) {
   if (field.type === "readonly-list") {
     return (
-      <div className="rounded-[10px] border border-neutral-border bg-white p-4">
+      <div className="rounded-2.5 border border-neutral-border bg-white p-4">
         <div className="mb-2.5 text-[13px] font-bold text-neutral-text">
           {field.label}
         </div>
@@ -14,7 +14,7 @@ function FieldRow({ field }: { field: StageField }) {
           {field.items?.map((item) => (
             <div
               key={item}
-              className="flex items-center gap-2.5 rounded-[8px] bg-neutral-bg px-3 py-2 text-[13px] text-neutral-text"
+              className="flex items-center gap-2.5 rounded-2 bg-neutral-bg px-3 py-2 text-[13px] text-neutral-text"
             >
               <CheckSquare size={15} className="shrink-0 text-brand" />
               {item}
@@ -27,7 +27,7 @@ function FieldRow({ field }: { field: StageField }) {
 
   if (field.type === "file") {
     return (
-      <div className="rounded-[10px] border border-dashed border-neutral-border bg-white p-4">
+      <div className="rounded-2.5 border border-dashed border-neutral-border bg-white p-4">
         <div className="mb-2 flex items-center gap-2 text-[13px] font-bold text-neutral-text">
           <Upload size={15} className="text-brand" />
           {field.label}
@@ -40,7 +40,7 @@ function FieldRow({ field }: { field: StageField }) {
   }
 
   return (
-    <div className="rounded-[10px] border border-neutral-border bg-white p-4">
+    <div className="rounded-2.5 border border-neutral-border bg-white p-4">
       <div className="mb-1.5 flex items-center gap-2 text-[13px] font-bold text-neutral-text">
         <Circle size={7} className="shrink-0 fill-brand-light text-brand-light" />
         {field.label}

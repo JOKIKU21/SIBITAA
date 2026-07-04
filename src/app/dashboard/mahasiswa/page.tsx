@@ -9,10 +9,10 @@ export const metadata: Metadata = {
 export default function MahasiswaDashboard() {
   return (
     <div className="block">
-      <div className="p-[28px] max-[600px]:p-[16px]">
-        <div className="mb-[24px]">
-          <h2 className="font-display text-[22px] font-extrabold mb-[4px]">Progress Skripsi</h2>
-          <p className="text-[14px] text-neutral-muted">Pantau perkembangan setiap tahapan tugas akhir Anda</p>
+      <div className="p-7 max-[600px]:p-4">
+        <div className="mb-6">
+          <h2 className="font-display text-5.5 font-extrabold mb-1">Progress Skripsi</h2>
+          <p className="text-3.5 text-neutral-muted">Pantau perkembangan setiap tahapan tugas akhir Anda</p>
         </div>
         
         <OverallCard />

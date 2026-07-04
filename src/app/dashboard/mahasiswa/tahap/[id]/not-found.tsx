@@ -11,7 +11,7 @@ export default function StageNotFound() {
       </p>
       <Link
         href="/dashboard/mahasiswa"
-        className="mt-2 rounded-[9px] bg-brand px-5 py-2.5 text-[13.5px] font-semibold text-white hover:bg-brand-dark"
+        className="mt-2 rounded-2.25 bg-brand px-5 py-2.5 text-[13.5px] font-semibold text-white hover:bg-brand-dark"
       >
         Kembali ke Dashboard
       </Link>

@@ -63,13 +63,13 @@ export default function PasswordInput({
   const [visible, setVisible] = useState(false);
 
   return (
-    <div className="text-left mb-[16px]">
-      <label htmlFor={id} className="block text-[13px] font-semibold text-neutral-text mb-[6px]">
+    <div className="text-left mb-4">
+      <label htmlFor={id} className="block text-[13px] font-semibold text-neutral-text mb-1.5">
         {label}
       </label>
       <div className="relative">
         <input
-          className="w-full bg-neutral-bg border-[1.5px] border-transparent rounded-[10px] py-[12px] px-[16px] text-[14px] text-neutral-text outline-none transition-[border-color] duration-200 font-sans focus:border-brand-light focus:bg-[#f8f9ff] disabled:opacity-60 disabled:cursor-not-allowed disabled:bg-neutral-bg"
+          className="w-full bg-neutral-bg border-[1.5px] border-transparent rounded-2.5 py-3 px-4 text-3.5 text-neutral-text outline-none transition-[border-color] duration-200 font-sans focus:border-brand-light focus:bg-[#f8f9ff] disabled:opacity-60 disabled:cursor-not-allowed disabled:bg-neutral-bg"
           type={visible ? "text" : "password"}
           id={id}
           name={name ?? id}
@@ -80,7 +80,7 @@ export default function PasswordInput({
           maxLength={maxLength}
         />
         <button
-          className="absolute right-[12px] top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer text-neutral-muted text-[16px] p-[2px] flex items-center justify-center"
+          className="absolute right-3 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer text-neutral-muted text-4 p-0.5 flex items-center justify-center"
           type="button"
           title={visible ? "Sembunyikan password" : "Tampilkan password"}
           onClick={() => setVisible((v) => !v)}

@@ -4,7 +4,7 @@
 
 // Hoisted static SVG outside component
 const GOOGLE_ICON = (
-  <svg className="w-[22px] h-[22px]" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+  <svg className="w-5.5 h-5.5" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
     <path
       fill="#EA4335"
       d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"
@@ -40,7 +40,7 @@ export default function GoogleButton({
   }
 
   return (
-    <button className="flex items-center justify-center gap-[10px] w-full p-[12px] border-[1.5px] border-neutral-border rounded-[10px] bg-white text-[14px] font-semibold text-neutral-text cursor-pointer transition-[background] duration-200 font-sans hover:bg-neutral-bg disabled:opacity-60 disabled:cursor-not-allowed" type="button" onClick={handleClick} disabled={disabled}>
+    <button className="flex items-center justify-center gap-2.5 w-full p-3 border-[1.5px] border-neutral-border rounded-2.5 bg-white text-3.5 font-semibold text-neutral-text cursor-pointer transition-[background] duration-200 font-sans hover:bg-neutral-bg disabled:opacity-60 disabled:cursor-not-allowed" type="button" onClick={handleClick} disabled={disabled}>
       {GOOGLE_ICON}
       {label}
     </button>

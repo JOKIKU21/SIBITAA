@@ -31,29 +31,29 @@ export default async function StagePage({
 
   return (
     <div className="block">
-      <div className="p-[28px] max-[600px]:p-[16px]">
-        <Link href="/dashboard/mahasiswa" className="inline-flex items-center gap-[6px] bg-transparent border-none text-neutral-muted text-[13px] font-semibold cursor-pointer p-0 mb-[18px] transition-[color] duration-150 hover:text-brand">
+      <div className="p-7 max-[600px]:p-4">
+        <Link href="/dashboard/mahasiswa" className="inline-flex items-center gap-1.5 bg-transparent border-none text-neutral-muted text-[13px] font-semibold cursor-pointer p-0 mb-4.5 transition-[color] duration-150 hover:text-brand">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
           Kembali ke Progress Skripsi
         </Link>
         
-        <div className="bg-gradient-to-r from-brand to-brand-dark rounded-[16px] py-[24px] px-[28px] mb-[24px]">
-          <span className="inline-block bg-white/18 text-white text-[12.5px] font-bold py-[5px] px-[14px] rounded-full mb-[10px]">Tahap {stage.n}</span>
-          <div className="text-white text-[22px] font-extrabold leading-[1.3] font-display">{stage.name}</div>
-          <div className="text-white/80 text-[14px] mt-[12px] leading-[1.5] font-normal">
+        <div className="bg-linear-to-r from-brand to-brand-dark rounded-4 py-6 px-7 mb-6">
+          <span className="inline-block bg-white/18 text-white text-[12.5px] font-bold py-1.25 px-3.5 rounded-full mb-2.5">Tahap {stage.n}</span>
+          <div className="text-white text-5.5 font-extrabold leading-[1.3] font-display">{stage.name}</div>
+          <div className="text-white/80 text-3.5 mt-3 leading-normal font-normal">
             {stage.desc}
           </div>
         </div>
         {stage.comparison && (
-          <div className="mb-5 max-w-[200px]">
+          <div className="mb-5 max-w-50">
             <CompareRevision comparison={stage.comparison} />
           </div>
         )}
 
-        <div className="grid grid-cols-[1.4fr_1fr] gap-[20px] items-stretch max-[980px]:grid-cols-1">
-          <div className="flex flex-col gap-[20px]">
+        <div className="grid grid-cols-[1.4fr_1fr] gap-5 items-stretch max-[980px]:grid-cols-1">
+          <div className="flex flex-col gap-5">
             <StageForm stage={stageWithoutIcon} />
-            <div className="rounded-[12px] border border-neutral-border bg-white p-[24px]">
+            <div className="rounded-3 border border-neutral-border bg-white p-6">
               <MarkDoneButton
                 stageNumber={stage.n}
                 nextSlug={nextStage ? nextStage.slug : null}
@@ -61,7 +61,7 @@ export default async function StagePage({
             </div>
           </div>
 
-          <div className="flex flex-col gap-[20px]">
+          <div className="flex flex-col gap-5">
             <ChatPanel />
           </div>
         </div>
