@@ -47,8 +47,8 @@ export default function DaftarPage() {
       await authService.signUp(name, email, password);
 
       router.push(`/verifikasi?email=${encodeURIComponent(email)}`);
-    } catch (err: any) {
-      setError(err.message || "Gagal melakukan pendaftaran.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Gagal melakukan pendaftaran.");
     } finally {
       setLoading(false);
     }
@@ -59,8 +59,8 @@ export default function DaftarPage() {
     setLoading(true);
     try {
       await authService.signInWithGoogle();
-    } catch (err: any) {
-      setError(err.message || "Gagal melakukan pendaftaran dengan Google.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Gagal melakukan pendaftaran dengan Google.");
       setLoading(false);
     }
   }

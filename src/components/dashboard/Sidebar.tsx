@@ -37,7 +37,7 @@ export function Sidebar() {
   };
 
   const name = session?.user?.name || "Pengguna";
-  const userRole = (session?.user as any)?.role;
+  const userRole = (session?.user as { role?: string })?.role;
   const roleLabel = userRole ? getRoleLabel(userRole) : "";
   const avatarLetter = name.charAt(0).toUpperCase();
 

@@ -126,8 +126,8 @@ export default function VerifikasiForm() {
       setTimeout(() => {
         router.push("/dashboard");
       }, 1500);
-    } catch (err: any) {
-      setError(err.message || "Gagal memverifikasi OTP.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Gagal memverifikasi OTP.");
     } finally {
       setLoading(false);
     }
@@ -143,8 +143,8 @@ export default function VerifikasiForm() {
       await authService.resendOtp(email);
       setSuccess("Kode OTP baru telah dikirim ke email Anda");
       setTimeout(() => setSuccess(""), 5000);
-    } catch (err: any) {
-      setError(err.message || "Gagal mengirim ulang kode OTP.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Gagal mengirim ulang kode OTP.");
       setResendCooldown(0); // reset cooldown on failure so they can try again
     }
   }

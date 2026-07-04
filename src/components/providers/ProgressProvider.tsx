@@ -28,7 +28,10 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
-      if (raw) setCompletedStages(new Set(JSON.parse(raw)));
+      if (raw) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setCompletedStages(new Set(JSON.parse(raw)));
+      }
     } catch {
       // ponytail: localStorage not available — start empty
     }

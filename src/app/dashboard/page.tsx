@@ -20,7 +20,7 @@ export default async function DashboardPage() {
       redirect("/masuk");
     }
 
-    const role = (sessionData.user as any).role;
+    const role = (sessionData.user as { role?: string }).role || "student";
 
     // Redirection routing map based on user role
     const rolePaths: Record<string, string> = {

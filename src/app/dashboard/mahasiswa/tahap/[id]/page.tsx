@@ -25,6 +25,8 @@ export default async function StagePage({
   if (index === -1) notFound();
 
   const stage = STAGES[index];
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { icon, ...stageWithoutIcon } = stage;
   const nextStage = STAGES[index + 1] ?? null;
 
   return (
@@ -51,7 +53,7 @@ export default async function StagePage({
 
         <div className="dash-grid">
           <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-            <StageForm stage={{ ...stage, icon: undefined } as any} />
+            <StageForm stage={stageWithoutIcon} />
             <div className="stage-page-panel" style={{ maxWidth: "none" }}>
               <MarkDoneButton
                 stageNumber={stage.n}

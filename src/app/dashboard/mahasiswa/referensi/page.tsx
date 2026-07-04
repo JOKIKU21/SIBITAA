@@ -70,7 +70,7 @@ export default function ReferensiPage() {
           ))}
           {filtered.length === 0 && (
             <div style={{ padding: "40px", textAlign: "center", color: "var(--muted)" }}>
-              Tidak ada referensi yang ditemukan untuk "{query}".
+              Tidak ada referensi yang ditemukan untuk `&quot;`{query}`&quot;`.
             </div>
           )}
         </div>

@@ -45,13 +45,14 @@ export default function MasukPage() {
     try {
       await authService.signIn(email, password);
       router.push("/dashboard/mahasiswa");
-    } catch (err: any) {
-      setError(err.message || "Email atau password salah.");
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Email atau password salah.";
+      setError(message);
       // Redirect to verification if email is not verified
       if (
-        err.message?.toLowerCase().includes("verify") ||
-        err.message?.toLowerCase().includes("verified") ||
-        err.message?.toLowerCase().includes("unverified")
+        message.toLowerCase().includes("verify") ||
+        message.toLowerCase().includes("verified") ||
+        message.toLowerCase().includes("unverified")
       ) {
         router.push(`/verifikasi?email=${encodeURIComponent(email)}`);
       }
@@ -65,8 +66,9 @@ export default function MasukPage() {
     setLoading(true);
     try {
       await authService.signInWithGoogle();
-    } catch (err: any) {
-      setError(err.message || "Gagal masuk dengan Google.");
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Gagal masuk dengan Google.";
+      setError(message);
       setLoading(false);
     }
   }
