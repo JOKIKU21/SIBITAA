@@ -20,12 +20,11 @@ export function MarkDoneButton({ stageNumber, nextSlug }: MarkDoneButtonProps) {
   }
 
   return (
-    <div className="detail-actions" style={{ width: "100%" }}>
+    <div className="flex justify-end gap-[8px] w-full">
       <button
         type="button"
         onClick={handleClick}
-        className="btn-detail-done"
-        style={{ width: "100%", fontSize: "15px", padding: "14px" }}
+        className="w-full text-[15px] p-[14px] bg-[#16A34A] text-white border-none font-semibold rounded-[9px] cursor-pointer transition-[background] duration-200 hover:bg-[#15803d]"
       >
         Tandai Selesai
       </button>

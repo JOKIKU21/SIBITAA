@@ -18,21 +18,24 @@ export function ChecklistBox({ items }: { items: string[] }) {
 
   return (
     <div>
-      <div className="checklist-progress">
+      <div className="text-[12px] text-neutral-muted mb-[10px]">
         {checkedCount}/{items.length} item selesai
       </div>
-      <div className="checklist-items">
+      <div className="flex flex-col gap-[8px]">
         {items.map((item, index) => {
           const isChecked = checkedState[index];
           return (
             <label
               key={index}
-              className={`checklist-item ${isChecked ? "checked" : ""}`}
+              className={`flex items-center gap-[10px] bg-neutral-bg border-[1.5px] border-transparent rounded-[8px] py-[10px] px-[14px] text-[13.5px] cursor-pointer select-none transition-[border-color] duration-200 ${
+                isChecked ? "text-neutral-light line-through" : "text-neutral-text hover:border-[#D8DEF5]"
+              }`}
             >
               <input
                 type="checkbox"
                 checked={isChecked}
                 onChange={() => handleOnChange(index)}
+                className="w-[16px] h-[16px] accent-brand cursor-pointer shrink-0"
               />
               {item}
             </label>

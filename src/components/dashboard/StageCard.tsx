@@ -1,18 +1,12 @@
 import { useRouter } from "next/navigation";
 import type { Stage } from "@/lib/stages";
 import type { StageStatus, StageWindow } from "@/lib/stage-status";
-import { formatStageDate, formatStageNumber } from "@/lib/stage-status";
+import { formatStageDate } from "@/lib/stage-status";
 
 function getBadgeInfo(status: StageStatus) {
-  if (status === "belum-mulai") return { cls: "badge-grey", label: "Belum Mulai" };
-  if (status === "berlangsung") return { cls: "badge-blue", label: "Berlangsung" };
-  return { cls: "badge-green", label: "Selesai ✓" };
-}
-
-function getItemClass(status: StageStatus) {
-  if (status === "selesai") return "st-done-green";
-  if (status === "berlangsung") return "st-active";
-  return "";
+  if (status === "belum-mulai") return { cls: "bg-neutral-bg text-neutral-muted", label: "Belum Mulai" };
+  if (status === "berlangsung") return { cls: "bg-brand-bg text-brand", label: "Berlangsung" };
+  return { cls: "bg-success-bg text-success", label: "Selesai ✓" };
 }
 
 // Map the STAGE_ICONS from the HTML exactly based on stage.n
@@ -38,39 +32,55 @@ const RAW_ICONS = [
 export function StageCard({ stage, status, window }: { stage: Stage; status: StageStatus; window: StageWindow }) {
   const router = useRouter();
   const badge = getBadgeInfo(status);
-  const itcls = getItemClass(status);
   const rawSvg = RAW_ICONS[stage.n - 1] || "";
-  
-  // Note: we're using "use client" in the wrapper or using onClick to navigate to preserve the exact HTML structure
-  // but to keep it RSC we can use a Link or just a regular div with a router push if client-side
-  // Since TimelineList is a client component, we can safely use useRouter here.
-  
+
+  const getIconClass = (status: StageStatus) => {
+    const base = "w-[44px] h-[44px] rounded-full border-[3px] flex items-center justify-center z-1 shrink-0 transition-[background,border-color] duration-300 [&>svg]:w-[20px] [&>svg]:h-[20px]";
+    if (status === "selesai") return `${base} bg-success-bg border-success text-success`;
+    if (status === "berlangsung") return `${base} bg-brand-bg border-brand text-brand`;
+    return `${base} bg-[#F3F4F6] border-neutral-border text-neutral-muted`;
+  };
+
+  const getLineClass = (status: StageStatus) => {
+    const base = "w-[2px] flex-1 min-h-[16px]";
+    if (status === "selesai") return `${base} bg-success`;
+    if (status === "berlangsung") return `${base} bg-gradient-to-b from-brand to-neutral-border`;
+    return `${base} bg-neutral-border`;
+  };
+
+  const getCardClass = (status: StageStatus) => {
+    const base = "flex-1 mb-[14px] ml-[12px] bg-white border rounded-[14px] py-[18px] px-[20px] pb-[16px] transition-[box-shadow,border-color] duration-200 cursor-pointer hover:shadow-[0_4px_18px_rgba(43,59,175,0.1)] hover:border-brand/20";
+    if (status === "berlangsung") {
+      return `${base} border-brand shadow-[0_0_0_3px_rgba(43,59,175,0.08)]`;
+    }
+    return `${base} border-neutral-border`;
+  };
+
   let daysLabel = "";
   if (status === "berlangsung") {
-    // Fake the days left as per HTML logic
     daysLabel = `Sisa ${stage.days} hari`;
   } else if (status === "belum-mulai") {
     daysLabel = `Mulai hari ke-${window.start}`;
   }
 
   return (
-    <div className={`tl-item ${itcls}`}>
-      <div className="tl-left">
-        <div className="tl-icon" dangerouslySetInnerHTML={{ __html: rawSvg }} />
-        <div className="tl-line" />
+    <div className="flex gap-0 relative">
+      <div className="flex flex-col items-center w-[56px] shrink-0">
+        <div className={getIconClass(status)} dangerouslySetInnerHTML={{ __html: rawSvg }} />
+        {stage.n !== 16 && <div className={getLineClass(status)} />}
       </div>
-      <div style={{ flex: 1 }}>
-        <div className="tl-card" onClick={() => router.push(`/dashboard/mahasiswa/tahap/${stage.slug}`)}>
-          <div className="tl-card-head">
-            <span className="tl-num">{String(stage.n).padStart(2, "0")}</span>
-            <span className={`tl-badge ${badge.cls}`}>{badge.label}</span>
+      <div className="flex-1">
+        <div className={getCardClass(status)} onClick={() => router.push(`/dashboard/mahasiswa/tahap/${stage.slug}`)}>
+          <div className="flex items-center justify-between gap-[10px] mb-[8px]">
+            <span className="font-display text-[22px] font-extrabold text-brand -tracking-[0.01em] leading-none">{String(stage.n).padStart(2, "0")}</span>
+            <span className={`text-[11.5px] font-bold py-[3px] px-[10px] rounded-full whitespace-nowrap shrink-0 ${badge.cls}`}>{badge.label}</span>
           </div>
-          <div className="tl-title">{stage.name}</div>
-          <div className="tl-dates">{formatStageDate(window.start)} – {formatStageDate(window.end)}</div>
-          <div className="tl-desc">{stage.desc}</div>
+          <div className="font-display text-[15px] font-bold text-neutral-text mb-[3px]">{stage.name}</div>
+          <div className="text-[12.5px] text-brand font-semibold mb-[8px]">{formatStageDate(window.start)} – {formatStageDate(window.end)}</div>
+          <div className="text-[13px] text-neutral-muted leading-[1.55]">{stage.desc}</div>
           {status !== "belum-mulai" && (
-            <div className="tl-foot">
-              <span className="tl-days-left">{daysLabel}</span>
+            <div className="flex justify-end mt-[10px]">
+              <span className="text-[11.5px] text-neutral-muted font-semibold">{daysLabel}</span>
             </div>
           )}
         </div>

@@ -30,30 +30,30 @@ export default async function StagePage({
   const nextStage = STAGES[index + 1] ?? null;
 
   return (
-    <div className="content-page active">
-      <div className="content-inner">
-        <Link href="/dashboard/mahasiswa" className="btn-back">
+    <div className="block">
+      <div className="p-[28px] max-[600px]:p-[16px]">
+        <Link href="/dashboard/mahasiswa" className="inline-flex items-center gap-[6px] bg-transparent border-none text-neutral-muted text-[13px] font-semibold cursor-pointer p-0 mb-[18px] transition-[color] duration-150 hover:text-brand">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
           Kembali ke Progress Skripsi
         </Link>
         
-        <div className="stage-header-simple">
-          <span className="stage-header-badge">Tahap {stage.n}</span>
-          <div className="stage-header-title">{stage.name}</div>
-          <div style={{ color: "rgba(255, 255, 255, 0.8)", fontSize: "14px", marginTop: "12px", lineHeight: "1.5", fontWeight: "normal" }}>
+        <div className="bg-gradient-to-r from-brand to-brand-dark rounded-[16px] py-[24px] px-[28px] mb-[24px]">
+          <span className="inline-block bg-white/18 text-white text-[12.5px] font-bold py-[5px] px-[14px] rounded-full mb-[10px]">Tahap {stage.n}</span>
+          <div className="text-white text-[22px] font-extrabold leading-[1.3] font-display">{stage.name}</div>
+          <div className="text-white/80 text-[14px] mt-[12px] leading-[1.5] font-normal">
             {stage.desc}
           </div>
         </div>
         {stage.comparison && (
-          <div className="mb-5 max-w-200">
+          <div className="mb-5 max-w-[200px]">
             <CompareRevision comparison={stage.comparison} />
           </div>
         )}
 
-        <div className="dash-grid">
-          <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+        <div className="grid grid-cols-[1.4fr_1fr] gap-[20px] items-stretch max-[980px]:grid-cols-1">
+          <div className="flex flex-col gap-[20px]">
             <StageForm stage={stageWithoutIcon} />
-            <div className="stage-page-panel" style={{ maxWidth: "none" }}>
+            <div className="rounded-[12px] border border-neutral-border bg-white p-[24px]">
               <MarkDoneButton
                 stageNumber={stage.n}
                 nextSlug={nextStage ? nextStage.slug : null}
@@ -61,7 +61,7 @@ export default async function StagePage({
             </div>
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+          <div className="flex flex-col gap-[20px]">
             <ChatPanel />
           </div>
         </div>

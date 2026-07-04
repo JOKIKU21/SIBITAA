@@ -1,5 +1,4 @@
 "use client";
-import "../dashboard.css";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { Topbar } from "@/components/dashboard/Topbar";
 import { ProgressProvider } from "@/components/providers/ProgressProvider";
@@ -12,9 +11,9 @@ export default function MahasiswaDashboardLayout({
 }) {
   return (
     <ProgressProvider>
-      <div className="app-shell">
+      <div className="flex min-h-screen w-full">
         <Sidebar />
-        <div className="content">
+        <div className="flex-1 min-w-0 bg-[#F0F2F9] max-[600px]:w-full">
           <Topbar title="Dashboard" />
           {children}
         </div>

@@ -153,25 +153,11 @@ export default function VerifikasiForm() {
 
   return (
     <AuthCard icon={MAIL_ICON} title="Verifikasi Email">
-      <p
-        style={{
-          fontSize: "14px",
-          color: "var(--text-muted)",
-          marginBottom: "8px",
-          lineHeight: "1.6",
-        }}
-      >
+      <p className="text-[14px] text-neutral-muted mb-[8px] leading-[1.6]">
         Kami telah mengirimkan kode OTP 6 digit ke email:
       </p>
       {email ? (
-        <p
-          style={{
-            fontSize: "14px",
-            fontWeight: 600,
-            color: "var(--blue-primary)",
-            marginBottom: "24px",
-          }}
-        >
+        <p className="text-[14px] font-semibold text-brand mb-[24px]">
           {email}
         </p>
       ) : null}
@@ -179,19 +165,19 @@ export default function VerifikasiForm() {
       <AuthError message={error} />
       <AuthSuccess message={success} />
 
-      <form onSubmit={handleVerify} style={{ textAlign: "left" }}>
-        <div className="form-group">
-          <label htmlFor="otp-0" style={{ textAlign: "center" }}>
+      <form onSubmit={handleVerify} className="text-left">
+        <div className="text-left mb-[16px]">
+          <label htmlFor="otp-0" className="block text-[13px] font-semibold text-neutral-text mb-[6px] text-center">
             Kode OTP
           </label>
-          <div className="otp-inputs" onPaste={handlePaste}>
+          <div className="flex justify-center gap-[8px]" onPaste={handlePaste}>
             {otp.map((digit, i) => (
               <input
                 key={i}
                 ref={(el) => {
                   inputRefs.current[i] = el;
                 }}
-                className="otp-input"
+                className="w-[48px] h-[56px] text-center text-[22px] font-bold border-[1.5px] border-neutral-border rounded-[10px] bg-neutral-bg text-neutral-text outline-none transition-[border-color,background,box-shadow] duration-200 caret-brand focus:border-brand-light focus:bg-[#f8f9ff] focus:shadow-[0_0_0_3px_rgba(43,59,175,0.1)] disabled:opacity-50 disabled:cursor-not-allowed"
                 type="text"
                 inputMode="numeric"
                 id={`otp-${i}`}
@@ -208,30 +194,20 @@ export default function VerifikasiForm() {
 
         <button
           type="submit"
-          className="btn-login"
-          style={{ marginTop: "16px" }}
+          className="w-full bg-brand text-white border-none p-[14px] rounded-[10px] text-[15px] font-bold cursor-pointer mt-[16px] transition-[background,transform] duration-100 no-underline block text-center font-sans hover:bg-brand-dark hover:-translate-y-[1px] disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
           disabled={loading || !otpComplete}
         >
           {loading ? "Memverifikasi..." : "Verifikasi Akun"}
         </button>
       </form>
 
-      <p className="back-link" style={{ marginTop: "24px" }}>
+      <p className="mt-[24px] text-[13px] text-neutral-muted">
         Belum menerima email?{" "}
         <button
           type="button"
           onClick={handleResend}
           disabled={resendCooldown > 0}
-          style={{
-            background: "none",
-            border: "none",
-            color:
-              resendCooldown > 0 ? "var(--text-light)" : "var(--blue-primary)",
-            fontWeight: 600,
-            cursor: resendCooldown > 0 ? "default" : "pointer",
-            padding: 0,
-            font: "inherit",
-          }}
+          className={`bg-transparent border-none font-semibold p-0 text-[13px] font-sans ${resendCooldown > 0 ? 'text-neutral-light cursor-default' : 'text-brand cursor-pointer'}`}
         >
           {resendCooldown > 0
             ? `Kirim Ulang (${resendCooldown}s)`
@@ -239,7 +215,10 @@ export default function VerifikasiForm() {
         </button>
         <br />
         <br />
-        Kembali ke <Link href="/daftar">Pendaftaran</Link>
+        Kembali ke{" "}
+        <Link href="/daftar" className="text-brand font-semibold no-underline cursor-pointer hover:underline">
+          Pendaftaran
+        </Link>
       </p>
     </AuthCard>
   );

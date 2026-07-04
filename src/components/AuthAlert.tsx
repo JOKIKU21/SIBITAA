@@ -1,5 +1,3 @@
-import type { ReactNode } from "react";
-
 // ponytail: server component — conditional rendering, no client JS
 
 const ERROR_ICON = (
@@ -25,7 +23,7 @@ const SUCCESS_ICON = (
 export function AuthError({ message }: { message: string }) {
   if (!message) return null;
   return (
-    <div className="auth-error" role="alert">
+    <div className="flex items-center gap-[8px] py-[10px] px-[14px] mb-[16px] rounded-[8px] bg-[#FEF2F2] border border-[#FECACA] text-[#DC2626] text-[13px] font-medium leading-[1.5] animate-[slideDown_0.2s_ease]" role="alert">
       {ERROR_ICON}
       {message}
     </div>
@@ -35,7 +33,7 @@ export function AuthError({ message }: { message: string }) {
 export function AuthSuccess({ message }: { message: string }) {
   if (!message) return null;
   return (
-    <div className="auth-success" role="status">
+    <div className="flex items-center gap-[8px] py-[10px] px-[14px] mb-[16px] rounded-[8px] bg-[#F0FDF4] border border-[#BBF7D0] text-[#16A34A] text-[13px] font-medium leading-[1.5] animate-[slideDown_0.2s_ease]" role="status">
       {SUCCESS_ICON}
       {message}
     </div>

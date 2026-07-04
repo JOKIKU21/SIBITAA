@@ -8,17 +8,9 @@ export default function VerifikasiPage() {
   return (
     <Suspense
       fallback={
-        <div className="login-page">
-          <div
-            className="login-card"
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              minHeight: "200px",
-            }}
-          >
-            <p style={{ color: "var(--text-muted)", fontSize: "14px" }}>Memuat...</p>
+        <div className="min-h-screen bg-[#F0F4FF] flex items-center justify-center py-[40px] px-[16px]">
+          <div className="bg-white rounded-[20px] py-[40px] px-[36px] w-full max-w-[420px] shadow-[0_8px_40px_rgba(43,59,175,0.12)] border-[1.5px] border-[#e0e7ff] text-center flex justify-center items-center min-h-[200px]">
+            <p className="text-neutral-muted text-[14px]">Memuat...</p>
           </div>
         </div>
       }

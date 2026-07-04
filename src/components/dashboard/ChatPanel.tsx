@@ -28,25 +28,25 @@ export function ChatPanel() {
   };
 
   return (
-    <div className="panel chat-panel">
-      <div className="panel-head">
+    <div className="bg-white rounded-[14px] border border-neutral-border overflow-hidden mb-[20px] flex flex-col min-h-[380px] h-auto">
+      <div className="py-[18px] px-[24px] font-display text-[16px] font-extrabold border-b border-neutral-border">
         Chatting
       </div>
-      <div className="chat-body">
-        <div className="chat-date">
-          <span>Hari Ini</span>
+      <div className="py-[18px] px-[24px] flex flex-col gap-[14px] max-h-[400px] overflow-y-auto flex-1">
+        <div className="text-center mb-[4px]">
+          <span className="bg-[#1F2937] text-white text-[11px] py-[3px] px-[12px] rounded-[12px]">Hari Ini</span>
         </div>
 
         {chats.map((c) => (
           <div
             key={c.id}
-            className={`chat-bubble ${c.me ? "me" : "other"}`}
+            className={`flex items-end gap-[8px] max-w-[80%] ${c.me ? "self-end flex-row-reverse" : ""}`}
           >
-            {!c.me && <div className="chat-avatar" />}
+            {!c.me && <div className="w-[30px] h-[30px] rounded-full bg-neutral-bg shrink-0" />}
             <div>
-              <div className="chat-text">
+              <div className={`py-[10px] px-[14px] rounded-[14px] text-[13.5px] leading-[1.4] relative ${c.me ? "bg-brand text-white rounded-br-[2px]" : "bg-[#EAF0FB] text-neutral-text rounded-bl-[2px]"}`}>
                 {c.text}
-                <span className="chat-time">
+                <span className="block text-[10px] opacity-70 mt-[3px]">
                   {c.time}
                 </span>
               </div>
@@ -55,13 +55,13 @@ export function ChatPanel() {
         ))}
       </div>
 
-      <div className="chat-foot">
-        <button className="chat-plus">
+      <div className="py-[14px] px-[24px] pb-[20px] border-t border-neutral-border flex items-center gap-[10px]">
+        <button className="w-[34px] h-[34px] rounded-full bg-neutral-bg border-none text-[18px] text-neutral-muted cursor-pointer shrink-0 flex items-center justify-center">
           <Plus size={18} />
         </button>
         <input
           type="text"
-          className="chat-input"
+          className="flex-1 bg-neutral-bg border-none rounded-full py-[10px] px-[16px] text-[13.5px] outline-none font-sans"
           placeholder="Write a message........"
           value={msg}
           onChange={(e) => setMsg(e.target.value)}
@@ -69,7 +69,7 @@ export function ChatPanel() {
         />
         <button
           onClick={handleSend}
-          className="chat-send"
+          className="w-[36px] h-[36px] rounded-full bg-brand border-none text-white text-[16px] cursor-pointer shrink-0 flex items-center justify-center transition-[background] duration-200 hover:bg-brand-dark"
         >
           <ArrowUp size={18} />
         </button>

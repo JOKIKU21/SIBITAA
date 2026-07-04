@@ -1,8 +1,5 @@
 "use client";
 
-// ponytail: minimal client component — just the input + label pattern
-// Used across masuk (email) and daftar (name, email)
-
 export default function FormInput({
   id,
   label,
@@ -25,10 +22,12 @@ export default function FormInput({
   name?: string;
 }) {
   return (
-    <div className="form-group">
-      <label htmlFor={id}>{label}</label>
+    <div className="text-left mb-[16px]">
+      <label htmlFor={id} className="block text-[13px] font-semibold text-neutral-text mb-[6px]">
+        {label}
+      </label>
       <input
-        className="form-input"
+        className="w-full bg-neutral-bg border-[1.5px] border-transparent rounded-[10px] py-[12px] px-[16px] text-[14px] text-neutral-text outline-none transition-[border-color] duration-200 font-sans focus:border-brand-light focus:bg-[#f8f9ff] disabled:opacity-60 disabled:cursor-not-allowed disabled:bg-neutral-bg"
         type={type}
         id={id}
         name={name ?? id}
