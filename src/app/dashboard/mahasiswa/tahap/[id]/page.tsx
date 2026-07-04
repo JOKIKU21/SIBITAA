@@ -44,9 +44,8 @@ export default async function StagePage({
             {stage.desc}
           </div>
         </div>
-
         {stage.comparison && (
-          <div className="mb-5 max-w-[800px]">
+          <div className="mb-5 max-w-200">
             <CompareRevision comparison={stage.comparison} />
           </div>
         )}
