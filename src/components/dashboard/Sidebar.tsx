@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { authService } from "@/services/auth";
 import { authClient } from "@/lib/auth-client";
+import Button from "@/components/Button";
 
 export function Sidebar() {
   const router = useRouter();
@@ -169,7 +170,14 @@ export function Sidebar() {
             <div className="text-2.75 text-white/50 whitespace-nowrap overflow-hidden text-ellipsis">{isPending ? "" : roleLabel}</div>
           </div>
         </div>
-        <button className="flex items-center gap-2.5 w-full py-2.5 px-3.5 rounded-2.5 bg-danger/12 text-[#fca5a5] text-[13.5px] font-semibold border-none cursor-pointer transition-[background] duration-200 hover:bg-danger/22" type="button" onClick={handleLogout}>
+        <Button
+          variant="danger-light"
+          size="custom"
+          fullWidth
+          className="flex items-center gap-2.5 py-2.5 px-3.5 rounded-2.5 text-[13.5px] font-semibold"
+          type="button"
+          onClick={handleLogout}
+        >
           <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 shrink-0">
             <path
               d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"
@@ -180,7 +188,7 @@ export function Sidebar() {
             />
           </svg>
           Keluar
-        </button>
+        </Button>
       </div>
     </aside>
   );

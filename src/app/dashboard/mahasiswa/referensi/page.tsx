@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import Button from "@/components/Button";
+import Input from "@/components/Input";
 
 const REFS = [
   { id: 1, title: "Metodologi Penelitian Kuantitatif", desc: "Panduan lengkap metodologi penelitian kuantitatif mencakup desain penelitian, pengumpulan data, dan analisis statistik.", tag: "Metodologi", file: "metodologi-kuantitatif.pdf", author: "Prof. Sugiyono", year: "2023" },
@@ -30,19 +32,21 @@ export default function ReferensiPage() {
           <p className="text-3.5 text-neutral-muted">Materi pendukung dari dosen pembimbing untuk membantu tugas akhir Anda</p>
         </div>
         <div className="flex gap-3 mb-5.5 flex-wrap">
-          <div className="flex-1 min-w-50 flex items-center gap-2.5 bg-white border border-neutral-border rounded-2.5 px-3.5 py-0 h-10.5">
-            <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 text-neutral-muted shrink-0">
-              <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.8" />
-              <path d="m21 21-4.35-4.35" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-            </svg>
-            <input
-              type="text"
-              className="border-none outline-none text-3.5 flex-1 bg-transparent text-neutral-text"
-              placeholder="Cari referensi..."
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-            />
-          </div>
+          <Input
+            variant="bordered"
+            type="text"
+            placeholder="Cari referensi..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            leftIcon={
+              <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 text-neutral-muted">
+                <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.8" />
+                <path d="m21 21-4.35-4.35" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+              </svg>
+            }
+            wrapperClassName="flex-1 min-w-50"
+            className="bg-white h-10.5 py-0 rounded-2.5"
+          />
         </div>
         <div className="flex flex-col gap-3.5">
           {filtered.map((r) => (
@@ -61,12 +65,20 @@ export default function ReferensiPage() {
                   <span>{r.year}</span>
                 </div>
               </div>
-              <button className="inline-flex items-center gap-1.5 bg-brand text-white border-none py-2 px-4 rounded-2 text-[13px] font-bold cursor-pointer no-underline whitespace-nowrap shrink-0 self-start transition-[background] duration-200 hover:bg-brand-dark" type="button" onClick={() => alert(`Mengunduh: ${r.title}`)}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
+              <Button
+                variant="brand"
+                size="custom"
+                className="inline-flex items-center gap-1.5 py-2 px-4 rounded-2 text-[13px] font-bold no-underline whitespace-nowrap shrink-0 self-start"
+                type="button"
+                onClick={() => alert(`Mengunduh: ${r.title}`)}
+                leftIcon={
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                }
+              >
                 Unduh
-              </button>
+              </Button>
             </div>
           ))}
           {filtered.length === 0 && (

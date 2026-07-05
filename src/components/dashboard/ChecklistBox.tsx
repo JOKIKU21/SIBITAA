@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Input from "@/components/Input";
 
 export function ChecklistBox({ items }: { items: string[] }) {
   const [checkedState, setCheckedState] = useState<boolean[]>(
@@ -31,7 +32,7 @@ export function ChecklistBox({ items }: { items: string[] }) {
                 isChecked ? "text-neutral-light line-through" : "text-neutral-text hover:border-[#D8DEF5]"
               }`}
             >
-              <input
+              <Input
                 type="checkbox"
                 checked={isChecked}
                 onChange={() => handleOnChange(index)}

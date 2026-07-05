@@ -2,6 +2,7 @@
 
 import { STAGES } from "@/lib/stages";
 import { useProgress } from "@/components/providers/ProgressProvider";
+import Button from "@/components/Button";
 
 export function OverallCard() {
   const { completedStages } = useProgress();
@@ -19,8 +20,20 @@ export function OverallCard() {
         <div className="text-3 text-white/60 mb-1.5">Simulasi Hari ke-</div>
         <div className="font-display text-5.5 font-extrabold text-white mb-2">0</div>
         <div className="flex gap-1.5">
-          <button className="py-1.5 px-3 rounded-1.75 text-3 font-bold border-none cursor-pointer transition-[background] duration-150 bg-white/12 text-white/80 hover:bg-white/20">&minus;</button>
-          <button className="py-1.5 px-3 rounded-1.75 text-3 font-bold border-none cursor-pointer transition-[background] duration-150 bg-[#6FE3A6] text-[#14532D] hover:bg-[#4ade80]">+1 Hari</button>
+          <Button
+            variant="custom"
+            size="custom"
+            className="py-1.5 px-3 rounded-1.75 text-3.5 font-bold bg-white/12 text-white/80 hover:bg-white/20"
+          >
+            &minus;
+          </Button>
+          <Button
+            variant="custom"
+            size="custom"
+            className="py-1.5 px-3 rounded-1.75 text-3.5 font-bold bg-[#6FE3A6] text-[#14532D] hover:bg-[#4ade80]"
+          >
+            +1 Hari
+          </Button>
         </div>
       </div>
     </div>

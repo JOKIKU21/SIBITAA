@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import type { Stage } from "@/lib/stages";
+import Button from "@/components/Button";
+import Input from "@/components/Input";
 
 export function StageForm({ stage }: { stage: Omit<Stage, "icon"> }) {
   const [loading, setLoading] = useState(false);
@@ -38,9 +40,9 @@ export function StageForm({ stage }: { stage: Omit<Stage, "icon"> }) {
                 ) : field.type === "textarea" ? (
                   <textarea className="w-full bg-neutral-bg border-[1.5px] border-transparent rounded-2 py-3 px-3.5 text-3.5 text-neutral-text outline-none font-sans transition-[border-color,background] duration-200 focus:border-brand-light focus:bg-[#f8f9ff] resize-y min-h-20" />
                 ) : (
-                  <input
+                  <Input
                     type="text"
-                    className="w-full bg-neutral-bg border-[1.5px] border-transparent rounded-2 py-3 px-3.5 text-3.5 text-neutral-text outline-none font-sans transition-[border-color,background] duration-200 focus:border-brand-light focus:bg-[#f8f9ff]"
+                    variant="default"
                   />
                 )}
               </div>
@@ -48,19 +50,23 @@ export function StageForm({ stage }: { stage: Omit<Stage, "icon"> }) {
           })}
 
           <div className="flex gap-3 mt-5.5">
-            <button
+            <Button
               type="button"
-              className="flex-1 bg-white border-[1.5px] border-brand text-brand font-bold text-3.5 p-3 rounded-2.25 cursor-pointer transition-[background] duration-200 hover:bg-[#f0f3ff]"
+              variant="outline"
+              size="custom"
+              className="flex-1 p-3 rounded-2.25"
             >
               Batal
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
-              disabled={loading}
-              className="flex-1 bg-brand border-none text-white font-bold text-3.5 p-3 rounded-2.25 cursor-pointer transition-[background] duration-200 hover:bg-brand-dark disabled:opacity-70 disabled:cursor-not-allowed"
+              variant="brand"
+              size="custom"
+              className="flex-1 p-3 rounded-2.25"
+              isLoading={loading}
             >
-              {loading ? "Menyimpan..." : "Selesai"}
-            </button>
+              Selesai
+            </Button>
           </div>
         </form>
       </div>

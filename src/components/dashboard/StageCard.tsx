@@ -72,7 +72,7 @@ export function StageCard({ stage, status, window }: { stage: Stage; status: Sta
       <div className="flex-1">
         <div className={getCardClass(status)} onClick={() => router.push(`/dashboard/mahasiswa/tahap/${stage.slug}`)}>
           <div className="flex items-center justify-between gap-2.5 mb-2">
-            <span className="font-display text-5.5 font-extrabold text-brand -tracking-[0.01em] leading-none">{String(stage.n).padStart(2, "0")}</span>
+            <span className="font-display text-5.5 font-extrabold text-brand tracking-[-0.01em] leading-none">{String(stage.n).padStart(2, "0")}</span>
             <span className={`text-[11.5px] font-bold py-0.75 px-2.5 rounded-full whitespace-nowrap shrink-0 ${badge.cls}`}>{badge.label}</span>
           </div>
           <div className="font-display text-[15px] font-bold text-neutral-text mb-0.75">{stage.name}</div>

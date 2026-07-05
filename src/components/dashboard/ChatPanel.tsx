@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { Plus, ArrowUp } from "lucide-react";
+import Button from "@/components/Button";
+import Input from "@/components/Input";
 
 export function ChatPanel() {
   const [msg, setMsg] = useState("");
@@ -28,11 +30,11 @@ export function ChatPanel() {
   };
 
   return (
-    <div className="bg-white rounded-3.5 border border-neutral-border overflow-hidden mb-5 flex flex-col min-h-[380px] h-auto">
+    <div className="bg-white rounded-3.5 border border-neutral-border overflow-hidden mb-5 flex flex-col min-h-95 h-auto">
       <div className="py-4.5 px-6 font-display text-4 font-extrabold border-b border-neutral-border">
         Chatting
       </div>
-      <div className="py-4.5 px-6 flex flex-col gap-3.5 max-h-[400px] overflow-y-auto flex-1">
+      <div className="py-4.5 px-6 flex flex-col gap-3.5 max-h-100 overflow-y-auto flex-1">
         <div className="text-center mb-1">
           <span className="bg-[#1F2937] text-white text-2.75 py-0.75 px-3 rounded-3">Hari Ini</span>
         </div>
@@ -44,7 +46,7 @@ export function ChatPanel() {
           >
             {!c.me && <div className="w-7.5 h-7.5 rounded-full bg-neutral-bg shrink-0" />}
             <div>
-              <div className={`py-2.5 px-3.5 rounded-3.5 text-[13.5px] leading-[1.4] relative ${c.me ? "bg-brand text-white rounded-br-[2px]" : "bg-[#EAF0FB] text-neutral-text rounded-bl-[2px]"}`}>
+              <div className={`py-2.5 px-3.5 rounded-3.5 text-[13.5px] leading-[1.4] relative ${c.me ? "bg-brand text-white rounded-br-xs" : "bg-[#EAF0FB] text-neutral-text rounded-bl-xs"}`}>
                 {c.text}
                 <span className="block text-2.5 opacity-70 mt-0.75">
                   {c.time}
@@ -56,23 +58,31 @@ export function ChatPanel() {
       </div>
 
       <div className="py-3.5 px-6 pb-5 border-t border-neutral-border flex items-center gap-2.5">
-        <button className="w-8.5 h-8.5 rounded-full bg-neutral-bg border-none text-4.5 text-neutral-muted cursor-pointer shrink-0 flex items-center justify-center">
+        <Button
+          variant="neutral"
+          size="icon"
+          className="w-8.5 h-8.5 rounded-full"
+        >
           <Plus size={18} />
-        </button>
-        <input
+        </Button>
+        <Input
           type="text"
+          variant="custom"
           className="flex-1 bg-neutral-bg border-none rounded-full py-2.5 px-4 text-[13.5px] outline-none font-sans"
           placeholder="Write a message........"
           value={msg}
           onChange={(e) => setMsg(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSend()}
+          fullWidth={false}
         />
-        <button
+        <Button
+          variant="brand"
+          size="icon"
           onClick={handleSend}
-          className="w-9 h-9 rounded-full bg-brand border-none text-white text-4 cursor-pointer shrink-0 flex items-center justify-center transition-[background] duration-200 hover:bg-brand-dark"
+          className="w-9 h-9 rounded-full"
         >
           <ArrowUp size={18} />
-        </button>
+        </Button>
       </div>
     </div>
   );

@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import Button from "@/components/Button";
+import Input from "@/components/Input";
 
 export default function ProfilPage() {
   const [nama, setNama] = useState("Tih Indriani");
@@ -26,7 +28,7 @@ export default function ProfilPage() {
                   <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2v11Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
                   <circle cx="12" cy="13" r="4" stroke="currentColor" strokeWidth="1.7" />
                 </svg>
-                <input type="file" accept="image/*" className="hidden" onChange={() => alert("Upload foto!")} />
+                <Input type="file" accept="image/*" className="hidden" onChange={() => alert("Upload foto!")} />
               </label>
             </div>
             <div className="font-display text-4.5 font-extrabold mb-1">{nama}</div>
@@ -46,35 +48,35 @@ export default function ProfilPage() {
               <div className="grid grid-cols-2 gap-4 max-[700px]:grid-cols-1">
                 <div className="flex flex-col gap-1.5">
                   <label className="text-[12.5px] font-semibold text-neutral-muted">Nama Lengkap</label>
-                  <input className="bg-neutral-bg border-[1.5px] border-neutral-border rounded-2.25 py-2.75 px-3.5 text-3.5 outline-none transition-[border-color] duration-200 font-sans focus:border-brand-light" type="text" value={nama} onChange={(e) => setNama(e.target.value)} />
+                  <Input variant="bordered" type="text" value={nama} onChange={(e) => setNama(e.target.value)} />
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <label className="text-[12.5px] font-semibold text-neutral-muted">NIM</label>
-                  <input className="bg-neutral-bg border-[1.5px] border-neutral-border rounded-2.25 py-2.75 px-3.5 text-3.5 outline-none transition-[border-color] duration-200 font-sans focus:border-brand-light text-neutral-muted cursor-default" type="text" value="200101012" readOnly />
+                  <Input variant="bordered" type="text" value="200101012" readOnly className="text-neutral-muted cursor-default" />
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <label className="text-[12.5px] font-semibold text-neutral-muted">Email</label>
-                  <input className="bg-neutral-bg border-[1.5px] border-neutral-border rounded-2.25 py-2.75 px-3.5 text-3.5 outline-none transition-[border-color] duration-200 font-sans focus:border-brand-light" type="email" defaultValue="tih.indriani@uin-mataram.ac.id" />
+                  <Input variant="bordered" type="email" defaultValue="tih.indriani@uin-mataram.ac.id" />
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <label className="text-[12.5px] font-semibold text-neutral-muted">No. HP</label>
-                  <input className="bg-neutral-bg border-[1.5px] border-neutral-border rounded-2.25 py-2.75 px-3.5 text-3.5 outline-none transition-[border-color] duration-200 font-sans focus:border-brand-light" type="text" defaultValue="081234567890" />
+                  <Input variant="bordered" type="text" defaultValue="081234567890" />
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <label className="text-[12.5px] font-semibold text-neutral-muted">Program Studi</label>
-                  <input className="bg-neutral-bg border-[1.5px] border-neutral-border rounded-2.25 py-2.75 px-3.5 text-3.5 outline-none transition-[border-color] duration-200 font-sans focus:border-brand-light" type="text" value={prodi} onChange={(e) => setProdi(e.target.value)} />
+                  <Input variant="bordered" type="text" value={prodi} onChange={(e) => setProdi(e.target.value)} />
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <label className="text-[12.5px] font-semibold text-neutral-muted">Asal Kampus</label>
-                  <input className="bg-neutral-bg border-[1.5px] border-neutral-border rounded-2.25 py-2.75 px-3.5 text-3.5 outline-none transition-[border-color] duration-200 font-sans focus:border-brand-light" type="text" value={kampus} onChange={(e) => setKampus(e.target.value)} />
+                  <Input variant="bordered" type="text" value={kampus} onChange={(e) => setKampus(e.target.value)} />
                 </div>
                 <div className="flex flex-col gap-1.5" style={{ gridColumn: "1/-1" }}>
                   <label className="text-[12.5px] font-semibold text-neutral-muted">Dosen Pembimbing</label>
-                  <input className="bg-neutral-bg border-[1.5px] border-neutral-border rounded-2.25 py-2.75 px-3.5 text-3.5 outline-none transition-[border-color] duration-200 font-sans focus:border-brand-light text-neutral-muted cursor-default" type="text" value="Dr. Ahmad Fauzi, M.T." readOnly />
+                  <Input variant="bordered" type="text" value="Dr. Ahmad Fauzi, M.T." readOnly className="text-neutral-muted cursor-default" />
                 </div>
               </div>
               <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "18px" }}>
-                <button className="bg-brand text-white border-none py-2.75 px-6.5 rounded-2.25 text-3.5 font-bold cursor-pointer transition-[background] duration-200 hover:bg-brand-dark" onClick={() => alert("Profil berhasil disimpan!")}>Simpan Perubahan</button>
+                <Button variant="brand" size="custom" className="py-2.75 px-6.5 rounded-2.25 text-3.5 font-bold" onClick={() => alert("Profil berhasil disimpan!")}>Simpan Perubahan</Button>
               </div>
             </div>
 
@@ -83,19 +85,19 @@ export default function ProfilPage() {
               <div className="flex flex-col gap-3.5">
                 <div className="flex flex-col gap-1.5">
                   <label className="text-[12.5px] font-semibold text-neutral-muted">Password Saat Ini</label>
-                  <input className="bg-neutral-bg border-[1.5px] border-neutral-border rounded-2.25 py-2.75 px-3.5 text-3.5 outline-none transition-[border-color] duration-200 font-sans focus:border-brand-light" type="password" placeholder="••••••••" />
+                  <Input variant="bordered" type="password" placeholder="••••••••" />
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <label className="text-[12.5px] font-semibold text-neutral-muted">Password Baru</label>
-                  <input className="bg-neutral-bg border-[1.5px] border-neutral-border rounded-2.25 py-2.75 px-3.5 text-3.5 outline-none transition-[border-color] duration-200 font-sans focus:border-brand-light" type="password" placeholder="Minimal 8 karakter" />
+                  <Input variant="bordered" type="password" placeholder="Minimal 8 karakter" />
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <label className="text-[12.5px] font-semibold text-neutral-muted">Konfirmasi Password Baru</label>
-                  <input className="bg-neutral-bg border-[1.5px] border-neutral-border rounded-2.25 py-2.75 px-3.5 text-3.5 outline-none transition-[border-color] duration-200 font-sans focus:border-brand-light" type="password" placeholder="Ulangi password baru" />
+                  <Input variant="bordered" type="password" placeholder="Ulangi password baru" />
                 </div>
               </div>
               <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "18px" }}>
-                <button className="bg-brand text-white border-none py-2.75 px-6.5 rounded-2.25 text-3.5 font-bold cursor-pointer transition-[background] duration-200 hover:bg-brand-dark" onClick={() => alert("Password berhasil diubah!")}>Ubah Password</button>
+                <Button variant="brand" size="custom" className="py-2.75 px-6.5 rounded-2.25 text-3.5 font-bold" onClick={() => alert("Password berhasil diubah!")}>Ubah Password</Button>
               </div>
             </div>
           </div>
