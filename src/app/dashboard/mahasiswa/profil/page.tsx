@@ -9,6 +9,7 @@ import {
   useStudentProfile,
   useUpdateProfile,
 } from "@/hooks/useStudentProfile";
+import ProfilLoading from "./loading";
 
 const EMPTY_PROFILE_FORM = {
   name: "",
@@ -123,12 +124,9 @@ export default function ProfilPage() {
   const editableVariant = isEditing ? "bordered" : "ghost";
 
   if (isLoading) {
-    return (
-      <div className="p-7 max-[600px]:p-4">
-        <p className="text-3.5 text-neutral-muted">Memuat profil…</p>
-      </div>
-    );
+    return <ProfilLoading />;
   }
+
 
   if (isError || !profile) {
     return (

@@ -4,21 +4,14 @@ import { useState } from "react";
 import Button from "@/components/Button";
 import Input from "@/components/Input";
 import { useReferenceFiles } from "@/hooks/useReferenceFiles";
+import ReferensiLoading from "./loading";
 
 export default function ReferensiPage() {
   const [query, setQuery] = useState("");
   const { data, isLoading, isError, error, refetch } = useReferenceFiles();
 
   if (isLoading) {
-    return (
-      <div className="p-7 max-[600px]:p-4">
-        <div className="mb-6">
-          <h2 className="font-display text-2xl font-extrabold mb-1">Referensi Buku & Jurnal</h2>
-          <p className="text-lg text-neutral-muted">Materi pendukung dari dosen pembimbing untuk membantu tugas akhir Anda</p>
-        </div>
-        <p className="text-lg text-neutral-muted">Memuat referensi…</p>
-      </div>
-    );
+    return <ReferensiLoading />;
   }
 
   if (isError) {
