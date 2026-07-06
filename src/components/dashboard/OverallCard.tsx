@@ -2,7 +2,6 @@
 
 import { STAGES } from "@/lib/stages";
 import { useProgress } from "@/components/providers/ProgressProvider";
-import Button from "@/components/Button";
 
 export function OverallCard() {
   const { completedStages } = useProgress();
@@ -15,26 +14,6 @@ export function OverallCard() {
       <div className="flex-1 min-w-50">
         <h3 className="font-display text-[17px] font-extrabold text-white mb-1">Progres Keseluruhan</h3>
         <p className="text-[13.5px] text-white/78 font-semibold">{completedStages.size} dari {STAGES.length} tahap selesai</p>
-      </div>
-      <div className="ml-auto text-right shrink-0">
-        <div className="text-3 text-white/60 mb-1.5">Simulasi Hari ke-</div>
-        <div className="font-display text-5.5 font-extrabold text-white mb-2">0</div>
-        <div className="flex gap-1.5">
-          <Button
-            variant="custom"
-            size="custom"
-            className="py-1.5 px-3 rounded-1.75 text-3.5 font-bold bg-white/12 text-white/80 hover:bg-white/20"
-          >
-            &minus;
-          </Button>
-          <Button
-            variant="custom"
-            size="custom"
-            className="py-1.5 px-3 rounded-1.75 text-3.5 font-bold bg-[#6FE3A6] text-[#14532D] hover:bg-[#4ade80]"
-          >
-            +1 Hari
-          </Button>
-        </div>
       </div>
     </div>
   );

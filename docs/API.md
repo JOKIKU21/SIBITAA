@@ -40,3 +40,33 @@ returns:
   },
   "status": "active"
 }
+```
+
+### Get Reference File
+
+```sh
+curl -X GET http://localhost:3001/api/reference-files \
+  -H "Cookie: better-auth.session_token=..."
+```
+
+returns:
+
+```json
+{
+  "referenceFiles": [
+    {
+      "id": "ref-uuid-111",
+      "title": "Pedoman Penulisan Skripsi",
+      "description": "Buku panduan format dan tata cara penulisan skripsi.",
+      "type": "guideline",
+      "fileName": "panduan_skripsi_v2.pdf",
+      "fileUrl": "https://example.com/files/panduan_skripsi_v2.pdf",
+      "fileType": "application/pdf",
+      "fileSize": 2048000,
+      "author": "Tim Akademik",
+      "createdAt": "2026-07-06T05:52:21.195Z",
+      "updatedAt": "2026-07-06T05:52:21.195Z"
+    }
+  ]
+}
+```

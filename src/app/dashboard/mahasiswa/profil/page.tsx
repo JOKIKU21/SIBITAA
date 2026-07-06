@@ -154,8 +154,8 @@ export default function ProfilPage() {
     <div className="block">
       <div className="p-7 max-[600px]:p-4">
         <div className="mb-6">
-          <h2 className="font-display text-5.5 font-extrabold mb-1">Profil Saya</h2>
-          <p className="text-3.5 text-neutral-muted">Kelola informasi akun dan keamanan Anda</p>
+          <h2 className="font-display text-2xl font-extrabold mb-1">Profil Saya</h2>
+          <p className="text-lg text-neutral-muted">Kelola informasi akun dan keamanan Anda</p>
         </div>
         <div className="grid grid-cols-[300px_1fr] gap-5.5 items-start max-[900px]:grid-cols-1">
           {/* left: avatar */}

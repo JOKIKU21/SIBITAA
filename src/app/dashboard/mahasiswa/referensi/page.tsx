@@ -3,33 +3,113 @@
 import { useState } from "react";
 import Button from "@/components/Button";
 import Input from "@/components/Input";
-
-const REFS = [
-  { id: 1, title: "Metodologi Penelitian Kuantitatif", desc: "Panduan lengkap metodologi penelitian kuantitatif mencakup desain penelitian, pengumpulan data, dan analisis statistik.", tag: "Metodologi", file: "metodologi-kuantitatif.pdf", author: "Prof. Sugiyono", year: "2023" },
-  { id: 2, title: "Penulisan Karya Ilmiah Akademik", desc: "Buku panduan penulisan skripsi, tesis, dan disertasi sesuai kaidah akademik yang berlaku di perguruan tinggi.", tag: "Penulisan", file: "karya-ilmiah.pdf", author: "Dr. Suharsimi", year: "2022" },
-  { id: 3, title: "Analisis Data dengan SPSS", desc: "Panduan praktis analisis data kuantitatif menggunakan SPSS dari dasar hingga mahir, disertai contoh kasus nyata.", tag: "Statistik", file: "analisis-spss.pdf", author: "Imam Ghozali", year: "2023" },
-  { id: 4, title: "Tinjauan Pustaka Sistematis", desc: "Teknik systematic literature review untuk menemukan, mengevaluasi, dan mensintesis penelitian-penelitian terdahulu.", tag: "Literatur", file: "tinjauan-pustaka.pdf", author: "Dr. Ridwan", year: "2022" },
-  { id: 5, title: "Etika Penelitian & Plagiarisme", desc: "Panduan etika dalam penelitian ilmiah and cara mencegah plagiarisme, termasuk penggunaan manajemen referensi.", tag: "Etika", file: "etika-penelitian.pdf", author: "Tim Akademik", year: "2024" },
-  { id: 6, title: "Instrumen dan Validitas Penelitian", desc: "Cara membuat, menguji validitas dan reliabilitas instrumen penelitian baik kuantitatif maupun kualitatif.", tag: "Instrumen", file: "instrumen-penelitian.pdf", author: "Prof. Arikunto", year: "2021" },
-];
+import { useReferenceFiles } from "@/hooks/useReferenceFiles";
 
 export default function ReferensiPage() {
   const [query, setQuery] = useState("");
+  const { data, isLoading, isError, error, refetch } = useReferenceFiles();
 
-  const filtered = REFS.filter(
+  if (isLoading) {
+    return (
+      <div className="p-7 max-[600px]:p-4">
+        <div className="mb-6">
+          <h2 className="font-display text-2xl font-extrabold mb-1">Referensi Buku & Jurnal</h2>
+          <p className="text-lg text-neutral-muted">Materi pendukung dari dosen pembimbing untuk membantu tugas akhir Anda</p>
+        </div>
+        <p className="text-lg text-neutral-muted">Memuat referensi…</p>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="p-7 max-[600px]:p-4">
+        <div className="mb-6">
+          <h2 className="font-display text-2xl font-extrabold mb-1">Referensi Buku & Jurnal</h2>
+          <p className="text-lg text-neutral-muted">Materi pendukung dari dosen pembimbing untuk membantu tugas akhir Anda</p>
+        </div>
+        <div className="bg-white border border-neutral-border rounded-4 p-6.5 max-w-md">
+          <h2 className="font-display text-4.5 font-extrabold mb-1">
+            Gagal memuat referensi
+          </h2>
+          <p className="text-lg text-neutral-muted mb-4">
+            {error instanceof Error
+              ? error.message
+              : "Terjadi kesalahan saat mengambil data referensi."}
+          </p>
+          <Button variant="brand" size="md" onClick={() => refetch()}>
+            Coba Lagi
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  const referenceFiles = data?.referenceFiles ?? [];
+
+  const filtered = referenceFiles.filter(
     (r) =>
       !query ||
       r.title.toLowerCase().includes(query.toLowerCase()) ||
-      r.desc.toLowerCase().includes(query.toLowerCase()) ||
-      r.tag.toLowerCase().includes(query.toLowerCase())
+      r.description.toLowerCase().includes(query.toLowerCase()) ||
+      r.type.toLowerCase().includes(query.toLowerCase()) ||
+      r.author.toLowerCase().includes(query.toLowerCase())
   );
+
+  const formatFileSize = (bytes: number) => {
+    if (!bytes) return "";
+    if (bytes < 1024) return `${bytes} B`;
+    const kb = bytes / 1024;
+    if (kb < 1024) return `${kb.toFixed(1)} KB`;
+    const mb = kb / 1024;
+    return `${mb.toFixed(1)} MB`;
+  };
+
+  const formatUploadDate = (dateStr: string) => {
+    try {
+      const date = new Date(dateStr);
+      return date.toLocaleDateString("id-ID", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      });
+    } catch {
+      return "";
+    }
+  };
+
+  const getBadgeStyles = (type: string) => {
+    const t = type?.toLowerCase() || "";
+    if (t === "guideline" || t === "panduan") {
+      return "bg-brand-bg text-brand";
+    }
+    if (t === "book" || t === "buku") {
+      return "bg-emerald-50 text-emerald-700 border border-emerald-200/40";
+    }
+    if (t === "journal" || t === "jurnal") {
+      return "bg-purple-50 text-purple-700 border border-purple-200/40";
+    }
+    if (t === "template" || t === "templat") {
+      return "bg-amber-50 text-amber-700 border border-amber-200/40";
+    }
+    return "bg-neutral-bg text-neutral-text border border-neutral-border/50";
+  };
+
+  const formatType = (type: string) => {
+    if (!type) return "";
+    if (type.toLowerCase() === "guideline") return "Panduan";
+    if (type.toLowerCase() === "book") return "Buku";
+    if (type.toLowerCase() === "journal") return "Jurnal";
+    if (type.toLowerCase() === "template") return "Templat";
+    return type.charAt(0).toUpperCase() + type.slice(1);
+  };
 
   return (
     <div className="block">
       <div className="p-7 max-[600px]:p-4">
         <div className="mb-6">
-          <h2 className="font-display text-5.5 font-extrabold mb-1">Referensi Buku & Jurnal</h2>
-          <p className="text-3.5 text-neutral-muted">Materi pendukung dari dosen pembimbing untuk membantu tugas akhir Anda</p>
+          <h2 className="font-display text-2xl font-extrabold mb-1">Referensi Buku & Jurnal</h2>
+          <p className="text-lg text-neutral-muted">Materi pendukung dari dosen pembimbing untuk membantu tugas akhir Anda</p>
         </div>
         <div className="flex gap-3 mb-5.5 flex-wrap">
           <Input
@@ -58,19 +138,36 @@ export default function ReferensiPage() {
               </div>
               <div className="flex-1 min-w-0">
                 <div className="font-display text-[15px] font-bold mb-1">{r.title}</div>
-                <div className="text-[13px] text-neutral-muted leading-[1.55] mb-2.5">{r.desc}</div>
-                <div className="flex items-center gap-3 text-3 text-neutral-muted">
-                  <span className="bg-brand-bg text-brand py-0.5 px-2.25 rounded-full font-semibold">{r.tag}</span>
+                <div className="text-[13px] text-neutral-muted leading-[1.55] mb-2">{r.description}</div>
+                
+                {/* File Attachment Info */}
+                {r.fileName && (
+                  <div className="inline-flex items-center gap-2 mb-3 px-2.5 py-1 bg-neutral-bg border border-neutral-border/60 rounded-2 text-[12px] text-neutral-muted">
+                    <svg viewBox="0 0 24 24" fill="none" className="w-3.5 h-3.5 text-neutral-muted/80" stroke="currentColor" strokeWidth="2">
+                      <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                    <span className="truncate max-w-50 sm:max-w-75" title={r.fileName}>{r.fileName}</span>
+                    {r.fileSize && (
+                      <span className="text-neutral-muted/60">({formatFileSize(r.fileSize)})</span>
+                    )}
+                  </div>
+                )}
+
+                <div className="flex items-center gap-2 text-3 text-neutral-muted flex-wrap">
+                  <span className={`py-0.5 px-2.25 rounded-full font-semibold ${getBadgeStyles(r.type)}`}>{formatType(r.type)}</span>
+                  <span className="text-neutral-border/60">•</span>
                   <span>{r.author}</span>
-                  <span>{r.year}</span>
+                  <span className="text-neutral-border/60">•</span>
+                  <span>{formatUploadDate(r.createdAt)}</span>
                 </div>
               </div>
               <Button
                 variant="brand"
                 size="custom"
                 className="inline-flex items-center gap-1.5 py-2 px-4 rounded-2 text-[13px] font-bold no-underline whitespace-nowrap shrink-0 self-start"
-                type="button"
-                onClick={() => alert(`Mengunduh: ${r.title}`)}
+                href={r.fileUrl}
+                target="_blank"
+                rel="noopener noreferrer"
                 leftIcon={
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -83,7 +180,7 @@ export default function ReferensiPage() {
           ))}
           {filtered.length === 0 && (
             <div className="p-10 text-center text-neutral-muted">
-              Tidak ada referensi yang ditemukan untuk `&quot;`{query}`&quot;`.
+              Tidak ada referensi yang ditemukan untuk &quot;{query}&quot;.
             </div>
           )}
         </div>

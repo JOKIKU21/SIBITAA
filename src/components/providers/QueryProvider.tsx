@@ -19,18 +19,18 @@ export function QueryProvider({ children }: { children: React.ReactNode }) {
       new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime: 60 * 1000,
-            gcTime: 5 * 60 * 1000,
+            staleTime: 60 * 1000, // 1 minute
+            gcTime: 5 * 60 * 1000, // 5 minutes
             refetchOnWindowFocus: false,
             retry: (failureCount, error) => {
               if (error instanceof ApiError && error.status < 500) {
                 return false;
               }
-              return failureCount < 2;
+              return failureCount < 2; // retry up to 2 times for server errors (5xx)
             },
           },
           mutations: {
-            retry: false,
+            retry: false, // mutations are usually user actions, so don't retry
           },
         },
       })
