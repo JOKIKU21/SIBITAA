@@ -16,6 +16,8 @@ export async function proxy(request: NextRequest) {
         headers: {
           cookie: cookieHeader,
         },
+        credentials: "include",
+        cache: "no-store",
       });
 
       const session = res.ok ? await res.json() : null;

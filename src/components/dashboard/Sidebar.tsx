@@ -10,7 +10,6 @@ export function Sidebar() {
   const router = useRouter();
   const pathname = usePathname() || "";
 
-  // ponytail: use authClient session hook to display user details dynamically in the sidebar footer
   const { data: session, isPending } = authClient.useSession();
 
   async function handleLogout() {
