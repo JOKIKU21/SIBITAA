@@ -45,7 +45,7 @@ export function BimbinganTable({
             {mahasiswa.map((m) => {
               const badge = STATUS_BADGE[m.status];
               return (
-                <tr key={m.nim} className="border-b border-neutral-border last:border-b-0 hover:bg-neutral-bg/30 transition-colors duration-150">
+                <tr key={m.userId} className="border-b border-neutral-border last:border-b-0 hover:bg-neutral-bg/30 transition-colors duration-150">
                   <td className="py-3.5 px-6">
                     <div className="flex items-center gap-3">
                       <div className={`w-9 h-9 rounded-full bg-linear-to-br ${m.avatarColor} flex items-center justify-center text-[13px] font-bold text-white shrink-0`}>
@@ -71,7 +71,7 @@ export function BimbinganTable({
                   </td>
                   <td className="py-3.5 px-4">
                     <Link
-                      href={`/dashboard/dosen/bimbingan/${m.nim}`}
+                      href={`/dashboard/dosen/bimbingan/${m.userId}`}
                       className="inline-flex items-center gap-1.5 bg-brand-bg text-brand text-[12.5px] font-bold py-1.75 px-3.5 rounded-2 hover:bg-brand hover:text-white transition-colors duration-200"
                     >
                       <svg viewBox="0 0 24 24" fill="none" className="w-3.5 h-3.5">

@@ -1,4 +1,4 @@
-import { InputHTMLAttributes } from "react";
+import { InputProps } from "@/components/Input";
 import Input from "@/components/Input";
 
 export default function FormInput({
@@ -9,10 +9,8 @@ export default function FormInput({
   ...props
 }: {
   id: string;
-  label: string;
-  type?: string;
-  wrapperClassName?: string;
-} & Omit<InputHTMLAttributes<HTMLInputElement>, "id" | "label" | "type">) {
+  label?: string;
+} & Omit<InputProps, "id" | "label">) {
   return (
     <Input
       type={type}

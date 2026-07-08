@@ -46,7 +46,7 @@ const RAW_ICONS = [
   `<svg viewBox="0 0 24 24" fill="none"><path d="M22 10 12 5 2 10l10 5 10-5ZM6 12.5v5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
 ];
 
-export function StageCard({ stage, status, window }: { stage: Stage; status: StageStatus; window: StageWindow }) {
+export function StageCard({ stage, status, window, basePath = "/dashboard/mahasiswa/tahap" }: { stage: Stage; status: StageStatus; window: StageWindow; basePath?: string }) {
   const rawSvg = RAW_ICONS[stage.n - 1] || "";
 
   const getIconClass = (status: StageStatus) => {
@@ -85,7 +85,7 @@ export function StageCard({ stage, status, window }: { stage: Stage; status: Sta
         {stage.n !== 17 && <div className={getLineClass(status)} />}
       </div>
       <div className="flex-1">
-        <Link href={`/dashboard/mahasiswa/tahap/${stage.slug}`} className={`block ${getCardClass(status)}`}>
+        <Link href={`${basePath}/${stage.slug}`} className={`block ${getCardClass(status)}`}>
           <div className="flex items-center justify-between gap-2.5 mb-2">
             <span className="font-display text-5.5 font-extrabold text-brand tracking-[-0.01em] leading-none">{String(stage.n).padStart(2, "0")}</span>
             <StatusBadge status={status} />

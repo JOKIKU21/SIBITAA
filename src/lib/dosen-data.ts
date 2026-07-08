@@ -1,6 +1,7 @@
 // ponytail: dummy data for dosen dashboard — frontend only
-
+import { STAGES } from "./stages";
 export interface MahasiswaBimbingan {
+  userId: string; // PK from student_profile
   nim: string;
   nama: string;
   prodi: string;
@@ -28,6 +29,7 @@ export const DOSEN_PROFILE: DosenProfile = {
 
 export const MAHASISWA_BIMBINGAN: MahasiswaBimbingan[] = [
   {
+    userId: "usr_af032",
     nim: "210101032",
     nama: "Ahmad Fauzi",
     prodi: "Sistem Informasi",
@@ -39,6 +41,7 @@ export const MAHASISWA_BIMBINGAN: MahasiswaBimbingan[] = [
     avatarColor: "from-[#818CF8] to-[#6366F1]",
   },
   {
+    userId: "usr_sr045",
     nim: "210101045",
     nama: "Siti Rahayu",
     prodi: "Teknik Informatika",
@@ -50,6 +53,7 @@ export const MAHASISWA_BIMBINGAN: MahasiswaBimbingan[] = [
     avatarColor: "from-[#A78BFA] to-[#7C3AED]",
   },
   {
+    userId: "usr_bs078",
     nim: "210101078",
     nama: "Budi Santoso",
     prodi: "Sistem Informasi",
@@ -61,6 +65,7 @@ export const MAHASISWA_BIMBINGAN: MahasiswaBimbingan[] = [
     avatarColor: "from-[#34D399] to-[#059669]",
   },
   {
+    userId: "usr_rw091",
     nim: "210101091",
     nama: "Rina Wulandari",
     prodi: "Teknik Informatika",
@@ -72,6 +77,7 @@ export const MAHASISWA_BIMBINGAN: MahasiswaBimbingan[] = [
     avatarColor: "from-[#F472B6] to-[#EC4899]",
   },
   {
+    userId: "usr_hg056",
     nim: "210101056",
     nama: "Hendra Gunawan",
     prodi: "Sistem Informasi",
@@ -83,6 +89,7 @@ export const MAHASISWA_BIMBINGAN: MahasiswaBimbingan[] = [
     avatarColor: "from-[#FB923C] to-[#EA580C]",
   },
   {
+    userId: "usr_dl023",
     nim: "210101023",
     nama: "Dewi Lestari",
     prodi: "Teknik Informatika",
@@ -94,6 +101,7 @@ export const MAHASISWA_BIMBINGAN: MahasiswaBimbingan[] = [
     avatarColor: "from-[#2DD4BF] to-[#0D9488]",
   },
   {
+    userId: "usr_fp067",
     nim: "210101067",
     nama: "Fajar Pratama",
     prodi: "Sistem Informasi",
@@ -105,6 +113,7 @@ export const MAHASISWA_BIMBINGAN: MahasiswaBimbingan[] = [
     avatarColor: "from-[#60A5FA] to-[#2563EB]",
   },
   {
+    userId: "usr_nh089",
     nim: "210101089",
     nama: "Nur Hidayah",
     prodi: "Teknik Informatika",
@@ -116,6 +125,7 @@ export const MAHASISWA_BIMBINGAN: MahasiswaBimbingan[] = [
     avatarColor: "from-[#FBBF24] to-[#D97706]",
   },
   {
+    userId: "usr_ra034",
     nim: "210101034",
     nama: "Rizky Aditya",
     prodi: "Sistem Informasi",
@@ -127,6 +137,7 @@ export const MAHASISWA_BIMBINGAN: MahasiswaBimbingan[] = [
     avatarColor: "from-[#C084FC] to-[#9333EA]",
   },
   {
+    userId: "usr_ap012",
     nim: "210101012",
     nama: "Anisa Putri",
     prodi: "Teknik Informatika",
@@ -138,6 +149,7 @@ export const MAHASISWA_BIMBINGAN: MahasiswaBimbingan[] = [
     avatarColor: "from-[#6FE3A6] to-[#16A34A]",
   },
   {
+    userId: "usr_yp099",
     nim: "210101099",
     nama: "Yoga Permana",
     prodi: "Sistem Informasi",
@@ -149,6 +161,7 @@ export const MAHASISWA_BIMBINGAN: MahasiswaBimbingan[] = [
     avatarColor: "from-[#F87171] to-[#DC2626]",
   },
   {
+    userId: "usr_ms041",
     nim: "210101041",
     nama: "Maya Sari",
     prodi: "Teknik Informatika",
@@ -184,6 +197,41 @@ export function getTahapanDistribution() {
   return groups;
 }
 
-export function getMahasiswaByNim(nim: string) {
-  return MAHASISWA_BIMBINGAN.find((m) => m.nim === nim) ?? null;
+export function getMahasiswaByUserId(userId: string) {
+  return MAHASISWA_BIMBINGAN.find((m) => m.userId === userId) ?? null;
+}
+
+// ponytail: mock submission data dynamically generated from stage fields
+export function getSubmissionByUserIdAndStage(userId: string, stageN: number) {
+  const stage = STAGES.find(s => s.n === stageN);
+  if (!stage) return [];
+  
+  return stage.fields
+    .filter(f => f.type !== "file")
+    .map(f => {
+      let val = `Mahasiswa (${userId}) telah mengisi bagian ${f.label} pada tahapan ini. Ini adalah data dummy yang digenerate otomatis berdasarkan tipe field.`;
+      
+      // Override specific values based on field type
+      if (f.type === "readonly-list" && f.items) {
+        val = f.items.map(i => `✓ ${i}`).join("\n");
+      }
+      
+      return {
+        label: f.label,
+        value: val
+      };
+    });
+}
+
+export function getFilesByUserIdAndStage(userId: string, stageN: number) {
+  const stage = STAGES.find(s => s.n === stageN);
+  if (!stage) return [];
+  
+  return stage.fields
+    .filter(f => f.type === "file")
+    .map((f, i) => ({
+      name: `${f.label.replace(/\s+/g, "_")}_${userId}_v1.pdf`,
+      url: "#",
+      size: `${(Math.random() * 5 + 1).toFixed(1)} MB`
+    }));
 }

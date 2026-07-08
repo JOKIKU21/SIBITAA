@@ -142,9 +142,9 @@ export default function VerifikasiForm() {
 
     try {
       await authService.verifyEmailOtp(email, code);
-      setSuccess("Email berhasil diverifikasi! Mengalihkan...");
+      setSuccess("Email berhasil diverifikasi! Melanjutkan ke pendaftaran...");
       setTimeout(() => {
-        router.push("/dashboard");
+        router.push("/registrasi-mahasiswa");
       }, 1500);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Gagal memverifikasi OTP.");

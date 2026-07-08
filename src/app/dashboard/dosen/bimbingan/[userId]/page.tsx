@@ -1,13 +1,14 @@
-// ponytail: Server Component — detail mahasiswa with feedback forms
+// ponytail: Server Component — timeline for mahasiswa progress
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getMahasiswaByNim } from "@/lib/dosen-data";
+import { getMahasiswaByUserId } from "@/lib/dosen-data";
 import { STAGES } from "@/lib/stages";
-import { DosenFeedbackForm } from "@/components/dashboard/dosen/DosenFeedbackForm";
+import { computeStageWindows, getStageStatus } from "@/lib/stage-status";
+import { StageCard } from "@/components/dashboard/StageCard";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Detail Mahasiswa | SIBITA",
+  title: "Progress Mahasiswa | SIBITA",
 };
 
 const STATUS_BADGE = {
@@ -19,21 +20,24 @@ const STATUS_BADGE = {
 export default async function DetailMahasiswaPage({
   params,
 }: {
-  params: Promise<{ nim: string }>;
+  params: Promise<{ userId: string }>;
 }) {
-  const { nim } = await params;
-  const mhs = getMahasiswaByNim(nim);
+  const { userId } = await params;
+  const mhs = getMahasiswaByUserId(userId);
   if (!mhs) notFound();
 
   const badge = STATUS_BADGE[mhs.status];
+  const windows = computeStageWindows();
 
-  // ponytail: show stages up to current + 1 for context
-  const visibleStages = STAGES.filter((s) => s.n <= mhs.tahapanAktif + 1);
+  // ponytail: mock completedStages from tahapanAktif
+  const completedStages = new Set<number>();
+  for (let i = 1; i < mhs.tahapanAktif; i++) {
+    completedStages.add(i);
+  }
 
   return (
     <div className="block">
       <div className="p-7 max-[600px]:p-4">
-        {/* Back link */}
         <Link
           href="/dashboard/dosen/bimbingan"
           className="inline-flex items-center gap-1.5 text-neutral-muted text-[13px] font-semibold mb-4.5 transition-colors duration-150 hover:text-brand"
@@ -62,7 +66,6 @@ export default async function DetailMahasiswaPage({
             <span className="text-white/50 text-[12.5px] font-medium">Judul:</span>{" "}
             {mhs.judul}
           </div>
-          {/* Progress bar */}
           <div className="mt-4 flex items-center gap-3">
             <div className="flex-1 h-2 rounded-full bg-white/15 overflow-hidden">
               <div
@@ -74,40 +77,26 @@ export default async function DetailMahasiswaPage({
           </div>
         </div>
 
-        {/* Tahapan List with Feedback */}
+        {/* Timeline */}
         <div className="mb-4">
           <h3 className="font-display text-[16px] font-extrabold text-neutral-text mb-1">
-            Tahapan & Feedback
+            Timeline Bimbingan
           </h3>
           <p className="text-[13px] text-neutral-muted mb-5">
-            Berikan catatan dan setujui tahapan yang sudah selesai. Catatan Anda akan terlihat oleh mahasiswa.
+            Pantau perkembangan dan berikan feedback untuk setiap tahapan bimbingan.
           </p>
         </div>
 
-        <div className="flex flex-col gap-3.5">
-          {visibleStages.map((stage) => {
-            const isCompleted = stage.n < mhs.tahapanAktif;
-            const isCurrent = stage.n === mhs.tahapanAktif;
-
-            return (
-              <div key={stage.n} className="relative">
-                {/* Status indicator */}
-                <div className="flex items-center gap-2 mb-2">
-                  <div className={`w-2.5 h-2.5 rounded-full ${isCompleted ? "bg-success" : isCurrent ? "bg-brand" : "bg-neutral-border"}`} />
-                  <span className={`text-[12px] font-bold ${isCompleted ? "text-success" : isCurrent ? "text-brand" : "text-neutral-muted"}`}>
-                    {isCompleted ? "Selesai" : isCurrent ? "Sedang Berlangsung" : "Belum Dimulai"}
-                  </span>
-                </div>
-
-                <DosenFeedbackForm
-                  tahapanNumber={stage.n}
-                  tahapanName={stage.name}
-                  initialApproved={isCompleted}
-                  initialFeedback={isCompleted ? "Tahapan telah diselesaikan dengan baik." : ""}
-                />
-              </div>
-            );
-          })}
+        <div className="timeline">
+          {STAGES.map((stage) => (
+            <StageCard
+              key={stage.n}
+              stage={stage}
+              status={getStageStatus(stage.n, completedStages)}
+              window={windows[stage.n]}
+              basePath={`/dashboard/dosen/bimbingan/${userId}/tahap`}
+            />
+          ))}
         </div>
       </div>
     </div>
