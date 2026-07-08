@@ -224,10 +224,10 @@ export const STAGES: Stage[] = [
     ],
   },
   {
-    n: 16, slug: "ujian-akhir",
-    name: "Persiapan Ujian Akhir & Revisi Naskah Akhir", days: 7,
-    desc: "Lengkapi administrasi sidang, ikuti ujian akhir, dan revisi naskah sesuai catatan penguji.",
-    icon: GraduationCap,
+    n: 16, slug: "persiapan-ujian-akhir",
+    name: "Persiapan Ujian Akhir", days: 7,
+    desc: "Lengkapi administrasi sidang dan siapkan berkas pendaftaran ujian akhir.",
+    icon: ClipboardList,
     fields: [
       {
         label: "Checklist Persyaratan Ujian", type: "readonly-list",
@@ -239,6 +239,15 @@ export const STAGES: Stage[] = [
           "Bukti bebas teori",
         ],
       },
+      { label: "Unggah Dokumen Persyaratan", type: "file" },
+    ],
+  },
+  {
+    n: 17, slug: "ujian-akhir",
+    name: "Ujian Akhir & Revisi Naskah Akhir", days: 7,
+    desc: "Ikuti ujian akhir/sidang dan lakukan revisi naskah akhir sesuai masukan penguji.",
+    icon: GraduationCap,
+    fields: [
       { label: "Hasil Ujian", type: "text" },
       { label: "Ringkasan Revisi Akhir", type: "textarea" },
       { label: "Unggah Dokumen", type: "file" },

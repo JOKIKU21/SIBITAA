@@ -1,20 +1,101 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { Stage } from "@/lib/stages";
+import type { StageNote, StageFile } from "@/services/student";
+import { useCreateNote, useUpdateNote, useCreateFile, useDeleteFile } from "@/hooks/useStudentBimbingan";
 import Button from "@/components/Button";
 import Input from "@/components/Input";
 
-export function StageForm({ stage }: { stage: Omit<Stage, "icon"> }) {
-  const [loading, setLoading] = useState(false);
+interface StageFormProps {
+  stage: Omit<Stage, "icon">;
+  stageId?: string;
+  existingNote?: StageNote;
+  existingFiles?: StageFile[];
+}
+
+export function StageForm({ stage, stageId, existingNote, existingFiles = [] }: StageFormProps) {
+  const [formData, setFormData] = useState<Record<string, string>>({});
+  const createNoteMut = useCreateNote();
+  const updateNoteMut = useUpdateNote();
+  const createFileMut = useCreateFile();
+  const deleteFileMut = useDeleteFile();
+
+  const loading = createNoteMut.isPending || updateNoteMut.isPending;
+
+  // Initialize form data from existing note in backend
+  useEffect(() => {
+    if (existingNote?.data) {
+      setFormData(existingNote.data as Record<string, string>);
+    } else {
+      setFormData({});
+    }
+  }, [existingNote]);
+
+  const handleInputChange = (fieldLabel: string, value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      [fieldLabel]: value,
+    }));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      alert("Tersimpan!");
-    }, 600);
+    if (!stageId) return;
+
+    if (existingNote) {
+      updateNoteMut.mutate({
+        stageId,
+        noteId: existingNote.id,
+        payload: { data: formData },
+      }, {
+        onSuccess: () => {
+          alert("Data berhasil diperbarui!");
+        }
+      });
+    } else {
+      createNoteMut.mutate({
+        stageId,
+        data: formData,
+      }, {
+        onSuccess: () => {
+          alert("Data berhasil disimpan!");
+        }
+      });
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !stageId) return;
+
+    createFileMut.mutate({
+      stageId,
+      payload: {
+        fileName: file.name,
+        fileUrl: `https://storage.sibita.com/files/${Date.now()}_${encodeURIComponent(file.name)}`,
+        fileType: file.type || "application/octet-stream",
+        fileSize: file.size,
+      },
+    }, {
+      onSuccess: () => {
+        alert("File berhasil diunggah!");
+      }
+    });
+  };
+
+  const handleDeleteFile = (fileId: string) => {
+    if (!stageId) return;
+    if (confirm("Apakah Anda yakin ingin menghapus file ini?")) {
+      deleteFileMut.mutate({
+        stageId,
+        fileId,
+      }, {
+        onSuccess: () => {
+          alert("File berhasil dihapus!");
+        }
+      });
+    }
   };
 
   const otherFields = stage.fields.filter((f) => f.type !== "readonly-list");
@@ -27,6 +108,7 @@ export function StageForm({ stage }: { stage: Omit<Stage, "icon"> }) {
       <div className="py-5 px-6 pb-6">
         <form onSubmit={handleSubmit}>
           {otherFields.map((field, idx) => {
+            const value = formData[field.label] || "";
             return (
               <div key={idx} className="mb-4.5">
                 <label className="block text-[13.5px] font-semibold mb-2 text-neutral-text">
@@ -34,15 +116,83 @@ export function StageForm({ stage }: { stage: Omit<Stage, "icon"> }) {
                 </label>
 
                 {field.type === "file" ? (
-                  <div className="border-[1.5px] border-dashed border-[#C7CCE0] bg-neutral-bg rounded-2 py-7 px-3.5 text-center text-[13.5px] text-neutral-muted cursor-pointer transition-[background,border-color] duration-200 hover:bg-[#ECEEF7] hover:border-brand-light">
-                    Choose a file or drag & drop it here
+                  <div className="flex flex-col gap-3">
+                    <label className="border-[1.5px] border-dashed border-[#C7CCE0] bg-neutral-bg rounded-2 py-7 px-3.5 text-center text-[13.5px] text-neutral-muted cursor-pointer transition-[background,border-color] duration-200 hover:bg-[#ECEEF7] hover:border-brand-light block">
+                      Choose a file or drag & drop it here
+                      <input
+                        type="file"
+                        className="hidden"
+                        onChange={handleFileChange}
+                        disabled={createFileMut.isPending}
+                      />
+                    </label>
+
+                    {createFileMut.isPending && (
+                      <div className="text-[12.5px] text-neutral-muted italic">Mengunggah file...</div>
+                    )}
+
+                    {existingFiles.length > 0 && (
+                      <div className="mt-2 flex flex-col gap-2">
+                        {existingFiles.map((file) => (
+                          <div
+                            key={file.id}
+                            className="flex items-center justify-between bg-neutral-bg border border-neutral-border rounded-2 p-3"
+                          >
+                            <div className="flex items-center gap-2 min-w-0">
+                              <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 text-brand shrink-0">
+                                <path
+                                  d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6ZM14 2v6h6"
+                                  stroke="currentColor"
+                                  strokeWidth="1.8"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                />
+                              </svg>
+                              <div className="min-w-0">
+                                <a
+                                  href={file.fileUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-[13px] font-semibold text-brand hover:underline block truncate max-w-60"
+                                >
+                                  {file.fileName}
+                                </a>
+                                <span className="text-[11px] text-neutral-muted block">
+                                  {file.fileSize
+                                    ? (file.fileSize / 1024).toFixed(1) + " KB"
+                                    : "Unknown size"}
+                                </span>
+                              </div>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteFile(file.id)}
+                              disabled={deleteFileMut.isPending}
+                              className="text-danger hover:text-danger-dark text-[12px] font-semibold bg-transparent border-none cursor-pointer disabled:opacity-50"
+                            >
+                              Hapus
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 ) : field.type === "textarea" ? (
-                  <textarea className="w-full bg-neutral-bg border-[1.5px] border-transparent rounded-2 py-3 px-3.5 text-3.5 text-neutral-text outline-none font-sans transition-[border-color,background] duration-200 focus:border-brand-light focus:bg-[#f8f9ff] resize-y min-h-20" />
+                  <textarea
+                    value={value}
+                    onChange={(e) => handleInputChange(field.label, e.target.value)}
+                    className="w-full bg-neutral-bg border-[1.5px] border-transparent rounded-2 py-3 px-3.5 text-3.5 text-neutral-text outline-none font-sans transition-[border-color,background] duration-200 focus:border-brand-light focus:bg-[#f8f9ff] resize-y min-h-20"
+                    placeholder={`Masukkan ${field.label}`}
+                    required
+                  />
                 ) : (
                   <Input
                     type="text"
                     variant="default"
+                    value={value}
+                    onChange={(e) => handleInputChange(field.label, e.target.value)}
+                    placeholder={`Masukkan ${field.label}`}
+                    required
                   />
                 )}
               </div>
@@ -55,6 +205,13 @@ export function StageForm({ stage }: { stage: Omit<Stage, "icon"> }) {
               variant="outline"
               size="custom"
               className="flex-1 p-3 rounded-2.25"
+              onClick={() => {
+                if (existingNote?.data) {
+                  setFormData(existingNote.data as Record<string, string>);
+                } else {
+                  setFormData({});
+                }
+              }}
             >
               Batal
             </Button>
@@ -65,7 +222,7 @@ export function StageForm({ stage }: { stage: Omit<Stage, "icon"> }) {
               className="flex-1 p-3 rounded-2.25"
               isLoading={loading}
             >
-              Selesai
+              Simpan Data
             </Button>
           </div>
         </form>

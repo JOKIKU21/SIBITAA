@@ -6,6 +6,7 @@ export default async function DashboardPage() {
   const reqHeaders = await headers();
   const cookieHeader = reqHeaders.get("cookie") || "";
 
+  let targetPath = "/dashboard/mahasiswa";
   try {
     const { data: sessionData } = await authClient.getSession({
       fetchOptions: {
@@ -16,22 +17,23 @@ export default async function DashboardPage() {
     });
 
     if (!sessionData || !sessionData.user) {
-      redirect("/masuk");
+      targetPath = "/masuk";
+    } else {
+      const role = (sessionData.user as { role?: string }).role || "student";
+
+      const rolePaths: Record<string, string> = {
+        student: "/dashboard/mahasiswa",
+        lecturer: "/dashboard/dosen",
+        admin: "/dashboard/admin",
+        superadmin: "/dashboard/superadmin",
+      };
+
+      targetPath = rolePaths[role] || "/dashboard/mahasiswa";
     }
-
-    const role = (sessionData.user as { role?: string }).role || "student";
-
-    const rolePaths: Record<string, string> = {
-      student: "/dashboard/mahasiswa",
-      lecturer: "/dashboard/dosen",
-      admin: "/dashboard/admin",
-      superadmin: "/dashboard/superadmin",
-    };
-
-    const targetPath = rolePaths[role] || "/dashboard/mahasiswa";
-    redirect(targetPath);
   } catch (error) {
     console.error("Dashboard root redirect failed:", error);
-    redirect("/masuk");
+    targetPath = "/masuk";
   }
+
+  redirect(targetPath);
 }

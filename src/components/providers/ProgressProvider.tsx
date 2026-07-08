@@ -11,9 +11,12 @@ import {
   useState,
 } from "react";
 
+import { useStudentBimbingan } from "@/hooks/useStudentBimbingan";
+
 interface ProgressContextValue {
   completedStages: ReadonlySet<number>;
   markStageDone: (n: number) => void;
+  isLoading: boolean;
 }
 
 const ProgressContext = createContext<ProgressContextValue | null>(null);
@@ -21,24 +24,53 @@ const ProgressContext = createContext<ProgressContextValue | null>(null);
 const STORAGE_KEY = "sibita.completed-stages";
 
 export function ProgressProvider({ children }: { children: React.ReactNode }) {
-  const [completedStages, setCompletedStages] = useState<Set<number>>(
-    () => new Set()
-  );
+  const [localCompleted, setLocalCompleted] = useState<Set<number>>(() => new Set());
+  const { data: bimbinganData, isLoading } = useStudentBimbingan();
 
   useEffect(() => {
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
       if (raw) {
         // eslint-disable-next-line react-hooks/set-state-in-effect
-        setCompletedStages(new Set(JSON.parse(raw)));
+        setLocalCompleted(new Set(JSON.parse(raw)));
       }
     } catch {
       // ponytail: localStorage not available — start empty
     }
   }, []);
 
+  const backendCompleted = useMemo(() => {
+    const completed = new Set<number>();
+    if (!bimbinganData) return completed;
+
+    const { progress, stages } = bimbinganData;
+    if (!progress) return completed;
+
+    if (progress.status === "completed") {
+      for (let i = 1; i <= 17; i++) {
+        completed.add(i);
+      }
+      return completed;
+    }
+
+    const currentStage = stages.find((s) => s.id === progress.currentStageId);
+    if (currentStage) {
+      const currentOrder = currentStage.order;
+      for (let i = 1; i < currentOrder; i++) {
+        completed.add(i);
+      }
+    }
+    return completed;
+  }, [bimbinganData]);
+
+  const completedStages = useMemo(() => {
+    const union = new Set<number>(backendCompleted);
+    localCompleted.forEach((n) => union.add(n));
+    return union;
+  }, [backendCompleted, localCompleted]);
+
   const markStageDone = useCallback((n: number) => {
-    setCompletedStages((prev) => {
+    setLocalCompleted((prev) => {
       const next = new Set(prev);
       next.add(n);
       try {
@@ -51,8 +83,8 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const value = useMemo(
-    () => ({ completedStages, markStageDone }),
-    [completedStages, markStageDone]
+    () => ({ completedStages, markStageDone, isLoading }),
+    [completedStages, markStageDone, isLoading]
   );
 
   return (

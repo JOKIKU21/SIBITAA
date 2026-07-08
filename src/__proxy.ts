@@ -23,12 +23,46 @@ export async function proxy(request: NextRequest) {
       const session = res.ok ? await res.json() : null;
       const hasActiveSession = session && session.user;
 
-      if (isDashboardPath && !hasActiveSession) {
-        return NextResponse.redirect(new URL("/masuk", request.url));
-      }
+      const rolePaths: Record<string, string> = {
+        student: "/dashboard/mahasiswa",
+        lecturer: "/dashboard/dosen",
+        admin: "/dashboard/admin",
+        superadmin: "/dashboard/superadmin",
+      };
 
-      if (isAuthPath && hasActiveSession) {
-        return NextResponse.redirect(new URL("/dashboard/mahasiswa", request.url));
+      if (hasActiveSession) {
+        const role = session.user.role || "student";
+        const targetPath = rolePaths[role] || "/dashboard/mahasiswa";
+
+        // Redirect logged-in users away from auth pages to their dashboard
+        if (isAuthPath) {
+          return NextResponse.redirect(new URL(targetPath, request.url));
+        }
+
+        // Redirect root dashboard path to role-specific dashboard
+        if (pathname === "/dashboard" || pathname === "/dashboard/") {
+          return NextResponse.redirect(new URL(targetPath, request.url));
+        }
+
+        // Route protection based on roles
+        const pathRoleMap = [
+          { prefix: "/dashboard/mahasiswa", allowedRole: "student" },
+          { prefix: "/dashboard/dosen", allowedRole: "lecturer" },
+          { prefix: "/dashboard/admin", allowedRole: "admin" },
+          { prefix: "/dashboard/superadmin", allowedRole: "superadmin" },
+        ];
+
+        for (const rule of pathRoleMap) {
+          if (pathname === rule.prefix || pathname.startsWith(rule.prefix + "/")) {
+            if (role !== rule.allowedRole) {
+              return NextResponse.redirect(new URL(targetPath, request.url));
+            }
+          }
+        }
+      } else {
+        if (isDashboardPath) {
+          return NextResponse.redirect(new URL("/masuk", request.url));
+        }
       }
     } catch (error) {
       console.error("Auth proxy session check failed:", error);
