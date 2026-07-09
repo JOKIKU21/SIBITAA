@@ -5,12 +5,15 @@ import { useRouter } from "next/navigation";
 import FormInput from "@/components/FormInput";
 import Button from "@/components/Button";
 import FileDropzone from "./FileDropzone";
-import { Download, User, Building, Info, ArrowRight, BookUser } from "lucide-react";
+import { Download, User, Building, Info, ArrowRight, BookUser, Phone, GraduationCap } from "lucide-react";
+import { apiFetch } from "@/lib/api-client";
+import { useToast } from "@/components/providers/ToastProvider";
 
 const STEPS = ["Data Diri", "Pembayaran", "Kontrak"];
 
 export default function RegistrationFlow() {
   const router = useRouter();
+  const toast = useToast();
   const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading] = useState(false);
 
@@ -21,18 +24,54 @@ export default function RegistrationFlow() {
     prodi: "",
     asalKampus: "",
     pembayaran: "langsung-lunas",
+    phoneNumber: "",
+    education: "S1",
+    title: "",
   });
 
-  const handleNext = () => {
-    if (currentStep < 2) {
-      setCurrentStep((prev) => prev + 1);
+  const handleNext = async () => {
+    if (currentStep === 0) {
+      if (
+        !formData.nama.trim() ||
+        !formData.nim.trim() ||
+        !formData.prodi.trim() ||
+        !formData.asalKampus.trim() ||
+        !formData.phoneNumber.trim() ||
+        !formData.education.trim()
+      ) {
+        toast.warning("Silakan lengkapi semua field bertanda bintang (*)");
+        return;
+      }
+
+      setLoading(true);
+      try {
+        await apiFetch("/api/student/profile", {
+          method: "POST",
+          body: JSON.stringify({
+            name: formData.nama,
+            campus: formData.asalKampus,
+            nim: formData.nim,
+            studyProgram: formData.prodi,
+            title: formData.title,
+            education: formData.education,
+            phoneNumber: formData.phoneNumber,
+          }),
+        });
+        setCurrentStep(1);
+      } catch (err: any) {
+        console.error(err);
+        toast.error("Gagal mengirim data", { description: err.message || "Silakan coba lagi." });
+      } finally {
+        setLoading(false);
+      }
+    } else if (currentStep === 1) {
+      setCurrentStep(2);
     } else if (currentStep === 2) {
-      // Final submit
       setLoading(true);
       setTimeout(() => {
         setLoading(false);
         setCurrentStep(3); // Show success/waiting state
-      }, 1000);
+      }, 800);
     }
   };
 
@@ -144,21 +183,45 @@ export default function RegistrationFlow() {
                   onChange={(e) => setFormData({ ...formData, nim: e.target.value })}
                 />
                 
-                <div className="text-left mb-4">
+                <FormInput
+                  id="prodi"
+                  label={<span>Program Studi <span className="text-danger">*</span></span> as any}
+                  placeholder="Contoh: Teknologi Informasi"
+                  className="bg-[#f8fafc] border-none py-3.5 h-[50px] shadow-sm rounded-2.5"
+                  value={formData.prodi}
+                  onChange={(e) => setFormData({ ...formData, prodi: e.target.value })}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-6 max-[600px]:grid-cols-1">
+                <FormInput
+                  id="phoneNumber"
+                  label={<span>Nomor HP <span className="text-danger">*</span></span> as any}
+                  placeholder="Contoh: 081234567890"
+                  leftIcon={<Phone size={18} className="text-neutral-muted" />}
+                  className="bg-[#f8fafc] border-none py-3.5 h-[50px] shadow-sm rounded-2.5"
+                  value={formData.phoneNumber}
+                  onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
+                />
+
+                <div className="text-left flex flex-col">
                   <label className="block text-[13px] font-semibold text-neutral-text mb-2">
-                    Program Studi <span className="text-danger">*</span>
+                    Pendidikan <span className="text-danger">*</span>
                   </label>
-                  <div className="relative">
+                  <div className="relative flex items-center">
+                    <div className="absolute left-4 text-neutral-muted pointer-events-none">
+                      <GraduationCap size={18} />
+                    </div>
                     <select
-                      className="w-full bg-[#f8fafc] border-none rounded-2.5 h-[50px] px-4 text-[13.5px] font-medium text-neutral-text outline-none appearance-none transition-colors duration-200 focus:ring-2 focus:ring-brand-light shadow-sm"
-                      value={formData.prodi}
-                      onChange={(e) => setFormData({ ...formData, prodi: e.target.value })}
+                      className="w-full bg-[#f8fafc] border-none rounded-2.5 h-[50px] pl-11 pr-10 text-[13.5px] font-medium text-neutral-text outline-none appearance-none transition-colors duration-200 focus:ring-2 focus:ring-brand-light shadow-sm"
+                      value={formData.education}
+                      onChange={(e) => setFormData({ ...formData, education: e.target.value })}
                     >
-                      <option value="" disabled hidden>Pilih Program Studi</option>
-                      <option value="Sistem Informasi">Sistem Informasi</option>
-                      <option value="Teknik Informatika">Teknik Informatika</option>
+                      <option value="S1">S1</option>
+                      <option value="S2">S2</option>
+                      <option value="S3">S3</option>
                     </select>
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-neutral-muted">
+                    <div className="absolute right-4 pointer-events-none text-neutral-muted">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
                         <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
@@ -169,12 +232,22 @@ export default function RegistrationFlow() {
 
               <FormInput
                 id="asalKampus"
-                label="Asal Kampus"
+                label={<span>Asal Kampus <span className="text-danger">*</span></span> as any}
                 placeholder="Contoh: Universitas Mataram"
                 leftIcon={<Building size={18} className="text-neutral-muted" />}
                 className="bg-[#f8fafc] border-none py-3.5 h-[50px] shadow-sm rounded-2.5"
                 value={formData.asalKampus}
                 onChange={(e) => setFormData({ ...formData, asalKampus: e.target.value })}
+              />
+
+              <FormInput
+                id="title"
+                label={<span>Judul Tugas Akhir / Topik</span> as any}
+                placeholder="Masukkan judul tugas akhir / topik skripsi Anda (opsional)"
+                leftIcon={<BookUser size={18} className="text-neutral-muted" />}
+                className="bg-[#f8fafc] border-none py-3.5 h-[50px] shadow-sm rounded-2.5"
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               />
 
               <div className="mt-4 p-4 rounded-2.5 bg-[#f0f4ff] border border-[#dbeafe] flex gap-3 items-start shadow-sm">
@@ -254,7 +327,7 @@ export default function RegistrationFlow() {
                   variant="outline"
                   size="md"
                   className="inline-flex items-center gap-2 bg-white border-[#cbd5e1] shadow-sm hover:bg-[#f8fafc]"
-                  onClick={() => alert("Mendownload template kontrak...")}
+                  onClick={() => toast.info("Mendownload template kontrak...")}
                 >
                   <Download size={16} />
                   Download Template Kontrak
@@ -275,22 +348,12 @@ export default function RegistrationFlow() {
             type="button"
             variant="link"
             className="text-brand font-bold text-[13.5px] hover:underline px-0 transition-opacity hover:opacity-80"
-            onClick={() => alert("Draft tersimpan!")}
+            onClick={() => toast.success("Draft berhasil disimpan!")}
           >
             Simpan Draft
           </Button>
 
           <div className="flex gap-4">
-            {currentStep > 0 && (
-              <Button
-                variant="outline"
-                onClick={() => setCurrentStep((prev) => prev - 1)}
-                disabled={loading}
-                className="text-neutral-text text-[13.5px] font-semibold shadow-sm h-11 px-6 border-[#e2e8f0]"
-              >
-                Kembali
-              </Button>
-            )}
             <Button
               variant="brand"
               size="custom"

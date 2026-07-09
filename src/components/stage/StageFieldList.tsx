@@ -1,5 +1,3 @@
-// ponytail: Server Component — renders field rows read-only
-
 import { Circle, Upload, CheckSquare } from "lucide-react";
 import type { StageField } from "@/lib/stages";
 import { snakeToTitleCase } from "@/lib/stages";

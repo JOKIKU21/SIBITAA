@@ -3,26 +3,31 @@
 import { useState, useRef, useEffect, useMemo } from "react";
 import { Plus, ArrowUp } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
-import { useChatMessages, useSendChatMessage } from "@/hooks/useStudent";
+import { useLecturerChatMessages, useLecturerSendChatMessage } from "@/hooks/useLecturer";
 import Button from "@/components/Button";
 import Input from "@/components/Input";
 
-interface ChatPanelProps {
+interface DosenChatPanelProps {
   stageId?: string;
+  studentId: string;
 }
 
-export function ChatPanel({ stageId }: ChatPanelProps) {
+export function DosenChatPanel({ stageId, studentId }: DosenChatPanelProps) {
   const [msg, setMsg] = useState("");
   const { data: session } = authClient.useSession();
   const currentUserId = session?.user?.id;
 
-  const { data: chatData, isLoading } = useChatMessages(stageId);
-  const sendChatMut = useSendChatMessage();
+  // Lecturer hooks
+  const lecturerChat = useLecturerChatMessages(studentId, stageId);
+  const lecturerSend = useLecturerSendChatMessage();
+
+  const chatData = lecturerChat.data;
+  const isLoading = lecturerChat.isLoading;
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const messages = useMemo(() => chatData?.messages || [], [chatData?.messages]);
-  const advisor = chatData?.advisor;
+  const student = (chatData as any)?.student;
 
   // Auto scroll to bottom when messages load
   useEffect(() => {
@@ -32,7 +37,8 @@ export function ChatPanel({ stageId }: ChatPanelProps) {
   const handleSend = () => {
     if (!msg.trim() || !stageId) return;
     
-    sendChatMut.mutate({
+    lecturerSend.mutate({
+      studentId,
       stageId,
       payload: {
         message: msg.trim(),
@@ -61,13 +67,15 @@ export function ChatPanel({ stageId }: ChatPanelProps) {
     };
   });
 
+  const isPending = lecturerSend.isPending;
+
   return (
     <div className="bg-white rounded-3.5 border border-neutral-border overflow-hidden mb-5 flex flex-col min-h-95 h-auto">
       <div className="py-4.5 px-6 font-display text-4 font-extrabold border-b border-neutral-border flex justify-between items-center">
         <span>Bimbingan Chat</span>
-        {advisor && (
+        {student && (
           <span className="text-[12.5px] text-neutral-muted font-semibold">
-            Dosen: {advisor.name}
+            Mahasiswa: {student.name}
           </span>
         )}
       </div>
@@ -79,11 +87,10 @@ export function ChatPanel({ stageId }: ChatPanelProps) {
           </div>
         ) : chats.length === 0 ? (
           <div className="text-center py-8 text-[13px] text-neutral-muted">
-            Belum ada pesan. Mulai diskusi Anda dengan dosen pembimbing di bawah.
+            Belum ada pesan. Mulai diskusi Anda dengan mahasiswa di bawah.
           </div>
         ) : (
           <>
-
             {chats.map((c) => (
               <div
                 key={c.id}
@@ -133,14 +140,14 @@ export function ChatPanel({ stageId }: ChatPanelProps) {
           onKeyDown={(e) => e.key === "Enter" && handleSend()}
           fullWidth={false}
           wrapperClassName="flex-1"
-          disabled={!stageId || sendChatMut.isPending}
+          disabled={!stageId || isPending}
         />
         <Button
           variant="brand"
           size="icon"
           onClick={handleSend}
           className="w-9 h-9 rounded-full shrink-0"
-          isLoading={sendChatMut.isPending}
+          isLoading={isPending}
           disabled={!stageId || !msg.trim()}
           type="button"
         >

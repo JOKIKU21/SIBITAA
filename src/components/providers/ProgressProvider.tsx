@@ -18,6 +18,7 @@ import type { StudentProgress } from "@/services/student";
 
 export interface MergedStage extends Stage {
   id?: string;
+  slug: string;
   name: string;
   desc: string;
   days: number;
@@ -88,6 +89,7 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
       return {
         ...stageConfig,
         id: backendStage?.id,
+        slug: backendStage?.slug || "",
         name: metadata.name,
         desc: metadata.desc,
         days: metadata.days,

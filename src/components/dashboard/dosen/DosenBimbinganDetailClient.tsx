@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useLecturerStudents } from "@/hooks/useLecturer";
+import { useLecturerStudents, useLecturerStudentProgress } from "@/hooks/useLecturer";
 import { STAGES, calculateRemainingDays, getStageMetadata } from "@/lib/stages";
 import { computeStageWindows, getStageStatus } from "@/lib/stage-status";
 import { StageCard } from "@/components/dashboard/StageCard";
@@ -46,7 +46,10 @@ const getAvatarColor = (id: string) => {
 };
 
 export function DosenBimbinganDetailClient({ userId }: { userId: string }) {
-  const { data: studentsData, isLoading } = useLecturerStudents();
+  const { data: studentsData, isLoading: isStudentsLoading } = useLecturerStudents();
+  const { data: progressData, isLoading: isProgressLoading } = useLecturerStudentProgress(userId);
+
+  const isLoading = isStudentsLoading || isProgressLoading;
 
   if (isLoading) {
     return (
@@ -124,19 +127,13 @@ export function DosenBimbinganDetailClient({ userId }: { userId: string }) {
     completedStages.add(i);
   }
 
-  // Merge the student's current active stage duration from the backend
+  // Merge the student's stages and durations from the backend
   const mergedStages = STAGES.map((stageConfig) => {
-    const isCurrent = stageConfig.n === activeOrder;
-    const backendStage = isCurrent && student.currentStage
-      ? {
-          name: student.currentStage.name,
-          description: null,
-          durationDays: student.currentStage.durationDays,
-        }
-      : undefined;
+    const backendStage = progressData?.stages?.find((s) => s.order === stageConfig.n);
     const metadata = getStageMetadata(stageConfig.n, backendStage);
     return {
       ...stageConfig,
+      slug: backendStage?.slug || "",
       name: metadata.name,
       desc: metadata.desc,
       days: metadata.days,

@@ -1,11 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Button from "@/components/Button";
 
 export function DosenNoteInput({ initialNote = "" }: { initialNote?: string }) {
   const [note, setNote] = useState(initialNote);
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    setNote(initialNote);
+  }, [initialNote]);
 
   const handleSave = () => {
     setSaving(true);

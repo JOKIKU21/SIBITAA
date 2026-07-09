@@ -1,10 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import type { Stage } from "@/lib/stages";
-import { getStageMetadata } from "@/lib/stages";
+import { STAGES, getStageMetadata } from "@/lib/stages";
 import { StageForm } from "@/components/dashboard/StageForm";
-import { ChatPanel } from "@/components/dashboard/ChatPanel";
+import { DosenChatPanel } from "@/components/dashboard/dosen/DosenChatPanel";
 import {
   useLecturerStudents,
   useLecturerStudentProgress,
@@ -16,15 +15,17 @@ import { ApprovalCheckbox } from "@/components/dashboard/dosen/ApprovalCheckbox"
 
 interface DosenStagePageClientProps {
   userId: string;
-  stage: Omit<Stage, "icon">;
+  slug: string;
 }
 
-export function DosenStagePageClient({ userId, stage }: DosenStagePageClientProps) {
+export function DosenStagePageClient({ userId, slug }: DosenStagePageClientProps) {
   // 1. Fetch student progress list to get the UUID of this stage
   const { data: progressData, isLoading: isProgressLoading } = useLecturerStudentProgress(userId);
-  const backendStage = progressData?.stages?.find((s) => s.order === stage.n);
+  const backendStage = progressData?.stages?.find((s) => s.slug === slug);
   const stageId = backendStage?.id;
-  const metadata = getStageMetadata(stage.n, backendStage);
+  const stageOrder = backendStage?.order;
+  const stageConfig = STAGES.find((s) => s.n === stageOrder);
+  const metadata = getStageMetadata(stageOrder || 0, backendStage);
 
   // 2. Fetch notes & files for this stage
   const { data: detailData, isLoading: isDetailLoading } = useLecturerStudentStageDetail(userId, stageId);
@@ -38,9 +39,31 @@ export function DosenStagePageClient({ userId, stage }: DosenStagePageClientProp
   const studentNim = student?.nim || "";
 
   const activeOrder = student?.currentStage?.order ?? 0;
-  const isApproved = activeOrder > stage.n || (student?.progressPercentage === 100);
+  const isApproved = existingNote?.status === "approved" || activeOrder > (stageOrder || 0) || (student?.progressPercentage === 100);
 
   const isLoading = isProgressLoading || isDetailLoading || isStudentsLoading;
+
+  const lecturerFiles = existingFiles.filter((file) => file.type === "lecturer");
+
+  if (isLoading) {
+    return (
+      <div className="p-7 max-[600px]:p-4">
+        <div className="py-12 text-center text-neutral-muted font-medium bg-white rounded-3.5 border border-neutral-border animate-pulse">
+          Memuat detail tahapan mahasiswa...
+        </div>
+      </div>
+    );
+  }
+
+  if (!backendStage || !stageConfig) {
+    return (
+      <div className="p-7 max-[600px]:p-4">
+        <div className="py-12 text-center text-neutral-muted font-medium bg-white rounded-3.5 border border-neutral-border">
+          Tahapan tidak ditemukan.
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="block">
@@ -54,11 +77,11 @@ export function DosenStagePageClient({ userId, stage }: DosenStagePageClientProp
           </svg>
           Kembali ke Progress Mahasiswa
         </Link>
-
+ 
         <div className="bg-linear-to-r from-brand to-brand-dark rounded-4 py-6 px-7 mb-6">
           <div className="flex items-center gap-3 mb-2.5">
             <span className="inline-block bg-white/18 text-white text-[12.5px] font-bold py-1.25 px-3.5 rounded-full">
-              Tahap {stage.n}
+              Tahap {stageConfig.n}
             </span>
             <span className="text-white/80 text-[13px] font-medium border-l border-white/20 pl-3">
               {studentName} {studentNim ? `(${studentNim})` : ""}
@@ -69,33 +92,28 @@ export function DosenStagePageClient({ userId, stage }: DosenStagePageClientProp
             {metadata.desc}
           </div>
         </div>
-
-        {isLoading ? (
-          <div className="py-12 text-center text-neutral-muted font-medium bg-white rounded-3.5 border border-neutral-border animate-pulse">
-            Memuat detail tahapan mahasiswa...
+ 
+        <div className="grid grid-cols-[1.4fr_1fr] gap-5 items-stretch max-[980px]:grid-cols-1">
+          {/* Kolom Kiri: Detail & Form Dosen */}
+          <div className="flex flex-col gap-5">
+            <StageForm
+              stage={stageConfig}
+              stageId={stageId}
+              existingNote={existingNote}
+              existingFiles={existingFiles}
+              readOnly={true}
+              stageName={metadata.name}
+            />
+            <DosenNoteInput initialNote={existingNote?.comment || ""} />
+            <DosenFileUpload existingFiles={lecturerFiles} />
+            <ApprovalCheckbox initialApproved={isApproved} />
           </div>
-        ) : (
-          <div className="grid grid-cols-[1.4fr_1fr] gap-5 items-stretch max-[980px]:grid-cols-1">
-            {/* Kolom Kiri: Detail & Form Dosen */}
-            <div className="flex flex-col gap-5">
-              <StageForm
-                stage={stage}
-                stageId={stageId}
-                existingNote={existingNote}
-                existingFiles={existingFiles}
-                readOnly={true}
-              />
-              <DosenNoteInput initialNote="" />
-              <DosenFileUpload />
-              <ApprovalCheckbox initialApproved={isApproved} />
-            </div>
 
-            {/* Kolom Kanan: Chat Panel */}
-            <div className="flex flex-col">
-              <ChatPanel stageId={stageId} />
-            </div>
+          {/* Kolom Kanan: Chat Panel */}
+          <div className="flex flex-col">
+            <DosenChatPanel stageId={stageId} studentId={userId} />
           </div>
-        )}
+        </div>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import { apiFetch } from "@/lib/api-client";
-import type { BackendStage, StudentProgress, GetStageDetailResponse } from "./student";
+import type { BackendStage, StudentProgress, GetStageDetailResponse, ChatMessage } from "./student";
 
 export interface LecturerProfile {
   userId: string;
@@ -63,6 +63,20 @@ export interface GetLecturerStudentProgressResponse {
   progress: StudentProgress | null;
 }
 
+export interface GetLecturerChatMessagesResponse {
+  messages: ChatMessage[];
+  student: {
+    id: string;
+    name: string;
+    image: string | null;
+  } | null;
+  pagination: {
+    limit: number;
+    offset: number;
+    total: number;
+  };
+}
+
 export const lecturerService = {
   /** Fetch the signed-in lecturer's profile information. */
   getProfile() {
@@ -94,8 +108,33 @@ export const lecturerService = {
 
   /** Fetch details of a specific stage (notes and files) for a student. */
   getStudentStageDetail(studentId: string, stageId: string) {
-    return apiFetch<GetStageDetailResponse>(`/api/lecturer/students/${studentId}/${stageId}`, {
+    return apiFetch<GetStageDetailResponse>(`/api/lecturer/bimbingan/${studentId}/${stageId}`, {
       method: "GET",
+    });
+  },
+
+  /** Fetch chat messages for a specific student and stage. */
+  getChatMessages(studentId: string, stageId: string) {
+    return apiFetch<GetLecturerChatMessagesResponse>(`/api/lecturer/chat/${studentId}/${stageId}`, {
+      method: "GET",
+    });
+  },
+
+  /** Send a chat message to a student for a stage. */
+  sendChatMessage(
+    studentId: string,
+    stageId: string,
+    payload: {
+      message?: string;
+      fileName?: string;
+      fileUrl?: string;
+      fileType?: string;
+      fileSize?: number;
+    }
+  ) {
+    return apiFetch<{ message: ChatMessage }>(`/api/lecturer/chat/${studentId}/${stageId}`, {
+      method: "POST",
+      body: JSON.stringify(payload),
     });
   },
 

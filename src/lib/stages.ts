@@ -30,87 +30,15 @@ export interface StageComparison {
 
 export interface Stage {
   n: number;
-  slug: string;
   icon: LucideIcon;
   fields: StageField[];
   comparison?: StageComparison;
 }
 
-// Fallback details when data is not loaded from backend or for mock/dosen views
-export const FALLBACK_STAGE_DETAILS: Record<number, { name: string; desc: string; days: number }> = {
-  1: {
-    name: "Pengajuan Topik Skripsi", days: 14,
-    desc: "Mahasiswa mengajukan judul skripsi beserta rumusan masalah."
-  },
-  2: {
-    name: "Penyusunan Proposal Penelitian", days: 14,
-    desc: "Susun BAB I–III sebagai dasar proposal yang akan diajukan ke pembimbing."
-  },
-  3: {
-    name: "Konsultasi Dosen Pembimbing (ke-1)", days: 7,
-    desc: "Ajukan proposal ke pembimbing untuk mendapatkan masukan pertama."
-  },
-  4: {
-    name: "Revisi Proposal Penelitian", days: 7,
-    desc: "Perbaiki proposal sesuai masukan dosen pada konsultasi pertama."
-  },
-  5: {
-    name: "Persiapan dan Ujian Proposal", days: 7,
-    desc: "Siapkan berkas dan presentasi untuk ujian proposal penelitian."
-  },
-  6: {
-    name: "Penyusunan Instrumen Penelitian", days: 7,
-    desc: "Buat instrumen (kuesioner/wawancara) sesuai metodologi yang telah disetujui."
-  },
-  7: {
-    name: "Konsultasi Dosen Pembimbing (ke-2)", days: 7,
-    desc: "Validasikan instrumen penelitian bersama dosen pembimbing."
-  },
-  8: {
-    name: "Pengambilan Data Penelitian", days: 21,
-    desc: "Lakukan pengumpulan data di lapangan sesuai instrumen yang telah divalidasi."
-  },
-  9: {
-    name: "Pengolahan Data Penelitian", days: 7,
-    desc: "Analisis dan olah data yang telah dikumpulkan menggunakan metode yang dipilih."
-  },
-  10: {
-    name: "Penyusunan BAB IV (Hasil & Pembahasan)", days: 14,
-    desc: "Tulis hasil analisis dan pembahasan penelitian secara komprehensif."
-  },
-  11: {
-    name: "Konsultasi Dosen Pembimbing (ke-3)", days: 7,
-    desc: "Konsultasikan BAB IV kepada dosen untuk mendapatkan masukan."
-  },
-  12: {
-    name: "Revisi BAB IV", days: 7,
-    desc: "Perbaiki BAB IV berdasarkan masukan dari dosen pembimbing."
-  },
-  13: {
-    name: "Penyusunan BAB V (Kesimpulan & Saran)", days: 7,
-    desc: "Tulis kesimpulan dan saran berdasarkan temuan penelitian."
-  },
-  14: {
-    name: "Penyusunan BAB I s.d. BAB V (Draft Final)", days: 7,
-    desc: "Gabungkan seluruh bab menjadi satu naskah utuh dan periksa konsistensinya."
-  },
-  15: {
-    name: "Konsultasi Dosen Pembimbing (ke-4)", days: 7,
-    desc: "Ajukan draft final untuk persetujuan akhir sebelum sidang."
-  },
-  16: {
-    name: "Persiapan Ujian Akhir", days: 7,
-    desc: "Lengkapi administrasi sidang dan siapkan berkas pendaftaran ujian akhir."
-  },
-  17: {
-    name: "Ujian Akhir & Revisi Naskah Akhir", days: 7,
-    desc: "Ikuti ujian akhir/sidang dan lakukan revisi naskah akhir sesuai masukan penguji."
-  }
-};
 
 export const STAGES: Stage[] = [
   {
-    n: 1, slug: "diskusi-konsep-judul",
+    n: 1,
     icon: MessageCircle,
     fields: [
       { key: "topik_penelitian", type: "text" },
@@ -121,7 +49,7 @@ export const STAGES: Stage[] = [
     ],
   },
   {
-    n: 2, slug: "penyusunan-proposal",
+    n: 2,
     icon: FileText,
     fields: [
       { key: "ringkasan_proposal", type: "textarea" },
@@ -131,7 +59,7 @@ export const STAGES: Stage[] = [
     ],
   },
   {
-    n: 3, slug: "konsultasi-pembimbing-1",
+    n: 3,
     icon: Users,
     fields: [
       { key: "catatan_diskusi", type: "textarea" },
@@ -140,7 +68,7 @@ export const STAGES: Stage[] = [
     ],
   },
   {
-    n: 4, slug: "revisi-proposal",
+    n: 4,
     icon: PenLine,
     fields: [
       { key: "ringkasan_revisi", type: "textarea" },
@@ -148,7 +76,7 @@ export const STAGES: Stage[] = [
     ],
   },
   {
-    n: 5, slug: "persiapan-ujian-proposal",
+    n: 5,
     icon: Target,
     fields: [
       { key: "pilih_jadwal_ujian", type: "text" },
@@ -157,7 +85,7 @@ export const STAGES: Stage[] = [
     ],
   },
   {
-    n: 6, slug: "penyusunan-instrumen",
+    n: 6,
     icon: ClipboardList,
     fields: [
       { key: "jenis_instrumen", type: "text" },
@@ -166,7 +94,7 @@ export const STAGES: Stage[] = [
     ],
   },
   {
-    n: 7, slug: "konsultasi-pembimbing-2",
+    n: 7,
     icon: Search,
     fields: [
       { key: "ringkasan_revisi", type: "textarea" },
@@ -174,7 +102,7 @@ export const STAGES: Stage[] = [
     ],
   },
   {
-    n: 8, slug: "pengambilan-data",
+    n: 8,
     icon: Database,
     fields: [
       { key: "progres_pengambilan_data", type: "text" },
@@ -183,7 +111,7 @@ export const STAGES: Stage[] = [
     ],
   },
   {
-    n: 9, slug: "pengolahan-data",
+    n: 9,
     icon: Calculator,
     fields: [
       { key: "metode_analisis", type: "text" },
@@ -192,7 +120,7 @@ export const STAGES: Stage[] = [
     ],
   },
   {
-    n: 10, slug: "penyusunan-bab-4",
+    n: 10,
     icon: BookOpen,
     fields: [
       { key: "temuan_utama", type: "textarea" },
@@ -201,7 +129,7 @@ export const STAGES: Stage[] = [
     ],
   },
   {
-    n: 11, slug: "konsultasi-pembimbing-3",
+    n: 11,
     icon: Users,
     fields: [
       { key: "ringkasan_revisi", type: "textarea" },
@@ -209,7 +137,7 @@ export const STAGES: Stage[] = [
     ],
   },
   {
-    n: 12, slug: "revisi-bab-4",
+    n: 12,
     icon: PenLine,
     fields: [
       {
@@ -226,7 +154,7 @@ export const STAGES: Stage[] = [
     ],
   },
   {
-    n: 13, slug: "penyusunan-bab-5",
+    n: 13,
     icon: FileText,
     fields: [
       { key: "ringkasan_kesimpulan", type: "textarea" },
@@ -235,7 +163,7 @@ export const STAGES: Stage[] = [
     ],
   },
   {
-    n: 14, slug: "draft-final",
+    n: 14,
     icon: BookOpen,
     fields: [
       { key: "catatan_draft_final", type: "textarea" },
@@ -243,7 +171,7 @@ export const STAGES: Stage[] = [
     ],
   },
   {
-    n: 15, slug: "konsultasi-pembimbing-4",
+    n: 15,
     icon: Users,
     fields: [
       { key: "ringkasan_revisi", type: "textarea" },
@@ -251,7 +179,7 @@ export const STAGES: Stage[] = [
     ],
   },
   {
-    n: 16, slug: "persiapan-ujian-akhir",
+    n: 16,
     icon: ClipboardList,
     fields: [
       {
@@ -268,7 +196,7 @@ export const STAGES: Stage[] = [
     ],
   },
   {
-    n: 17, slug: "ujian-akhir",
+    n: 17,
     icon: GraduationCap,
     fields: [
       { key: "hasil_ujian", type: "text" },
@@ -278,9 +206,6 @@ export const STAGES: Stage[] = [
   },
 ];
 
-export function getStageBySlug(slug: string): Stage | undefined {
-  return STAGES.find((s) => s.slug === slug);
-}
 
 /**
  * Converts a snake_case key to a Title Case label.
@@ -324,10 +249,9 @@ export function getStageMetadata(
   n: number,
   backendStage?: { name: string; description: string | null; durationDays: number }
 ) {
-  const fallback = FALLBACK_STAGE_DETAILS[n] || { name: `Tahap ${n}`, desc: "", days: 7 };
   return {
-    name: backendStage?.name || fallback.name,
-    desc: backendStage?.description || fallback.desc,
-    days: backendStage?.durationDays || fallback.days,
+    name: backendStage?.name || `Tahap ${n}`,
+    desc: backendStage?.description || "",
+    days: backendStage?.durationDays || 7,
   };
 }

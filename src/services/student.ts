@@ -40,6 +40,7 @@ export interface BackendStage {
   id: string;
   order: number;
   name: string;
+  slug: string;
   description: string | null;
   durationDays: number;
 }
@@ -63,6 +64,8 @@ export interface StageNote {
   studentId: string;
   stageId: string;
   data: Record<string, unknown> | null;
+  comment?: string | null;
+  status?: string;
   createdAt: string;
   completedAt: string | null;
   updatedAt: string;
@@ -76,6 +79,7 @@ export interface StageFile {
   fileUrl: string;
   fileType?: string;
   fileSize?: number;
+  type?: "student" | "lecturer";
   createdAt: string;
 }
 

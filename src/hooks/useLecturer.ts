@@ -71,3 +71,32 @@ export function useLecturerStudentStageDetail(studentId: string, stageId?: strin
     enabled: !!studentId && !!stageId,
   });
 }
+
+/** Fetch chat messages for a specific student and stage. */
+export function useLecturerChatMessages(studentId: string, stageId?: string) {
+  return useQuery({
+    queryKey: ["lecturer", "chat", studentId, stageId || ""],
+    queryFn: () => lecturerService.getChatMessages(studentId, stageId!),
+    enabled: !!studentId && !!stageId,
+  });
+}
+
+/** Send a chat message to a student. */
+export function useLecturerSendChatMessage() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      studentId,
+      stageId,
+      payload,
+    }: {
+      studentId: string;
+      stageId: string;
+      payload: { message?: string; fileName?: string; fileUrl?: string; fileType?: string; fileSize?: number };
+    }) => lecturerService.sendChatMessage(studentId, stageId, payload),
+    onSuccess: (_, { studentId, stageId }) => {
+      queryClient.invalidateQueries({ queryKey: ["lecturer", "chat", studentId, stageId] });
+    },
+  });
+}

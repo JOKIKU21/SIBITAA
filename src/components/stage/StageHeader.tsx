@@ -1,5 +1,3 @@
-// ponytail: Server Component — back link + badge + title
-
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { formatStageNumber } from "@/lib/stage-status";

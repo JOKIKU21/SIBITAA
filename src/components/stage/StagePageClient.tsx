@@ -1,23 +1,50 @@
 "use client";
 
 import Link from "next/link";
-import type { Stage } from "@/lib/stages";
-import { getStageMetadata, calculateRemainingDays } from "@/lib/stages";
+import { STAGES, getStageMetadata, calculateRemainingDays } from "@/lib/stages";
 import { StageForm } from "@/components/dashboard/StageForm";
-import { ChatPanel } from "@/components/dashboard/ChatPanel";
+import { MahasiswaChatPanel } from "@/components/stage/MahasiswaChatPanel";
 import { useStudentBimbingan, useStudentBimbinganDetail } from "@/hooks/useStudent";
 
 interface StagePageClientProps {
-  stage: Omit<Stage, "icon">;
-  nextStage: { slug: string } | null;
+  slug: string;
 }
 
-export function StagePageClient({ stage, nextStage }: StagePageClientProps) {
-  // 1. Fetch bimbingan list to get the UUID of this stage
+export function StagePageClient({ slug }: StagePageClientProps) {
   const { data: bimbinganData, isLoading: isBimbinganLoading } = useStudentBimbingan();
-  const backendStage = bimbinganData?.stages?.find((s) => s.order === stage.n);
+  
+  const backendStage = bimbinganData?.stages?.find((s) => s.slug === slug);
   const stageId = backendStage?.id;
-  const metadata = getStageMetadata(stage.n, backendStage);
+  const stageOrder = backendStage?.order;
+  const stageConfig = STAGES.find((s) => s.n === stageOrder);
+
+  const { data: detailData, isLoading: isDetailLoading } = useStudentBimbinganDetail(stageId);
+  const existingNote = detailData?.notes?.[0];
+  const existingFiles = detailData?.files || [];
+
+  const isLoading = isBimbinganLoading || isDetailLoading;
+
+  if (isBimbinganLoading) {
+    return (
+      <div className="p-7 max-[600px]:p-4">
+        <div className="py-12 text-center text-neutral-muted font-medium bg-white rounded-3.5 border border-neutral-border">
+          Memuat detail tahapan...
+        </div>
+      </div>
+    );
+  }
+
+  if (!backendStage || !stageConfig) {
+    return (
+      <div className="p-7 max-[600px]:p-4">
+        <div className="py-12 text-center text-neutral-muted font-medium bg-white rounded-3.5 border border-neutral-border">
+          Tahapan tidak ditemukan.
+        </div>
+      </div>
+    );
+  }
+
+  const metadata = getStageMetadata(stageConfig.n, backendStage);
 
   const progress = bimbinganData?.progress;
   const isCurrentStage = progress?.currentStageId === stageId && progress?.status === "in progress";
@@ -25,12 +52,8 @@ export function StagePageClient({ stage, nextStage }: StagePageClientProps) {
     ? calculateRemainingDays(progress.startedAt, metadata.days)
     : undefined;
 
-  // 2. Fetch notes & files for this stage
-  const { data: detailData, isLoading: isDetailLoading } = useStudentBimbinganDetail(stageId);
-  const existingNote = detailData?.notes?.[0];
-  const existingFiles = detailData?.files || [];
-
-  const isLoading = isBimbinganLoading || isDetailLoading;
+  const nextBackendStage = bimbinganData?.stages?.find((s) => s.order === stageConfig.n + 1);
+  const nextStage = nextBackendStage ? { slug: nextBackendStage.slug } : null;
 
   return (
     <div className="block">
@@ -41,7 +64,7 @@ export function StagePageClient({ stage, nextStage }: StagePageClientProps) {
         </Link>
         
         <div className="bg-linear-to-r from-brand to-brand-dark rounded-4 py-6 px-7 mb-6">
-          <span className="inline-block bg-white/18 text-white text-[12.5px] font-bold py-1.25 px-3.5 rounded-full mb-2.5">Tahap {stage.n}</span>
+          <span className="inline-block bg-white/18 text-white text-[12.5px] font-bold py-1.25 px-3.5 rounded-full mb-2.5">Tahap {stageConfig.n}</span>
           <div className="text-white text-5.5 font-extrabold leading-[1.3] font-display">{metadata.name}</div>
           <div className="text-white/80 text-3.5 mt-3 leading-normal font-normal">
             {metadata.desc}
@@ -76,15 +99,16 @@ export function StagePageClient({ stage, nextStage }: StagePageClientProps) {
           <div className="grid grid-cols-[1.4fr_1fr] gap-5 items-stretch max-[980px]:grid-cols-1">
             <div className="flex flex-col gap-5">
               <StageForm
-                stage={stage}
+                stage={stageConfig}
                 stageId={stageId}
                 existingNote={existingNote}
                 existingFiles={existingFiles}
+                stageName={metadata.name}
               />
             </div>
 
             <div className="flex flex-col gap-5">
-              <ChatPanel stageId={stageId} />
+              <MahasiswaChatPanel stageId={stageId} />
             </div>
           </div>
         )}

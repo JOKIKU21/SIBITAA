@@ -46,7 +46,7 @@ const RAW_ICONS = [
   `<svg viewBox="0 0 24 24" fill="none"><path d="M22 10 12 5 2 10l10 5 10-5ZM6 12.5v5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
 ];
 
-import { getStageMetadata } from "@/lib/stages";
+
 
 export function StageCard({
   stage,
@@ -55,16 +55,15 @@ export function StageCard({
   basePath = "/dashboard/mahasiswa/tahap",
   remainingDays,
 }: {
-  stage: Stage & { name?: string; desc?: string; days?: number };
+  stage: Stage & { slug: string; name?: string; desc?: string; days?: number };
   status: StageStatus;
   window: StageWindow;
   basePath?: string;
   remainingDays?: number;
 }) {
-  const metadata = getStageMetadata(stage.n);
-  const name = stage.name || metadata.name;
-  const desc = stage.desc || metadata.desc;
-  const days = stage.days || metadata.days;
+  const name = stage.name ?? `Tahap ${stage.n}`;
+  const desc = stage.desc ?? "";
+  const days = stage.days ?? 7;
 
   const rawSvg = RAW_ICONS[stage.n - 1] || "";
 
