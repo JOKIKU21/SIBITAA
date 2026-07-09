@@ -13,9 +13,8 @@ import {
 
 import { useStudentBimbingan } from "@/hooks/useStudentBimbingan";
 import { STAGES, getStageMetadata } from "@/lib/stages";
-import type { Stage, StageField, StageComparison } from "@/lib/stages";
+import type { Stage } from "@/lib/stages";
 import type { StudentProgress } from "@/services/student";
-import type { LucideIcon } from "lucide-react";
 
 export interface MergedStage extends Stage {
   id?: string;

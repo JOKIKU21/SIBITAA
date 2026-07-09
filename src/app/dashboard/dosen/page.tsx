@@ -1,6 +1,5 @@
 // ponytail: Server Component — data imported at module level, no fetch waterfalls
 import { StatCards } from "@/components/dashboard/dosen/StatCards";
-import { StageBarChart } from "@/components/dashboard/dosen/StageBarChart";
 import { BimbinganTable } from "@/components/dashboard/dosen/BimbinganTable";
 import {
   DOSEN_PROFILE,
@@ -35,9 +34,6 @@ export default function DosenDashboardPage() {
 
         {/* Stat Cards */}
         <StatCards stats={stats} />
-
-        {/* Bar Chart */}
-        <StageBarChart data={distribution} />
 
         {/* Bimbingan Table Preview */}
         <BimbinganTable mahasiswa={previewMahasiswa} />
