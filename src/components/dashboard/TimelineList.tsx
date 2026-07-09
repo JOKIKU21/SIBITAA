@@ -1,13 +1,13 @@
 "use client";
 
-import { STAGES } from "@/lib/stages";
 import { computeStageWindows, getStageStatus } from "@/lib/stage-status";
 import { useProgress } from "@/components/providers/ProgressProvider";
 import { StageCard } from "./StageCard";
+import { calculateRemainingDays } from "@/lib/stages";
 
 export function TimelineList() {
-  const { completedStages, isLoading } = useProgress();
-  const windows = computeStageWindows();
+  const { completedStages, isLoading, stages, progress } = useProgress();
+  const windows = computeStageWindows(stages);
 
   if (isLoading) {
     return (
@@ -19,14 +19,24 @@ export function TimelineList() {
 
   return (
     <div className="timeline">
-      {STAGES.map((stage) => (
-        <StageCard
-          key={stage.n}
-          stage={stage}
-          status={getStageStatus(stage.n, completedStages)}
-          window={windows[stage.n]}
-        />
-      ))}
+      {stages.map((stage) => {
+        const status = getStageStatus(stage.n, completedStages);
+        const isOngoing = status === "berlangsung";
+        const remainingDays =
+          isOngoing && progress?.startedAt
+            ? calculateRemainingDays(progress.startedAt, stage.days)
+            : undefined;
+
+        return (
+          <StageCard
+            key={stage.n}
+            stage={stage}
+            status={status}
+            window={windows[stage.n]}
+            remainingDays={remainingDays}
+          />
+        );
+      })}
     </div>
   );
 }

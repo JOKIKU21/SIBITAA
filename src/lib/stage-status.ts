@@ -1,6 +1,6 @@
 // ponytail: pure functions — no state, no side effects
 
-import { STAGES } from "./stages";
+import { STAGES, getStageMetadata } from "./stages";
 
 export type StageStatus = "belum-mulai" | "berlangsung" | "selesai";
 
@@ -11,12 +11,16 @@ export interface StageWindow {
 
 const TIMELINE_START = new Date(2026, 5, 29);
 
-export function computeStageWindows(): Record<number, StageWindow> {
+export function computeStageWindows(
+  stages?: Array<{ n: number; days?: number }>
+): Record<number, StageWindow> {
   const windows: Record<number, StageWindow> = {};
   let cursor = 0;
-  for (const stage of STAGES) {
-    windows[stage.n] = { start: cursor, end: cursor + stage.days };
-    cursor += stage.days;
+  const list = stages || STAGES;
+  for (const stage of list) {
+    const days = ("days" in stage ? stage.days : undefined) ?? getStageMetadata(stage.n).days;
+    windows[stage.n] = { start: cursor, end: cursor + days };
+    cursor += days;
   }
   return windows;
 }

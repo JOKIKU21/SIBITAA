@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from "react";
 import type { Stage } from "@/lib/stages";
+import { snakeToTitleCase, getStageMetadata } from "@/lib/stages";
 import type { StageNote, StageFile } from "@/services/student";
 import { useCreateNote, useUpdateNote, useCreateFile, useDeleteFile } from "@/hooks/useStudentBimbingan";
 import Button from "@/components/Button";
 import Input from "@/components/Input";
+import { useToast } from "@/components/providers/ToastProvider";
 
 interface StageFormProps {
   stage: Omit<Stage, "icon">;
@@ -16,12 +18,15 @@ interface StageFormProps {
 
 export function StageForm({ stage, stageId, existingNote, existingFiles = [] }: StageFormProps) {
   const [formData, setFormData] = useState<Record<string, string>>({});
+  const toast = useToast();
   const createNoteMut = useCreateNote();
   const updateNoteMut = useUpdateNote();
   const createFileMut = useCreateFile();
   const deleteFileMut = useDeleteFile();
 
   const loading = createNoteMut.isPending || updateNoteMut.isPending;
+
+  const metadata = getStageMetadata(stage.n);
 
   // Initialize form data from existing note in backend
   useEffect(() => {
@@ -32,10 +37,10 @@ export function StageForm({ stage, stageId, existingNote, existingFiles = [] }: 
     }
   }, [existingNote]);
 
-  const handleInputChange = (fieldLabel: string, value: string) => {
+  const handleInputChange = (fieldKey: string, value: string) => {
     setFormData((prev) => ({
       ...prev,
-      [fieldLabel]: value,
+      [fieldKey]: value,
     }));
   };
 
@@ -50,7 +55,12 @@ export function StageForm({ stage, stageId, existingNote, existingFiles = [] }: 
         payload: { data: formData },
       }, {
         onSuccess: () => {
-          alert("Data berhasil diperbarui!");
+          toast.success("Data berhasil diperbarui!");
+        },
+        onError: (err) => {
+          toast.error("Gagal memperbarui data", {
+            description: err instanceof Error ? err.message : undefined,
+          });
         }
       });
     } else {
@@ -59,7 +69,12 @@ export function StageForm({ stage, stageId, existingNote, existingFiles = [] }: 
         data: formData,
       }, {
         onSuccess: () => {
-          alert("Data berhasil disimpan!");
+          toast.success("Data berhasil disimpan!");
+        },
+        onError: (err) => {
+          toast.error("Gagal menyimpan data", {
+            description: err instanceof Error ? err.message : undefined,
+          });
         }
       });
     }
@@ -79,7 +94,12 @@ export function StageForm({ stage, stageId, existingNote, existingFiles = [] }: 
       },
     }, {
       onSuccess: () => {
-        alert("File berhasil diunggah!");
+        toast.success("File berhasil diunggah!");
+      },
+      onError: (err) => {
+        toast.error("Gagal mengunggah file", {
+          description: err instanceof Error ? err.message : undefined,
+        });
       }
     });
   };
@@ -92,7 +112,12 @@ export function StageForm({ stage, stageId, existingNote, existingFiles = [] }: 
         fileId,
       }, {
         onSuccess: () => {
-          alert("File berhasil dihapus!");
+          toast.success("File berhasil dihapus!");
+        },
+        onError: (err) => {
+          toast.error("Gagal menghapus file", {
+            description: err instanceof Error ? err.message : undefined,
+          });
         }
       });
     }
@@ -103,16 +128,17 @@ export function StageForm({ stage, stageId, existingNote, existingFiles = [] }: 
   return (
     <div className="bg-white rounded-3.5 border border-neutral-border overflow-hidden mb-5 flex flex-col">
       <div className="py-4.5 px-6 font-display text-4 font-extrabold border-b border-neutral-border">
-        {stage.name}
+        {metadata.name}
       </div>
       <div className="py-5 px-6 pb-6">
         <form onSubmit={handleSubmit}>
           {otherFields.map((field, idx) => {
-            const value = formData[field.label] || "";
+            const value = formData[field.key] || "";
+            const label = snakeToTitleCase(field.key);
             return (
               <div key={idx} className="mb-4.5">
                 <label className="block text-[13.5px] font-semibold mb-2 text-neutral-text">
-                  {field.label} <span className="text-danger">*</span>
+                  {label} <span className="text-danger">*</span>
                 </label>
 
                 {field.type === "file" ? (
@@ -146,6 +172,7 @@ export function StageForm({ stage, stageId, existingNote, existingFiles = [] }: 
                                   strokeWidth="1.8"
                                   strokeLinecap="round"
                                   strokeLinejoin="round"
+                                
                                 />
                               </svg>
                               <div className="min-w-0">
@@ -180,9 +207,9 @@ export function StageForm({ stage, stageId, existingNote, existingFiles = [] }: 
                 ) : field.type === "textarea" ? (
                   <textarea
                     value={value}
-                    onChange={(e) => handleInputChange(field.label, e.target.value)}
+                    onChange={(e) => handleInputChange(field.key, e.target.value)}
                     className="w-full bg-neutral-bg border-[1.5px] border-transparent rounded-2 py-3 px-3.5 text-3.5 text-neutral-text outline-none font-sans transition-[border-color,background] duration-200 focus:border-brand-light focus:bg-[#f8f9ff] resize-y min-h-20"
-                    placeholder={`Masukkan ${field.label}`}
+                    placeholder={`Masukkan ${label}`}
                     required
                   />
                 ) : (
@@ -190,8 +217,8 @@ export function StageForm({ stage, stageId, existingNote, existingFiles = [] }: 
                     type="text"
                     variant="default"
                     value={value}
-                    onChange={(e) => handleInputChange(field.label, e.target.value)}
-                    placeholder={`Masukkan ${field.label}`}
+                    onChange={(e) => handleInputChange(field.key, e.target.value)}
+                    placeholder={`Masukkan ${label}`}
                     required
                   />
                 )}

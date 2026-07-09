@@ -12,11 +12,24 @@ import {
 } from "react";
 
 import { useStudentBimbingan } from "@/hooks/useStudentBimbingan";
+import { STAGES, getStageMetadata } from "@/lib/stages";
+import type { Stage, StageField, StageComparison } from "@/lib/stages";
+import type { StudentProgress } from "@/services/student";
+import type { LucideIcon } from "lucide-react";
+
+export interface MergedStage extends Stage {
+  id?: string;
+  name: string;
+  desc: string;
+  days: number;
+}
 
 interface ProgressContextValue {
   completedStages: ReadonlySet<number>;
   markStageDone: (n: number) => void;
   isLoading: boolean;
+  stages: MergedStage[];
+  progress: StudentProgress | null;
 }
 
 const ProgressContext = createContext<ProgressContextValue | null>(null);
@@ -69,6 +82,22 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
     return union;
   }, [backendCompleted, localCompleted]);
 
+  const stages = useMemo(() => {
+    return STAGES.map((stageConfig) => {
+      const backendStage = bimbinganData?.stages?.find((s) => s.order === stageConfig.n);
+      const metadata = getStageMetadata(stageConfig.n, backendStage);
+      return {
+        ...stageConfig,
+        id: backendStage?.id,
+        name: metadata.name,
+        desc: metadata.desc,
+        days: metadata.days,
+      };
+    });
+  }, [bimbinganData]);
+
+  const progress = useMemo(() => bimbinganData?.progress ?? null, [bimbinganData]);
+
   const markStageDone = useCallback((n: number) => {
     setLocalCompleted((prev) => {
       const next = new Set(prev);
@@ -83,8 +112,8 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const value = useMemo(
-    () => ({ completedStages, markStageDone, isLoading }),
-    [completedStages, markStageDone, isLoading]
+    () => ({ completedStages, markStageDone, isLoading, stages, progress }),
+    [completedStages, markStageDone, isLoading, stages, progress]
   );
 
   return (

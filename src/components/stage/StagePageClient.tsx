@@ -2,10 +2,9 @@
 
 import Link from "next/link";
 import type { Stage } from "@/lib/stages";
-import { CompareRevision } from "@/components/stage/CompareRevision";
+import { getStageMetadata, calculateRemainingDays } from "@/lib/stages";
 import { StageForm } from "@/components/dashboard/StageForm";
 import { ChatPanel } from "@/components/dashboard/ChatPanel";
-import { MarkDoneButton } from "@/components/stage/MarkDoneButton";
 import { useStudentBimbingan, useStudentBimbinganDetail } from "@/hooks/useStudentBimbingan";
 
 interface StagePageClientProps {
@@ -18,6 +17,13 @@ export function StagePageClient({ stage, nextStage }: StagePageClientProps) {
   const { data: bimbinganData, isLoading: isBimbinganLoading } = useStudentBimbingan();
   const backendStage = bimbinganData?.stages?.find((s) => s.order === stage.n);
   const stageId = backendStage?.id;
+  const metadata = getStageMetadata(stage.n, backendStage);
+
+  const progress = bimbinganData?.progress;
+  const isCurrentStage = progress?.currentStageId === stageId && progress?.status === "in progress";
+  const remainingDays = isCurrentStage && progress?.startedAt
+    ? calculateRemainingDays(progress.startedAt, metadata.days)
+    : undefined;
 
   // 2. Fetch notes & files for this stage
   const { data: detailData, isLoading: isDetailLoading } = useStudentBimbinganDetail(stageId);
@@ -36,15 +42,30 @@ export function StagePageClient({ stage, nextStage }: StagePageClientProps) {
         
         <div className="bg-linear-to-r from-brand to-brand-dark rounded-4 py-6 px-7 mb-6">
           <span className="inline-block bg-white/18 text-white text-[12.5px] font-bold py-1.25 px-3.5 rounded-full mb-2.5">Tahap {stage.n}</span>
-          <div className="text-white text-5.5 font-extrabold leading-[1.3] font-display">{stage.name}</div>
+          <div className="text-white text-5.5 font-extrabold leading-[1.3] font-display">{metadata.name}</div>
           <div className="text-white/80 text-3.5 mt-3 leading-normal font-normal">
-            {stage.desc}
+            {metadata.desc}
           </div>
         </div>
-        {stage.comparison && (
-          <div className="mb-5 max-w-50">
-            <CompareRevision comparison={stage.comparison} />
-          </div>
+
+        {remainingDays !== undefined && (
+          <>
+            {remainingDays <= 0 ? (
+              <div className="bg-danger-bg border border-danger text-danger rounded-3 py-3 px-5 mb-6 flex items-center gap-2.5 text-[13.5px] font-semibold">
+                <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 9v4m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                Perhatian: Anda telah melewati deadline pengerjaan tahapan ini! Segera lengkapi dan kirim progres Anda.
+              </div>
+            ) : remainingDays <= 3 ? (
+              <div className="bg-warning-bg border border-warning text-warning rounded-3 py-3 px-5 mb-6 flex items-center gap-2.5 text-[13.5px] font-semibold">
+                <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 9v4m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                Perhatian: Tahapan ini mendekati deadline! Sisa waktu pengerjaan: {remainingDays} hari.
+              </div>
+            ) : null}
+          </>
         )}
 
         {isLoading ? (
@@ -60,14 +81,6 @@ export function StagePageClient({ stage, nextStage }: StagePageClientProps) {
                 existingNote={existingNote}
                 existingFiles={existingFiles}
               />
-              <div className="rounded-3 border border-neutral-border bg-white p-6">
-                <MarkDoneButton
-                  stageNumber={stage.n}
-                  stageId={stageId}
-                  existingNote={existingNote}
-                  nextSlug={nextStage ? nextStage.slug : null}
-                />
-              </div>
             </div>
 
             <div className="flex flex-col gap-5">

@@ -54,7 +54,7 @@ export default function AuthForm({ mode }: { mode: "masuk" | "daftar" }) {
     try {
       if (isLogin) {
         await authService.signIn(email, password);
-        router.push("/dashboard/mahasiswa");
+        router.push("/dashboard");
       } else {
         await authService.signUp(nama, email, password);
         router.push(`/verifikasi?email=${encodeURIComponent(email)}`);

@@ -18,7 +18,7 @@ import {
 export type StageFieldType = "text" | "textarea" | "file" | "readonly-list";
 
 export interface StageField {
-  label: string;
+  key: string;
   type: StageFieldType;
   items?: string[];
 }
@@ -31,156 +31,189 @@ export interface StageComparison {
 export interface Stage {
   n: number;
   slug: string;
-  name: string;
-  days: number;
-  desc: string;
   icon: LucideIcon;
   fields: StageField[];
   comparison?: StageComparison;
 }
 
+// Fallback details when data is not loaded from backend or for mock/dosen views
+export const FALLBACK_STAGE_DETAILS: Record<number, { name: string; desc: string; days: number }> = {
+  1: {
+    name: "Pengajuan Topik Skripsi", days: 14,
+    desc: "Mahasiswa mengajukan judul skripsi beserta rumusan masalah."
+  },
+  2: {
+    name: "Penyusunan Proposal Penelitian", days: 14,
+    desc: "Susun BAB I–III sebagai dasar proposal yang akan diajukan ke pembimbing."
+  },
+  3: {
+    name: "Konsultasi Dosen Pembimbing (ke-1)", days: 7,
+    desc: "Ajukan proposal ke pembimbing untuk mendapatkan masukan pertama."
+  },
+  4: {
+    name: "Revisi Proposal Penelitian", days: 7,
+    desc: "Perbaiki proposal sesuai masukan dosen pada konsultasi pertama."
+  },
+  5: {
+    name: "Persiapan dan Ujian Proposal", days: 7,
+    desc: "Siapkan berkas dan presentasi untuk ujian proposal penelitian."
+  },
+  6: {
+    name: "Penyusunan Instrumen Penelitian", days: 7,
+    desc: "Buat instrumen (kuesioner/wawancara) sesuai metodologi yang telah disetujui."
+  },
+  7: {
+    name: "Konsultasi Dosen Pembimbing (ke-2)", days: 7,
+    desc: "Validasikan instrumen penelitian bersama dosen pembimbing."
+  },
+  8: {
+    name: "Pengambilan Data Penelitian", days: 21,
+    desc: "Lakukan pengumpulan data di lapangan sesuai instrumen yang telah divalidasi."
+  },
+  9: {
+    name: "Pengolahan Data Penelitian", days: 7,
+    desc: "Analisis dan olah data yang telah dikumpulkan menggunakan metode yang dipilih."
+  },
+  10: {
+    name: "Penyusunan BAB IV (Hasil & Pembahasan)", days: 14,
+    desc: "Tulis hasil analisis dan pembahasan penelitian secara komprehensif."
+  },
+  11: {
+    name: "Konsultasi Dosen Pembimbing (ke-3)", days: 7,
+    desc: "Konsultasikan BAB IV kepada dosen untuk mendapatkan masukan."
+  },
+  12: {
+    name: "Revisi BAB IV", days: 7,
+    desc: "Perbaiki BAB IV berdasarkan masukan dari dosen pembimbing."
+  },
+  13: {
+    name: "Penyusunan BAB V (Kesimpulan & Saran)", days: 7,
+    desc: "Tulis kesimpulan dan saran berdasarkan temuan penelitian."
+  },
+  14: {
+    name: "Penyusunan BAB I s.d. BAB V (Draft Final)", days: 7,
+    desc: "Gabungkan seluruh bab menjadi satu naskah utuh dan periksa konsistensinya."
+  },
+  15: {
+    name: "Konsultasi Dosen Pembimbing (ke-4)", days: 7,
+    desc: "Ajukan draft final untuk persetujuan akhir sebelum sidang."
+  },
+  16: {
+    name: "Persiapan Ujian Akhir", days: 7,
+    desc: "Lengkapi administrasi sidang dan siapkan berkas pendaftaran ujian akhir."
+  },
+  17: {
+    name: "Ujian Akhir & Revisi Naskah Akhir", days: 7,
+    desc: "Ikuti ujian akhir/sidang dan lakukan revisi naskah akhir sesuai masukan penguji."
+  }
+};
+
 export const STAGES: Stage[] = [
   {
     n: 1, slug: "diskusi-konsep-judul",
-    name: "Diskusi Konsep dan Judul Penelitian", days: 7,
-    desc: "Diskusikan topik, permasalahan, dan judul penelitian bersama dosen pembimbing.",
     icon: MessageCircle,
     fields: [
-      { label: "Topik Penelitian", type: "text" },
-      { label: "Permasalahan Penelitian", type: "textarea" },
-      { label: "Judul Penelitian", type: "text" },
-      { label: "Alasan Penelitian", type: "textarea" },
-      { label: "Unggah Dokumen", type: "file" },
+      { key: "topik_penelitian", type: "text" },
+      { key: "rumusan_masalah", type: "textarea" },
+      { key: "judul_penelitian", type: "text" },
+      { key: "alasan_penelitian", type: "textarea" },
+      { key: "unggah_dokumen", type: "file" },
     ],
   },
   {
     n: 2, slug: "penyusunan-proposal",
-    name: "Penyusunan Proposal Penelitian", days: 14,
-    desc: "Susun BAB I–III sebagai dasar proposal yang akan diajukan ke pembimbing.",
     icon: FileText,
     fields: [
-      { label: "Ringkasan Proposal", type: "textarea" },
-      { label: "Tujuan Penelitian", type: "textarea" },
-      { label: "Kontribusi yang Diharapkan", type: "textarea" },
-      { label: "Unggah Dokumen", type: "file" },
+      { key: "ringkasan_proposal", type: "textarea" },
+      { key: "tujuan_penelitian", type: "textarea" },
+      { key: "kontribusi_yang_diharapkan", type: "textarea" },
+      { key: "unggah_dokumen", type: "file" },
     ],
   },
   {
     n: 3, slug: "konsultasi-pembimbing-1",
-    name: "Konsultasi Dosen Pembimbing (ke-1)", days: 7,
-    desc: "Ajukan proposal ke pembimbing untuk mendapatkan masukan pertama.",
     icon: Users,
     fields: [
-      { label: "Catatan Diskusi", type: "textarea" },
-      { label: "Pertanyaan untuk Pembimbing", type: "textarea" },
-      { label: "Unggah Dokumen", type: "file" },
+      { key: "catatan_diskusi", type: "textarea" },
+      { key: "pertanyaan_untuk_pembimbing", type: "textarea" },
+      { key: "unggah_dokumen", type: "file" },
     ],
   },
   {
     n: 4, slug: "revisi-proposal",
-    name: "Revisi Proposal Penelitian", days: 7,
-    desc: "Perbaiki proposal sesuai masukan dosen pada konsultasi pertama.",
     icon: PenLine,
     fields: [
-      { label: "Ringkasan Revisi", type: "textarea" },
-      { label: "Unggah Dokumen", type: "file" },
+      { key: "ringkasan_revisi", type: "textarea" },
+      { key: "unggah_dokumen", type: "file" },
     ],
-    comparison: {
-      before: "Bab I masih belum mencakup latar belakang yang komprehensif. Pernyataan masalah kurang spesifik dan tujuan penelitian belum terukur.",
-      after: "Bab I telah diperluas dengan latar belakang yang kuat. Pernyataan masalah diperinci dan tujuan penelitian menggunakan indikator yang terukur.",
-    },
   },
   {
     n: 5, slug: "persiapan-ujian-proposal",
-    name: "Persiapan dan Ujian Proposal", days: 7,
-    desc: "Siapkan berkas dan presentasi untuk ujian proposal penelitian.",
     icon: Target,
     fields: [
-      { label: "Pilih Jadwal Ujian", type: "text" },
-      { label: "Unggah Proposal Final", type: "file" },
-      { label: "Unggah PPT Ujian", type: "file" },
+      { key: "pilih_jadwal_ujian", type: "text" },
+      { key: "unggah_proposal_final", type: "file" },
+      { key: "unggah_ppt_ujian", type: "file" },
     ],
   },
   {
     n: 6, slug: "penyusunan-instrumen",
-    name: "Penyusunan Instrumen Penelitian", days: 7,
-    desc: "Buat instrumen (kuesioner/wawancara) sesuai metodologi yang telah disetujui.",
     icon: ClipboardList,
     fields: [
-      { label: "Jenis Instrumen", type: "text" },
-      { label: "Metode Validasi", type: "textarea" },
-      { label: "Unggah Dokumen", type: "file" },
+      { key: "jenis_instrumen", type: "text" },
+      { key: "metode_validasi", type: "textarea" },
+      { key: "unggah_dokumen", type: "file" },
     ],
   },
   {
     n: 7, slug: "konsultasi-pembimbing-2",
-    name: "Konsultasi Dosen Pembimbing (ke-2)", days: 7,
-    desc: "Validasikan instrumen penelitian bersama dosen pembimbing.",
     icon: Search,
     fields: [
-      { label: "Ringkasan Revisi", type: "textarea" },
-      { label: "Unggah Dokumen", type: "file" },
+      { key: "ringkasan_revisi", type: "textarea" },
+      { key: "unggah_dokumen", type: "file" },
     ],
-    comparison: {
-      before: "Instrumen penelitian masih belum sepenuhnya mencerminkan indikator pada variabel penelitian. Beberapa butir pertanyaan bersifat ambigu dan berpotensi menimbulkan interpretasi ganda.",
-      after: "Instrumen telah disesuaikan dengan indikator variabel penelitian. Redaksi pertanyaan diperjelas sehingga lebih mudah dipahami dan meminimalkan bias interpretasi.",
-    },
   },
   {
     n: 8, slug: "pengambilan-data",
-    name: "Pengambilan Data Penelitian", days: 21,
-    desc: "Lakukan pengumpulan data di lapangan sesuai instrumen yang telah divalidasi.",
     icon: Database,
     fields: [
-      { label: "Progres Pengambilan Data", type: "text" },
-      { label: "Jumlah Partisipan", type: "text" },
-      { label: "Unggah Dokumen", type: "file" },
+      { key: "progres_pengambilan_data", type: "text" },
+      { key: "jumlah_partisipan", type: "text" },
+      { key: "unggah_dokumen", type: "file" },
     ],
   },
   {
     n: 9, slug: "pengolahan-data",
-    name: "Pengolahan Data Penelitian", days: 7,
-    desc: "Analisis dan olah data yang telah dikumpulkan menggunakan metode yang dipilih.",
     icon: Calculator,
     fields: [
-      { label: "Metode Analisis", type: "text" },
-      { label: "Ringkasan Temuan", type: "textarea" },
-      { label: "Unggah Dokumen", type: "file" },
+      { key: "metode_analisis", type: "text" },
+      { key: "ringkasan_temuan", type: "textarea" },
+      { key: "unggah_dokumen", type: "file" },
     ],
   },
   {
     n: 10, slug: "penyusunan-bab-4",
-    name: "Penyusunan BAB IV (Hasil & Pembahasan)", days: 14,
-    desc: "Tulis hasil analisis dan pembahasan penelitian secara komprehensif.",
     icon: BookOpen,
     fields: [
-      { label: "Temuan Utama", type: "textarea" },
-      { label: "Ringkasan Pembahasan", type: "textarea" },
-      { label: "Unggah Dokumen", type: "file" },
+      { key: "temuan_utama", type: "textarea" },
+      { key: "ringkasan_pembahasan", type: "textarea" },
+      { key: "unggah_dokumen", type: "file" },
     ],
   },
   {
     n: 11, slug: "konsultasi-pembimbing-3",
-    name: "Konsultasi Dosen Pembimbing (ke-3)", days: 7,
-    desc: "Konsultasikan BAB IV kepada dosen untuk mendapatkan masukan.",
     icon: Users,
     fields: [
-      { label: "Ringkasan Revisi", type: "textarea" },
-      { label: "Unggah Dokumen", type: "file" },
+      { key: "ringkasan_revisi", type: "textarea" },
+      { key: "unggah_dokumen", type: "file" },
     ],
-    comparison: {
-      before: "Tabel dan grafik telah disajikan, namun beberapa visualisasi belum memiliki interpretasi yang memadai. Pembaca masih kesulitan memahami makna dari data yang ditampilkan.",
-      after: "Setiap tabel dan grafik telah dilengkapi dengan interpretasi yang jelas serta penjelasan mengenai implikasi hasil penelitian, sehingga informasi yang disajikan lebih mudah dipahami.",
-    },
   },
   {
     n: 12, slug: "revisi-bab-4",
-    name: "Revisi BAB IV", days: 7,
-    desc: "Perbaiki BAB IV berdasarkan masukan dari dosen pembimbing.",
     icon: PenLine,
     fields: [
       {
-        label: "Checklist Revisi", type: "readonly-list",
+        key: "checklist_revisi", type: "readonly-list",
         items: [
           "Perbaikan sistematika penulisan hasil penelitian",
           "Penambahan analisis statistik yang diminta",
@@ -189,48 +222,40 @@ export const STAGES: Stage[] = [
           "Koreksi referensi pada Bab IV",
         ],
       },
-      { label: "Unggah Dokumen", type: "file" },
+      { key: "unggah_dokumen", type: "file" },
     ],
   },
   {
     n: 13, slug: "penyusunan-bab-5",
-    name: "Penyusunan BAB V (Kesimpulan & Saran)", days: 7,
-    desc: "Tulis kesimpulan dan saran berdasarkan temuan penelitian.",
     icon: FileText,
     fields: [
-      { label: "Ringkasan Kesimpulan", type: "textarea" },
-      { label: "Saran", type: "textarea" },
-      { label: "Unggah Dokumen", type: "file" },
+      { key: "ringkasan_kesimpulan", type: "textarea" },
+      { key: "saran", type: "textarea" },
+      { key: "unggah_dokumen", type: "file" },
     ],
   },
   {
     n: 14, slug: "draft-final",
-    name: "Penyusunan BAB I s.d. BAB V (Draft Final)", days: 7,
-    desc: "Gabungkan seluruh bab menjadi satu naskah utuh dan periksa konsistensinya.",
     icon: BookOpen,
     fields: [
-      { label: "Catatan Draft Final", type: "textarea" },
-      { label: "Unggah Dokumen", type: "file" },
+      { key: "catatan_draft_final", type: "textarea" },
+      { key: "unggah_dokumen", type: "file" },
     ],
   },
   {
     n: 15, slug: "konsultasi-pembimbing-4",
-    name: "Konsultasi Dosen Pembimbing (ke-4)", days: 7,
-    desc: "Ajukan draft final untuk persetujuan akhir sebelum sidang.",
     icon: Users,
     fields: [
-      { label: "Ringkasan Revisi", type: "textarea" },
-      { label: "Unggah Dokumen", type: "file" },
+      { key: "ringkasan_revisi", type: "textarea" },
+      { key: "unggah_dokumen", type: "file" },
     ],
   },
   {
     n: 16, slug: "persiapan-ujian-akhir",
-    name: "Persiapan Ujian Akhir", days: 7,
-    desc: "Lengkapi administrasi sidang dan siapkan berkas pendaftaran ujian akhir.",
     icon: ClipboardList,
     fields: [
       {
-        label: "Checklist Persyaratan Ujian", type: "readonly-list",
+        key: "checklist_persyaratan_ujian", type: "readonly-list",
         items: [
           "Naskah tugas akhir telah disetujui oleh pembimbing",
           "Dokumen administrasi lengkap",
@@ -239,22 +264,70 @@ export const STAGES: Stage[] = [
           "Bukti bebas teori",
         ],
       },
-      { label: "Unggah Dokumen Persyaratan", type: "file" },
+      { key: "unggah_dokumen_persyaratan", type: "file" },
     ],
   },
   {
     n: 17, slug: "ujian-akhir",
-    name: "Ujian Akhir & Revisi Naskah Akhir", days: 7,
-    desc: "Ikuti ujian akhir/sidang dan lakukan revisi naskah akhir sesuai masukan penguji.",
     icon: GraduationCap,
     fields: [
-      { label: "Hasil Ujian", type: "text" },
-      { label: "Ringkasan Revisi Akhir", type: "textarea" },
-      { label: "Unggah Dokumen", type: "file" },
+      { key: "hasil_ujian", type: "text" },
+      { key: "ringkasan_revisi_akhir", type: "textarea" },
+      { key: "unggah_dokumen", type: "file" },
     ],
   },
 ];
 
 export function getStageBySlug(slug: string): Stage | undefined {
   return STAGES.find((s) => s.slug === slug);
+}
+
+/**
+ * Converts a snake_case key to a Title Case label.
+ * Example: "topik_penelitian" -> "Topik Penelitian"
+ */
+export function snakeToTitleCase(str: string): string {
+  if (!str) return "";
+  return str
+    .split("_")
+    .map((word) => {
+      const lower = word.toLowerCase();
+      if (lower === "ppt") return "PPT";
+      if (lower === "bab") return "BAB";
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    })
+    .join(" ");
+}
+
+/**
+ * Calculates the deadline date from the startedAt date and durationDays.
+ */
+export function calculateDeadline(startedAt: string | Date, durationDays: number): Date {
+  const start = new Date(startedAt);
+  return new Date(start.getTime() + durationDays * 24 * 60 * 60 * 1000);
+}
+
+/**
+ * Calculates remaining days from the startedAt date and durationDays.
+ */
+export function calculateRemainingDays(startedAt: string | Date, durationDays: number): number {
+  const deadline = calculateDeadline(startedAt, durationDays);
+  const now = new Date();
+  const diffTime = deadline.getTime() - now.getTime();
+  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+}
+
+/**
+ * Helper to get fallback/merged stage metadata.
+ */
+export function getStageMetadata(
+  n: number,
+  backendStage?: { name: string; description: string | null; durationDays: number }
+) {
+  const fallback = FALLBACK_STAGE_DETAILS[n] || { name: `Tahap ${n}`, desc: "", days: 7 };
+  return {
+    name: backendStage?.name || fallback.name,
+    desc: backendStage?.description || fallback.desc,
+    days: backendStage?.durationDays || fallback.days,
+  };
 }

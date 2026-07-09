@@ -46,26 +46,57 @@ const RAW_ICONS = [
   `<svg viewBox="0 0 24 24" fill="none"><path d="M22 10 12 5 2 10l10 5 10-5ZM6 12.5v5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
 ];
 
-export function StageCard({ stage, status, window, basePath = "/dashboard/mahasiswa/tahap" }: { stage: Stage; status: StageStatus; window: StageWindow; basePath?: string }) {
+import { getStageMetadata } from "@/lib/stages";
+
+export function StageCard({
+  stage,
+  status,
+  window,
+  basePath = "/dashboard/mahasiswa/tahap",
+  remainingDays,
+}: {
+  stage: Stage & { name?: string; desc?: string; days?: number };
+  status: StageStatus;
+  window: StageWindow;
+  basePath?: string;
+  remainingDays?: number;
+}) {
+  const metadata = getStageMetadata(stage.n);
+  const name = stage.name || metadata.name;
+  const desc = stage.desc || metadata.desc;
+  const days = stage.days || metadata.days;
+
   const rawSvg = RAW_ICONS[stage.n - 1] || "";
 
   const getIconClass = (status: StageStatus) => {
-    const base = "w-11 h-11 rounded-full border-[3px] flex items-center justify-center z-1 shrink-0 transition-[background,border-color] duration-300 [&>svg]:w-5 [&>svg]:h-5";
-    if (status === "selesai") return `${base} bg-success-bg border-success text-success`;
-    if (status === "berlangsung") return `${base} bg-brand-bg border-brand text-brand`;
+    const base =
+      "w-11 h-11 rounded-full border-[3px] flex items-center justify-center z-1 shrink-0 transition-[background,border-color] duration-300 [&>svg]:w-5 [&>svg]:h-5";
+    if (status === "selesai")
+      return `${base} bg-success-bg border-success text-success`;
+    if (status === "berlangsung")
+      return `${base} bg-brand-bg border-brand text-brand`;
     return `${base} bg-[#F3F4F6] border-neutral-border text-neutral-muted`;
   };
 
   const getLineClass = (status: StageStatus) => {
     const base = "w-0.5 flex-1 min-h-4";
     if (status === "selesai") return `${base} bg-success`;
-    if (status === "berlangsung") return `${base} bg-gradient-to-b from-brand to-neutral-border`;
+    if (status === "berlangsung")
+      return `${base} bg-gradient-to-b from-brand to-neutral-border`;
     return `${base} bg-neutral-border`;
   };
 
   const getCardClass = (status: StageStatus) => {
-    const base = "flex-1 mb-3.5 ml-3 bg-white border rounded-3.5 py-4.5 px-5 pb-4 transition-[box-shadow,border-color] duration-200 cursor-pointer hover:shadow-[0_4px_18px_rgba(43,59,175,0.1)] hover:border-brand/20";
+    const base =
+      "flex-1 mb-3.5 ml-3 bg-white border rounded-3.5 py-4.5 px-5 pb-4 transition-[box-shadow,border-color] duration-200 cursor-pointer hover:shadow-[0_4px_18px_rgba(43,59,175,0.1)] hover:border-brand/20";
     if (status === "berlangsung") {
+      if (remainingDays !== undefined) {
+        if (remainingDays <= 0) {
+          return `${base} border-danger shadow-[0_0_0_3px_rgba(220,38,38,0.08)]`;
+        } else if (remainingDays <= 3) {
+          return `${base} border-warning shadow-[0_0_0_3px_rgba(180,83,9,0.08)]`;
+        }
+      }
       return `${base} border-brand shadow-[0_0_0_3px_rgba(43,59,175,0.08)]`;
     }
     return `${base} border-neutral-border`;
@@ -73,7 +104,11 @@ export function StageCard({ stage, status, window, basePath = "/dashboard/mahasi
 
   let daysLabel = "";
   if (status === "berlangsung") {
-    daysLabel = `Sisa ${stage.days} hari`;
+    if (remainingDays !== undefined) {
+      daysLabel = remainingDays <= 0 ? "Tenggat waktu habis" : `Sisa ${remainingDays} hari`;
+    } else {
+      daysLabel = `Sisa ${days} hari`;
+    }
   } else if (status === "belum-mulai") {
     daysLabel = `Mulai hari ke-${window.start}`;
   }
@@ -81,21 +116,52 @@ export function StageCard({ stage, status, window, basePath = "/dashboard/mahasi
   return (
     <div className="flex gap-0 relative">
       <div className="flex flex-col items-center w-14 shrink-0">
-        <div className={getIconClass(status)} dangerouslySetInnerHTML={{ __html: rawSvg }} />
+        <div
+          className={getIconClass(status)}
+          dangerouslySetInnerHTML={{ __html: rawSvg }}
+        />
         {stage.n !== 17 && <div className={getLineClass(status)} />}
       </div>
       <div className="flex-1">
-        <Link href={`${basePath}/${stage.slug}`} className={`block ${getCardClass(status)}`}>
+        <Link
+          href={`${basePath}/${stage.slug}`}
+          className={`block ${getCardClass(status)}`}
+        >
           <div className="flex items-center justify-between gap-2.5 mb-2">
-            <span className="font-display text-5.5 font-extrabold text-brand tracking-[-0.01em] leading-none">{String(stage.n).padStart(2, "0")}</span>
+            <div className="flex items-center gap-2">
+              <span className="font-display text-5.5 font-extrabold text-brand tracking-[-0.01em] leading-none">
+                {String(stage.n).padStart(2, "0")}
+              </span>
+              {status === "berlangsung" && remainingDays !== undefined && (
+                <>
+                  {remainingDays <= 0 ? (
+                    <span className="whitespace-nowrap rounded-full bg-danger-bg text-danger px-2.5 py-0.75 text-[11px] font-bold">
+                      Melewati Deadline ⚠️
+                    </span>
+                  ) : remainingDays <= 3 ? (
+                    <span className="whitespace-nowrap rounded-full bg-warning-bg text-warning px-2.5 py-0.75 text-[11px] font-bold">
+                      Mendekati Deadline ⚠️
+                    </span>
+                  ) : null}
+                </>
+              )}
+            </div>
             <StatusBadge status={status} />
           </div>
-          <div className="font-display text-[15px] font-bold text-neutral-text mb-0.75">{stage.name}</div>
-          <div className="text-[12.5px] text-brand font-semibold mb-2">{formatStageDate(window.start)} – {formatStageDate(window.end)}</div>
-          <div className="text-[13px] text-neutral-muted leading-[1.55]">{stage.desc}</div>
+          <div className="font-display text-[15px] font-bold text-neutral-text mb-0.75">
+            {name}
+          </div>
+          <div className="text-[12.5px] text-brand font-semibold mb-2">
+            {formatStageDate(window.start)} – {formatStageDate(window.end)}
+          </div>
+          <div className="text-[13px] text-neutral-muted leading-[1.55]">
+            {desc}
+          </div>
           {status !== "belum-mulai" && (
             <div className="flex justify-end mt-2.5">
-              <span className="text-[11.5px] text-neutral-muted font-semibold">{daysLabel}</span>
+              <span className="text-[11.5px] text-neutral-muted font-semibold">
+                {daysLabel}
+              </span>
             </div>
           )}
         </Link>

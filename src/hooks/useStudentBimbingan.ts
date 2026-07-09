@@ -31,7 +31,7 @@ export function useCreateNote() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ stageId, data }: { stageId: string; data: Record<string, any> }) =>
+    mutationFn: ({ stageId, data }: { stageId: string; data: Record<string, unknown> }) =>
       studentService.createNote(stageId, data),
     onSuccess: (_, { stageId }) => {
       queryClient.invalidateQueries({ queryKey: bimbinganKeys.detail(stageId) });
@@ -51,7 +51,7 @@ export function useUpdateNote() {
     }: {
       stageId: string;
       noteId: string;
-      payload: { data?: Record<string, any>; completedAt?: string | null };
+      payload: { data?: Record<string, unknown>; completedAt?: string | null };
     }) => studentService.updateNote(stageId, noteId, payload),
     onSuccess: (_, { stageId }) => {
       queryClient.invalidateQueries({ queryKey: bimbinganKeys.detail(stageId) });

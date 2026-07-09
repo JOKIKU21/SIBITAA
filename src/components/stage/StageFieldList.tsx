@@ -2,13 +2,16 @@
 
 import { Circle, Upload, CheckSquare } from "lucide-react";
 import type { StageField } from "@/lib/stages";
+import { snakeToTitleCase } from "@/lib/stages";
 
 function FieldRow({ field }: { field: StageField }) {
+  const label = snakeToTitleCase(field.key);
+
   if (field.type === "readonly-list") {
     return (
       <div className="rounded-2.5 border border-neutral-border bg-white p-4">
         <div className="mb-2.5 text-[13px] font-bold text-neutral-text">
-          {field.label}
+          {label}
         </div>
         <div className="flex flex-col gap-2">
           {field.items?.map((item) => (
@@ -30,7 +33,7 @@ function FieldRow({ field }: { field: StageField }) {
       <div className="rounded-2.5 border border-dashed border-neutral-border bg-white p-4">
         <div className="mb-2 flex items-center gap-2 text-[13px] font-bold text-neutral-text">
           <Upload size={15} className="text-brand" />
-          {field.label}
+          {label}
         </div>
         <p className="text-[12.5px] text-neutral-muted">
           Belum ada dokumen diunggah untuk bagian ini.
@@ -43,7 +46,7 @@ function FieldRow({ field }: { field: StageField }) {
     <div className="rounded-2.5 border border-neutral-border bg-white p-4">
       <div className="mb-1.5 flex items-center gap-2 text-[13px] font-bold text-neutral-text">
         <Circle size={7} className="shrink-0 fill-brand-light text-brand-light" />
-        {field.label}
+        {label}
       </div>
       <p className="text-[12.5px] text-neutral-muted">
         Belum diisi.
@@ -56,7 +59,7 @@ export function StageFieldList({ fields }: { fields: StageField[] }) {
   return (
     <div className="flex flex-col gap-3">
       {fields.map((field) => (
-        <FieldRow key={field.label} field={field} />
+        <FieldRow key={field.key} field={field} />
       ))}
     </div>
   );

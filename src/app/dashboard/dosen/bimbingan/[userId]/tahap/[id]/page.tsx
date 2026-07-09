@@ -1,7 +1,7 @@
 // ponytail: Server Component — dosen detail tahapan view
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { STAGES } from "@/lib/stages";
+import { STAGES, getStageMetadata } from "@/lib/stages";
 import {
   getMahasiswaByUserId,
   getSubmissionByUserIdAndStage,
@@ -33,6 +33,7 @@ export default async function DosenStagePage({
   if (stageIndex === -1) notFound();
 
   const stage = STAGES[stageIndex];
+  const metadata = getStageMetadata(stage.n);
 
   // ponytail: mock data
   const submissions = getSubmissionByUserIdAndStage(userId, stage.n);
@@ -61,9 +62,9 @@ export default async function DosenStagePage({
               {mhs.nama} ({mhs.nim})
             </span>
           </div>
-          <div className="text-white text-5.5 font-extrabold leading-[1.3] font-display">{stage.name}</div>
+          <div className="text-white text-5.5 font-extrabold leading-[1.3] font-display">{metadata.name}</div>
           <div className="text-white/80 text-3.5 mt-3 leading-normal font-normal">
-            {stage.desc}
+            {metadata.desc}
           </div>
         </div>
 

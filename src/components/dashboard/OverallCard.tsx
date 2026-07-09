@@ -1,10 +1,9 @@
 "use client";
 
-import { STAGES } from "@/lib/stages";
 import { useProgress } from "@/components/providers/ProgressProvider";
 
 export function OverallCard() {
-  const { completedStages } = useProgress();
+  const { completedStages, stages } = useProgress();
 
   return (
     <div className="bg-linear-to-r from-brand to-brand-dark rounded-4 py-6 px-7 flex items-center gap-6 mb-7 flex-wrap">
@@ -13,7 +12,7 @@ export function OverallCard() {
       </div>
       <div className="flex-1 min-w-50">
         <h3 className="font-display text-[17px] font-extrabold text-white mb-1">Progres Keseluruhan</h3>
-        <p className="text-[13.5px] text-white/78 font-semibold">{completedStages.size} dari {STAGES.length} tahap selesai</p>
+        <p className="text-[13.5px] text-white/78 font-semibold">{completedStages.size} dari {stages.length} tahap selesai</p>
       </div>
     </div>
   );

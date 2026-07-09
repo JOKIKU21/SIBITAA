@@ -62,7 +62,7 @@ export interface StageNote {
   id: string;
   studentId: string;
   stageId: string;
-  data: Record<string, any> | null;
+  data: Record<string, unknown> | null;
   createdAt: string;
   completedAt: string | null;
   updatedAt: string;
@@ -150,7 +150,7 @@ export const studentService = {
   },
 
   /** Create a new note for a stage. */
-  createNote(stageId: string, data: Record<string, any>) {
+  createNote(stageId: string, data: Record<string, unknown>) {
     return apiFetch<{ note: StageNote }>(`/api/student/bimbingan/${stageId}/notes`, {
       method: "POST",
       body: JSON.stringify({ data }),
@@ -158,7 +158,7 @@ export const studentService = {
   },
 
   /** Update a stage note. */
-  updateNote(stageId: string, noteId: string, payload: { data?: Record<string, any>; completedAt?: string | null }) {
+  updateNote(stageId: string, noteId: string, payload: { data?: Record<string, unknown>; completedAt?: string | null }) {
     return apiFetch<{ note: StageNote }>(`/api/student/bimbingan/${stageId}/notes/${noteId}`, {
       method: "PATCH",
       body: JSON.stringify(payload),

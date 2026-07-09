@@ -1,5 +1,5 @@
 // ponytail: dummy data for dosen dashboard — frontend only
-import { STAGES } from "./stages";
+import { STAGES, snakeToTitleCase } from "./stages";
 export interface MahasiswaBimbingan {
   userId: string; // PK from student_profile
   nim: string;
@@ -209,7 +209,8 @@ export function getSubmissionByUserIdAndStage(userId: string, stageN: number) {
   return stage.fields
     .filter(f => f.type !== "file")
     .map(f => {
-      let val = `Mahasiswa (${userId}) telah mengisi bagian ${f.label} pada tahapan ini. Ini adalah data dummy yang digenerate otomatis berdasarkan tipe field.`;
+      const label = snakeToTitleCase(f.key);
+      let val = `Mahasiswa (${userId}) telah mengisi bagian ${label} pada tahapan ini. Ini adalah data dummy yang digenerate otomatis berdasarkan tipe field.`;
       
       // Override specific values based on field type
       if (f.type === "readonly-list" && f.items) {
@@ -217,7 +218,7 @@ export function getSubmissionByUserIdAndStage(userId: string, stageN: number) {
       }
       
       return {
-        label: f.label,
+        label,
         value: val
       };
     });
@@ -229,9 +230,12 @@ export function getFilesByUserIdAndStage(userId: string, stageN: number) {
   
   return stage.fields
     .filter(f => f.type === "file")
-    .map((f, i) => ({
-      name: `${f.label.replace(/\s+/g, "_")}_${userId}_v1.pdf`,
-      url: "#",
-      size: `${(Math.random() * 5 + 1).toFixed(1)} MB`
-    }));
+    .map((f, i) => {
+      const label = snakeToTitleCase(f.key);
+      return {
+        name: `${label.replace(/\s+/g, "_")}_${userId}_v1.pdf`,
+        url: "#",
+        size: `${(Math.random() * 5 + 1).toFixed(1)} MB`
+      };
+    });
 }

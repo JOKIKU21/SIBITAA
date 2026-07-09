@@ -134,7 +134,9 @@ returns:
       "studentId": "user-uuid-1234",
       "stageId": "stage_1",
       "data": {
-        "comment": "Draft pertama diserahkan ke pembimbing"
+        "topik_penelitian": "Draft pertama diserahkan ke pembimbing",
+        "rumusan_masalah": "Perlu diperjelas pada bagian latar belakang",
+        "judul_penelitian": "Analisis Pengaruh Media Sosial terhadap Perilaku Konsumen"
       },
       "createdAt": "2026-07-08T14:26:49.546Z",
       "completedAt": "2026-07-08T14:26:49.546Z",
@@ -153,6 +155,62 @@ returns:
       "createdAt": "2026-07-08T14:26:49.546Z"
     }
   ]
+}
+```
+
+### Create Note for Student Stage
+
+```sh
+curl -X POST http://localhost:3001/api/student/bimbingan/:stageId/notes \
+  -H "Cookie: better-auth.session_token=..." \
+  -H "Content-Type: application/json" \
+  -d '{"data": {"topik_penelitian": "Draft pertama diserahkan ke pembimbing", "rumusan_masalah": "Perlu diperjelas pada bagian latar belakang", "judul_penelitian": "Analisis Pengaruh Media Sosial terhadap Perilaku Konsumen"}}'
+```
+
+returns:
+
+```json
+{
+  "note": {
+    "id": "note-uuid-999",
+    "studentId": "user-uuid-1234",
+    "stageId": "stage_1",
+    "data": {
+      "topik_penelitian": "Draft pertama diserahkan ke pembimbing",
+      "rumusan_masalah": "Perlu diperjelas pada bagian latar belakang",
+      "judul_penelitian": "Analisis Pengaruh Media Sosial terhadap Perilaku Konsumen"
+    },
+    "createdAt": "2026-07-09T02:46:18.329Z",
+    "completedAt": null,
+    "updatedAt": null
+  }
+}
+```
+
+### Update Detail Student Stage
+
+```sh
+curl -X PATCH http://localhost:3001/api/student/bimbingan/:stageId \
+  -H "Cookie: better-auth.session_token=..." \
+  -H "Content-Type: application/json" \
+  -d '{"data": {"topik_penelitian": "Topik penelitian telah diperbarui", "rumusan_masalah": "Rumusan masalah telah diperjelas", "judul_penelitian": "Judul penelitian telah disesuaikan"}}'
+```
+
+returns:
+
+```json
+{
+  "note": {
+    "id": "note-uuid-999",
+    "studentId": "user-uuid-1234",
+    "stageId": "stage_1",
+    "data": {
+      "comment": "Draft pertama diserahkan ke pembimbing"
+    },
+    "createdAt": "2026-07-09T02:46:18.329Z",
+    "completedAt": "2026-07-09T02:46:18.329Z",
+    "updatedAt": "2026-07-09T02:46:18.329Z"
+  }
 }
 ```
 
