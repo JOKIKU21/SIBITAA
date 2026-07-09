@@ -4,12 +4,23 @@ import { useEffect, useState } from "react";
 import Button from "@/components/Button";
 import Input from "@/components/Input";
 import { useToast } from "@/components/providers/ToastProvider";
+import { authClient } from "@/lib/auth-client";
 import {
   useChangePassword,
   useStudentProfile,
   useUpdateProfile,
 } from "@/hooks/useStudentProfile";
-import ProfilLoading from "../../app/dashboard/mahasiswa/profil/loading";
+import {
+  useLecturerProfile,
+  useUpdateLecturerProfile,
+} from "@/hooks/useLecturer";
+import { StudentProfile } from "@/services/student";
+import { GetLecturerProfileResponse } from "@/services/lecturer";
+import ProfilLoading from "@/app/dashboard/mahasiswa/profil/loading";
+
+interface ProfilFormProps {
+  initialRole?: "student" | "lecturer" | "admin" | "superadmin";
+}
 
 const EMPTY_PROFILE_FORM = {
   name: "",
@@ -24,42 +35,105 @@ const EMPTY_PASSWORD_FORM = {
   confirmPassword: "",
 };
 
-export default function ProfilForm() {
+export default function ProfilForm({ initialRole }: ProfilFormProps = {}) {
   const toast = useToast();
+  const { data: session, isPending: isSessionLoading } = authClient.useSession();
+  const user = session?.user as any;
+
+  const resolvedRole =
+    initialRole ||
+    (user?.role as "student" | "lecturer" | "admin" | "superadmin") ||
+    "student";
+
+  // Student profile queries
   const {
-    data: profile,
-    isLoading,
-    isError,
-    error,
-    refetch,
-  } = useStudentProfile();
-  const updateProfile = useUpdateProfile();
+    data: studentProfileData,
+    isLoading: isStudentLoading,
+    isError: isStudentError,
+    error: studentError,
+    refetch: refetchStudent,
+  } = useStudentProfile({
+    enabled: resolvedRole === "student" && !!session,
+  });
+  const studentProfile = studentProfileData as StudentProfile | undefined;
+  const updateStudentProfile = useUpdateProfile();
+
+  // Lecturer profile queries
+  const {
+    data: lecturerProfileData,
+    isLoading: isLecturerLoading,
+    isError: isLecturerError,
+    error: lecturerError,
+    refetch: refetchLecturer,
+  } = useLecturerProfile({
+    enabled: resolvedRole === "lecturer" && !!session,
+  });
+  const lecturerProfileResponse = lecturerProfileData as GetLecturerProfileResponse | undefined;
+  const updateLecturerProfile = useUpdateLecturerProfile();
+
+  // Common password query
   const changePassword = useChangePassword();
 
   const [form, setForm] = useState(EMPTY_PROFILE_FORM);
   const [passwordForm, setPasswordForm] = useState(EMPTY_PASSWORD_FORM);
   const [isEditing, setIsEditing] = useState(false);
 
-  // Seed the editable form once the profile arrives (or changes after a save).
+  // Seed form data based on role and loaded profile
   useEffect(() => {
-    if (profile) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (resolvedRole === "student" && studentProfile) {
       setForm({
-        name: profile.name ?? "",
-        education: profile.education ?? "",
-        studyProgram: profile.studyProgram ?? "",
-        campus: profile.campus ?? "",
+        name: studentProfile.name ?? "",
+        education: studentProfile.education ?? "",
+        studyProgram: studentProfile.studyProgram ?? "",
+        campus: studentProfile.campus ?? "",
+      });
+    } else if (
+      resolvedRole === "lecturer" &&
+      user &&
+      lecturerProfileResponse?.profile
+    ) {
+      setForm({
+        name: user.name ?? "",
+        education: "",
+        studyProgram: lecturerProfileResponse.profile.department ?? "",
+        campus: lecturerProfileResponse.profile.campus ?? "",
+      });
+    } else if (
+      (resolvedRole === "admin" || resolvedRole === "superadmin") &&
+      user
+    ) {
+      setForm({
+        name: user.name ?? "",
+        education: "",
+        studyProgram: "",
+        campus: "",
       });
     }
-  }, [profile]);
+  }, [studentProfile, lecturerProfileResponse, user, resolvedRole]);
 
   const resetFormFromProfile = () => {
-    setForm({
-      name: profile?.name ?? "",
-      education: profile?.education ?? "",
-      studyProgram: profile?.studyProgram ?? "",
-      campus: profile?.campus ?? "",
-    });
+    if (resolvedRole === "student") {
+      setForm({
+        name: studentProfile?.name ?? "",
+        education: studentProfile?.education ?? "",
+        studyProgram: studentProfile?.studyProgram ?? "",
+        campus: studentProfile?.campus ?? "",
+      });
+    } else if (resolvedRole === "lecturer") {
+      setForm({
+        name: user?.name ?? "",
+        education: "",
+        studyProgram: lecturerProfileResponse?.profile?.department ?? "",
+        campus: lecturerProfileResponse?.profile?.campus ?? "",
+      });
+    } else if (resolvedRole === "admin" || resolvedRole === "superadmin") {
+      setForm({
+        name: user?.name ?? "",
+        education: "",
+        studyProgram: "",
+        campus: "",
+      });
+    }
   };
 
   const handleCancelEdit = () => {
@@ -68,26 +142,49 @@ export default function ProfilForm() {
   };
 
   const handleSaveProfile = () => {
-    updateProfile.mutate(
-      {
-        name: form.name,
-        education: form.education,
-        studyProgram: form.studyProgram,
-        campus: form.campus,
-      },
-      {
-        onSuccess: () => {
-          setIsEditing(false);
-          toast.success("Profil diperbarui", {
-            description: "Perubahan berhasil disimpan.",
-          });
+    if (resolvedRole === "student") {
+      updateStudentProfile.mutate(
+        {
+          name: form.name,
+          education: form.education,
+          studyProgram: form.studyProgram,
+          campus: form.campus,
         },
-        onError: (err) =>
-          toast.error("Gagal menyimpan profil", {
-            description: err instanceof Error ? err.message : undefined,
-          }),
-      },
-    );
+        {
+          onSuccess: () => {
+            setIsEditing(false);
+            toast.success("Profil diperbarui", {
+              description: "Perubahan berhasil disimpan.",
+            });
+          },
+          onError: (err) =>
+            toast.error("Gagal menyimpan profil", {
+              description: err instanceof Error ? err.message : undefined,
+            }),
+        }
+      );
+    } else {
+      // For lecturer, admin, superadmin - updates user name
+      updateLecturerProfile.mutate(
+        {
+          name: form.name,
+        },
+        {
+          onSuccess: async () => {
+            setIsEditing(false);
+            // Refresh Better Auth session to sync the header/sidebar immediately
+            await authClient.getSession();
+            toast.success("Profil diperbarui", {
+              description: "Perubahan berhasil disimpan.",
+            });
+          },
+          onError: (err) =>
+            toast.error("Gagal menyimpan profil", {
+              description: err instanceof Error ? err.message : undefined,
+            }),
+        }
+      );
+    }
   };
 
   const handleChangePassword = () => {
@@ -118,21 +215,70 @@ export default function ProfilForm() {
           toast.error("Gagal mengubah password", {
             description: err instanceof Error ? err.message : undefined,
           }),
-      },
+      }
     );
   };
 
-  const displayName = form.name || profile?.name || "";
-  const avatarInitial = displayName.charAt(0).toUpperCase() || "?";
-  // Editable fields render as flat `ghost` inputs in view mode and switch to
-  // `bordered` once Edit is toggled, making editability obvious at a glance.
+  // Determine displays
+  let displayName = "";
+  let avatarInitial = "?";
+  let displaySub = "";
+  let badgeText = "";
+
+  if (resolvedRole === "student") {
+    displayName = form.name || studentProfile?.name || "";
+    avatarInitial = displayName.charAt(0).toUpperCase() || "?";
+    displaySub = studentProfile
+      ? `${studentProfile.studyProgram} · ${studentProfile.campus}`
+      : "";
+    badgeText =
+      studentProfile?.status === "active"
+        ? "Mahasiswa Aktif"
+        : studentProfile?.status || "Mahasiswa";
+  } else if (resolvedRole === "lecturer") {
+    displayName = form.name || user?.name || "";
+    avatarInitial = displayName.charAt(0).toUpperCase() || "?";
+    displaySub = lecturerProfileResponse?.profile
+      ? `${lecturerProfileResponse.profile.department} · ${lecturerProfileResponse.profile.campus}`
+      : "";
+    badgeText = "Dosen Pembimbing";
+  } else if (resolvedRole === "admin") {
+    displayName = form.name || user?.name || "";
+    avatarInitial = displayName.charAt(0).toUpperCase() || "?";
+    displaySub = "Administrator";
+    badgeText = "Admin";
+  } else if (resolvedRole === "superadmin") {
+    displayName = form.name || user?.name || "";
+    avatarInitial = displayName.charAt(0).toUpperCase() || "?";
+    displaySub = "Super Administrator";
+    badgeText = "Super Admin";
+  }
+
+  const isEditingAllowed = true;
+  const isUpdatingPending =
+    updateStudentProfile.isPending || updateLecturerProfile.isPending;
+
   const editableVariant = isEditing ? "bordered" : "ghost";
+
+  const isLoading =
+    isSessionLoading ||
+    (resolvedRole === "student" && isStudentLoading) ||
+    (resolvedRole === "lecturer" && isLecturerLoading);
+
+  const isError =
+    !session ||
+    (resolvedRole === "student" && (isStudentError || !studentProfile)) ||
+    (resolvedRole === "lecturer" &&
+      (isLecturerError || !lecturerProfileResponse));
+
+  const errorObj = resolvedRole === "student" ? studentError : lecturerError;
+  const refetchFn = resolvedRole === "student" ? refetchStudent : refetchLecturer;
 
   if (isLoading) {
     return <ProfilLoading />;
   }
 
-  if (isError || !profile) {
+  if (isError) {
     return (
       <div className="p-7 max-[600px]:p-4">
         <div className="bg-white border border-neutral-border rounded-4 p-6.5 max-w-md">
@@ -140,11 +286,11 @@ export default function ProfilForm() {
             Gagal memuat profil
           </h2>
           <p className="text-3.5 text-neutral-muted mb-4">
-            {error instanceof Error
-              ? error.message
+            {errorObj instanceof Error
+              ? errorObj.message
               : "Terjadi kesalahan saat mengambil data profil."}
           </p>
-          <Button variant="brand" size="md" onClick={() => refetch()}>
+          <Button variant="brand" size="md" onClick={() => refetchFn?.()}>
             Coba Lagi
           </Button>
         </div>
@@ -207,9 +353,11 @@ export default function ProfilForm() {
             <div className="font-display text-4.5 font-extrabold mb-1">
               {displayName}
             </div>
-            <div className="text-[13px] text-neutral-muted mb-4.5">
-              {profile.studyProgram} &middot; {profile.campus}
-            </div>
+            {displaySub && (
+              <div className="text-[13px] text-neutral-muted mb-4.5">
+                {displaySub}
+              </div>
+            )}
             <span className="inline-flex items-center gap-1.5 bg-brand-bg text-brand py-1.5 px-3.5 rounded-full text-[12.5px] font-bold">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
                 <path
@@ -220,7 +368,7 @@ export default function ProfilForm() {
                   strokeLinejoin="round"
                 />
               </svg>
-              {profile.status === "active" ? "Mahasiswa Aktif" : profile.status}
+              {badgeText}
             </span>
           </div>
 
@@ -231,7 +379,7 @@ export default function ProfilForm() {
                 <h3 className="font-display text-[15px] font-extrabold">
                   Informasi Pribadi
                 </h3>
-                {!isEditing && (
+                {!isEditing && isEditingAllowed && (
                   <Button
                     variant="outline"
                     size="custom"
@@ -259,6 +407,7 @@ export default function ProfilForm() {
                 )}
               </div>
               <div className="grid grid-cols-2 gap-4 max-[700px]:grid-cols-1">
+                {/* Nama Lengkap */}
                 <div className="flex flex-col gap-1.5">
                   <label className="text-[12.5px] font-semibold text-neutral-muted">
                     Nama Lengkap
@@ -273,17 +422,36 @@ export default function ProfilForm() {
                     }
                   />
                 </div>
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-[12.5px] font-semibold text-neutral-muted">
-                    NIM
-                  </label>
-                  <Input
-                    variant="ghost"
-                    type="text"
-                    value={profile.nim}
-                    readOnly
-                  />
-                </div>
+
+                {/* NIM / NIDN */}
+                {resolvedRole === "student" && (
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[12.5px] font-semibold text-neutral-muted">
+                      NIM
+                    </label>
+                    <Input
+                      variant="ghost"
+                      type="text"
+                      value={studentProfile?.nim}
+                      readOnly
+                    />
+                  </div>
+                )}
+                {resolvedRole === "lecturer" && (
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[12.5px] font-semibold text-neutral-muted">
+                      NIDN
+                    </label>
+                    <Input
+                      variant="ghost"
+                      type="text"
+                      value={lecturerProfileResponse?.profile?.nidn}
+                      readOnly
+                    />
+                  </div>
+                )}
+
+                {/* Email */}
                 <div className="flex flex-col gap-1.5">
                   <label className="text-[12.5px] font-semibold text-neutral-muted">
                     Email
@@ -291,10 +459,16 @@ export default function ProfilForm() {
                   <Input
                     variant="ghost"
                     type="email"
-                    value={profile.email}
+                    value={
+                      resolvedRole === "student"
+                        ? studentProfile?.email
+                        : user?.email
+                    }
                     readOnly
                   />
                 </div>
+
+                {/* No. HP */}
                 <div className="flex flex-col gap-1.5">
                   <label className="text-[12.5px] font-semibold text-neutral-muted">
                     No. HP
@@ -302,63 +476,109 @@ export default function ProfilForm() {
                   <Input
                     variant="ghost"
                     type="text"
-                    value={profile.phoneNumber}
+                    value={
+                      (resolvedRole === "student"
+                        ? studentProfile?.phoneNumber
+                        : user?.phoneNumber) || "-"
+                    }
                     readOnly
                   />
                 </div>
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-[12.5px] font-semibold text-neutral-muted">
-                    Program Studi
-                  </label>
-                  <Input
-                    variant={editableVariant}
-                    type="text"
-                    value={form.studyProgram}
-                    readOnly={!isEditing}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, studyProgram: e.target.value }))
-                    }
-                  />
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-[12.5px] font-semibold text-neutral-muted">
-                    Asal Kampus
-                  </label>
-                  <Input
-                    variant={editableVariant}
-                    type="text"
-                    value={form.campus}
-                    readOnly={!isEditing}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, campus: e.target.value }))
-                    }
-                  />
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-[12.5px] font-semibold text-neutral-muted">
-                    Jenjang Pendidikan
-                  </label>
-                  <Input
-                    variant={editableVariant}
-                    type="text"
-                    value={form.education}
-                    readOnly={!isEditing}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, education: e.target.value }))
-                    }
-                  />
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-[12.5px] font-semibold text-neutral-muted">
-                    Dosen Pembimbing
-                  </label>
-                  <Input
-                    variant="ghost"
-                    type="text"
-                    value={profile.advisor?.name ?? "Belum ada"}
-                    readOnly
-                  />
-                </div>
+
+                {/* Program Studi / Departemen */}
+                {resolvedRole === "student" && (
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[12.5px] font-semibold text-neutral-muted">
+                      Program Studi
+                    </label>
+                    <Input
+                      variant={editableVariant}
+                      type="text"
+                      value={form.studyProgram}
+                      readOnly={!isEditing}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, studyProgram: e.target.value }))
+                      }
+                    />
+                  </div>
+                )}
+                {resolvedRole === "lecturer" && (
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[12.5px] font-semibold text-neutral-muted">
+                      Departemen
+                    </label>
+                    <Input
+                      variant="ghost"
+                      type="text"
+                      value={form.studyProgram}
+                      readOnly
+                    />
+                  </div>
+                )}
+
+                {/* Asal Kampus */}
+                {resolvedRole === "student" && (
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[12.5px] font-semibold text-neutral-muted">
+                      Asal Kampus
+                    </label>
+                    <Input
+                      variant={editableVariant}
+                      type="text"
+                      value={form.campus}
+                      readOnly={!isEditing}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, campus: e.target.value }))
+                      }
+                    />
+                  </div>
+                )}
+                {resolvedRole === "lecturer" && (
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[12.5px] font-semibold text-neutral-muted">
+                      Asal Kampus
+                    </label>
+                    <Input
+                      variant="ghost"
+                      type="text"
+                      value={form.campus}
+                      readOnly
+                    />
+                  </div>
+                )}
+
+                {/* Jenjang Pendidikan (student only) */}
+                {resolvedRole === "student" && (
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[12.5px] font-semibold text-neutral-muted">
+                      Jenjang Pendidikan
+                    </label>
+                    <Input
+                      variant={editableVariant}
+                      type="text"
+                      value={form.education}
+                      readOnly={!isEditing}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, education: e.target.value }))
+                      }
+                    />
+                  </div>
+                )}
+
+                {/* Dosen Pembimbing (student only) */}
+                {resolvedRole === "student" && (
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[12.5px] font-semibold text-neutral-muted">
+                      Dosen Pembimbing
+                    </label>
+                    <Input
+                      variant="ghost"
+                      type="text"
+                      value={studentProfile?.advisor?.name ?? "Belum ada"}
+                      readOnly
+                    />
+                  </div>
+                )}
               </div>
               {isEditing && (
                 <div className="flex items-center justify-end gap-3 mt-4.5">
@@ -366,7 +586,7 @@ export default function ProfilForm() {
                     variant="outline-neutral"
                     size="custom"
                     className="py-2.75 px-6.5 rounded-2.25 text-3.5 font-bold"
-                    disabled={updateProfile.isPending}
+                    disabled={isUpdatingPending}
                     onClick={handleCancelEdit}
                   >
                     Batal
@@ -375,7 +595,7 @@ export default function ProfilForm() {
                     variant="brand"
                     size="custom"
                     className="py-2.75 px-6.5 rounded-2.25 text-3.5 font-bold"
-                    isLoading={updateProfile.isPending}
+                    isLoading={isUpdatingPending}
                     onClick={handleSaveProfile}
                   >
                     Simpan Perubahan

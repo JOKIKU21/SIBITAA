@@ -23,18 +23,6 @@ export function StatCards({ stats }: { stats: { total: number; selesai: number; 
       ),
     },
     {
-      label: "Selesai Semester Ini",
-      value: stats.selesai,
-      iconBg: "bg-success-bg",
-      subtitle: `↑ ${stats.selesai} dari semester lalu`,
-      icon: (
-        <svg viewBox="0 0 24 24" fill="none" className="w-5.5 h-5.5 text-success">
-          <path d="M9 11l3 3L22 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-          <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      ),
-    },
-    {
       label: "Mendekati Tenggat",
       value: stats.mendekatTenggat,
       iconBg: "bg-warning-bg",

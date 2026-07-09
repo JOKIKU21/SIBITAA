@@ -15,10 +15,11 @@ export const studentKeys = {
 };
 
 /** Read the current student's profile. */
-export function useStudentProfile() {
+export function useStudentProfile(options?: any) {
   return useQuery({
     queryKey: studentKeys.profile(),
     queryFn: () => studentService.getProfile(),
+    ...options,
   });
 }
 

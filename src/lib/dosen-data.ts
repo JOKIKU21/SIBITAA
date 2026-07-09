@@ -198,7 +198,22 @@ export function getTahapanDistribution() {
 }
 
 export function getMahasiswaByUserId(userId: string) {
-  return MAHASISWA_BIMBINGAN.find((m) => m.userId === userId) ?? null;
+  const found = MAHASISWA_BIMBINGAN.find((m) => m.userId === userId);
+  if (found) return found;
+
+  // Fallback for real backend IDs to prevent 404s
+  return {
+    userId,
+    nim: "10115001",
+    nama: "Mahasiswa SIBITA",
+    prodi: "Teknik Informatika",
+    judul: "Analisis Performa Model Bahasa Besar pada Dataset Lokal.",
+    tahapanAktif: 4,
+    tahapanNama: "Revisi Proposal Penelitian",
+    status: "aktif" as const,
+    progress: 18,
+    avatarColor: "from-[#818CF8] to-[#6366F1]",
+  };
 }
 
 // ponytail: mock submission data dynamically generated from stage fields
