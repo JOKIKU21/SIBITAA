@@ -177,18 +177,13 @@ const INITIAL_REGISTRATIONS: RegistrationItem[] = [
 export function RegistrasiMahasiswaList() {
   const [registrations, setRegistrations] = useState<RegistrationItem[]>(INITIAL_REGISTRATIONS);
   const [activeTab, setActiveTab] = useState<"pending" | "approved" | "rejected">("pending");
-  const [searchQuery, setSearchQuery] = useState("");
   const [selectedReg, setSelectedReg] = useState<RegistrationItem | null>(null);
   const [rejectReasonInput, setRejectReasonInput] = useState("");
   const [isRejecting, setIsRejecting] = useState(false);
 
-  // Filter & Search registrations
+  // Filter registrations by active tab
   const filteredRegs = registrations.filter((reg) => {
-    const matchesTab = reg.status === activeTab;
-    const matchesSearch =
-      reg.student.user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      reg.student.nim.includes(searchQuery);
-    return matchesTab && matchesSearch;
+    return reg.status === activeTab;
   });
 
   const handleApprove = (id: string) => {
@@ -258,8 +253,8 @@ export function RegistrasiMahasiswaList() {
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Search & Tabs */}
-      <div className="bg-white border border-neutral-border rounded-3.5 p-5 flex flex-wrap gap-4 items-center justify-between">
+      {/* Tabs */}
+      <div className="bg-white border border-neutral-border rounded-3.5 p-5 flex flex-wrap gap-4 items-center justify-start">
         <div className="flex gap-1.5 bg-neutral-bg p-1.25 rounded-2.75">
           {(["pending", "approved", "rejected"] as const).map((tab) => {
             const count = registrations.filter(r => r.status === tab).length;
@@ -285,24 +280,6 @@ export function RegistrasiMahasiswaList() {
               </button>
             );
           })}
-        </div>
-
-        <div className="flex-1 max-w-sm min-w-60">
-          <div className="relative">
-            <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-neutral-muted">
-              <svg viewBox="0 0 24 24" fill="none" className="w-4.5 h-4.5">
-                <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="1.8" />
-                <path d="m21 21-4.3-4.3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-              </svg>
-            </span>
-            <input
-              type="text"
-              placeholder="Cari berdasarkan nama atau NIM..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-neutral-bg border-[1.5px] border-neutral-border rounded-2.5 py-2.25 pl-10 pr-4 text-3.5 outline-none transition-[border-color] duration-200 font-sans focus:border-brand-light"
-            />
-          </div>
         </div>
       </div>
 

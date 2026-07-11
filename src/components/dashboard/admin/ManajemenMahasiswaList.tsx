@@ -4,42 +4,20 @@ import { useState } from "react";
 import { MAHASISWA_LIST, type MahasiswaItem } from "@/lib/admin-data";
 
 export function ManajemenMahasiswaList() {
-  const [search, setSearch] = useState("");
   const [prodiFilter, setProdiFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
 
   // Filtering logic
   const filteredMahasiswa = MAHASISWA_LIST.filter((m) => {
-    const matchesSearch =
-      m.nama.toLowerCase().includes(search.toLowerCase()) ||
-      m.nim.includes(search);
     const matchesProdi = prodiFilter === "All" || m.prodi === prodiFilter;
     const matchesStatus = statusFilter === "All" || m.status === statusFilter;
-    return matchesSearch && matchesProdi && matchesStatus;
+    return matchesProdi && matchesStatus;
   });
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Search & Filters */}
-      <div className="bg-white border border-neutral-border rounded-3.5 p-5 flex flex-wrap gap-4 items-center justify-between">
-        <div className="flex-1 min-w-70">
-          <div className="relative">
-            <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-neutral-muted">
-              <svg viewBox="0 0 24 24" fill="none" className="w-4.5 h-4.5">
-                <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="1.8" />
-                <path d="m21 21-4.3-4.3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-              </svg>
-            </span>
-            <input
-              type="text"
-              placeholder="Cari mahasiswa berdasarkan nama atau NIM..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-neutral-bg border-[1.5px] border-neutral-border rounded-2.5 py-2.5 pl-10 pr-4 text-3.5 outline-none transition-[border-color] duration-200 font-sans focus:border-brand-light"
-            />
-          </div>
-        </div>
-
+      {/* Filters */}
+      <div className="bg-white border border-neutral-border rounded-3.5 p-5 flex flex-wrap gap-4 items-center justify-start">
         <div className="flex items-center gap-3.5 flex-wrap">
           {/* Prodi Filter */}
           <div className="flex flex-col gap-1">
@@ -167,7 +145,7 @@ export function ManajemenMahasiswaList() {
               {filteredMahasiswa.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="py-12 text-center text-[13.5px] text-neutral-muted">
-                    Tidak ada data mahasiswa yang cocok dengan pencarian Anda.
+                    Tidak ada data mahasiswa yang cocok dengan kriteria filter Anda.
                   </td>
                 </tr>
               ) : null}
