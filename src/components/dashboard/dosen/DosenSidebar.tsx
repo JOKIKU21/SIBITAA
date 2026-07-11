@@ -26,6 +26,7 @@ export function DosenSidebar() {
 
   const isDashboardActive = pathname === "/dashboard/dosen";
   const isBimbinganActive = pathname.startsWith("/dashboard/dosen/bimbingan");
+  const isChatActive = pathname.startsWith("/dashboard/dosen/chat");
   const isProfilActive = pathname === "/dashboard/dosen/profil";
 
   const linkClass = (active: boolean) =>
@@ -79,6 +80,12 @@ export function DosenSidebar() {
             <path d="M16 3.13a4 4 0 0 1 0 7.75M21 21v-1a4 4 0 0 0-3-3.87" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
           </svg>
           Bimbingan
+        </Link>
+        <Link href="/dashboard/dosen/chat" className={linkClass(isChatActive)}>
+          <svg viewBox="0 0 24 24" fill="none" className={iconClass(isChatActive)}>
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          Chat Mahasiswa
         </Link>
         <Link href="/dashboard/dosen/profil" className={linkClass(isProfilActive)}>
           <svg viewBox="0 0 24 24" fill="none" className={iconClass(isProfilActive)}>

@@ -9,6 +9,7 @@ export const lecturerKeys = {
   profile: () => [...lecturerKeys.all, "profile"] as const,
   summary: () => [...lecturerKeys.all, "summary"] as const,
   students: () => [...lecturerKeys.all, "students"] as const,
+  chatThreads: () => [...lecturerKeys.all, "chatThreads"] as const,
 };
 
 /** Read the current lecturer's profile. */
@@ -97,6 +98,15 @@ export function useLecturerSendChatMessage() {
     }) => lecturerService.sendChatMessage(studentId, stageId, payload),
     onSuccess: (_, { studentId, stageId }) => {
       queryClient.invalidateQueries({ queryKey: ["lecturer", "chat", studentId, stageId] });
+      queryClient.invalidateQueries({ queryKey: lecturerKeys.chatThreads() });
     },
+  });
+}
+
+/** Fetch all chat threads for the lecturer. */
+export function useLecturerChatThreads() {
+  return useQuery({
+    queryKey: lecturerKeys.chatThreads(),
+    queryFn: () => lecturerService.getChatThreads(),
   });
 }

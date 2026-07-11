@@ -293,3 +293,43 @@ Dosen mengirimkan pesan ke mahasiswa bimbingannya pada tahapan bimbingan tertent
   }
 }
 ```
+
+
+### 9. Daftar Thread Obrolan Mahasiswa (List Chat Threads)
+Menampilkan daftar seluruh mahasiswa bimbingan dosen tersebut beserta preview pesan terakhir dan total pesan dari chat thread mereka.
+
+* **Endpoint:** `GET /api/lecturer/chat`
+* **Autentikasi:** Wajib (Role: `lecturer`)
+
+#### Contoh Response (200 OK)
+```json
+{
+  "threads": [
+    {
+      "student": {
+        "userId": "student-uuid-1234",
+        "name": "Mahasiswa SIBITA",
+        "email": "student@sibita.com",
+        "image": "https://lh3.googleusercontent.com/a/acds12"
+      },
+      "latestMessage": {
+        "id": "chat-uuid-111",
+        "studentId": "student-uuid-1234",
+        "senderId": "student-uuid-1234",
+        "stageOrder": 1,
+        "message": "Permisi pak, saya sudah mengunggah revisi proposal bab 1.",
+        "fileName": "Proposal_Revisi_v1.pdf",
+        "fileUrl": "https://storage.sibita.com/files/proposal_revisi_v1.pdf",
+        "fileType": "application/pdf",
+        "fileSize": 2048576,
+        "createdAt": "2026-07-11T01:23:45.000Z",
+        "stage": {
+          "order": 1,
+          "name": "Pengajuan Proposal"
+        }
+      },
+      "totalMessages": 12
+    }
+  ]
+}
+```

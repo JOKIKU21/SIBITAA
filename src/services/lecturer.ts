@@ -77,6 +77,38 @@ export interface GetLecturerChatMessagesResponse {
   };
 }
 
+export interface ChatThreadLatestMessage {
+  id: string;
+  studentId: string;
+  senderId: string;
+  stageOrder: number;
+  message: string | null;
+  fileName: string | null;
+  fileUrl: string | null;
+  fileType: string | null;
+  fileSize: number | null;
+  createdAt: string;
+  stage: {
+    order: number;
+    name: string;
+  };
+}
+
+export interface ChatThread {
+  student: {
+    userId: string;
+    name: string;
+    email: string;
+    image: string | null;
+  };
+  latestMessage: ChatThreadLatestMessage | null;
+  totalMessages: number;
+}
+
+export interface GetLecturerChatThreadsResponse {
+  threads: ChatThread[];
+}
+
 export const lecturerService = {
   /** Fetch the signed-in lecturer's profile information. */
   getProfile() {
@@ -149,6 +181,13 @@ export const lecturerService = {
     return apiFetch<unknown>("/api/users/profile", {
       method: "PATCH",
       body: JSON.stringify(payload),
+    });
+  },
+
+  /** Fetch all chat threads/conversations with students. */
+  getChatThreads() {
+    return apiFetch<GetLecturerChatThreadsResponse>("/api/lecturer/chat", {
+      method: "GET",
     });
   },
 };
