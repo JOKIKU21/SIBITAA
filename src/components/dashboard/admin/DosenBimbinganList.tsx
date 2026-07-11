@@ -1,9 +1,23 @@
 // ponytail: Server Component — dosen list with bimbingan count + progress bar
 
 import Link from "next/link";
-import type { DosenItem } from "@/lib/admin-data";
+import type { LecturerItem } from "@/services/admin";
 
-export function DosenBimbinganList({ dosenList }: { dosenList: DosenItem[] }) {
+const AVATAR_COLORS = [
+  "from-[#818CF8] to-[#6366F1]",
+  "from-[#34D399] to-[#059669]",
+  "from-[#FB923C] to-[#EA580C]",
+  "from-[#F472B6] to-[#EC4899]",
+  "from-[#60A5FA] to-[#2563EB]",
+  "from-[#A78BFA] to-[#7C3AED]",
+];
+
+function getAvatarColor(name: string) {
+  const sum = name.split("").reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
+  return AVATAR_COLORS[sum % AVATAR_COLORS.length];
+}
+
+export function DosenBimbinganList({ lecturerList }: { lecturerList: LecturerItem[] }) {
   return (
     <div className="bg-white border border-neutral-border rounded-3.5 overflow-hidden">
       <div className="flex items-center justify-between px-6 pt-5 pb-4">
@@ -17,27 +31,32 @@ export function DosenBimbinganList({ dosenList }: { dosenList: DosenItem[] }) {
       </div>
 
       <div className="px-6 pb-5 flex flex-col gap-4">
-        {dosenList.map((dosen) => {
+        {lecturerList.map((lecturer) => {
+          const avatarColor = getAvatarColor(lecturer.name);
           return (
-            <div key={dosen.nip} className="flex items-center gap-3.5">
-              <div className={`w-10 h-10 rounded-full bg-linear-to-br ${dosen.avatarColor} flex items-center justify-center text-[14px] font-bold text-white shrink-0`}>
-                {dosen.nama.charAt(0)}
+            <div key={lecturer.id} className="flex items-center gap-3.5">
+              <div className={`w-10 h-10 rounded-full bg-linear-to-br ${avatarColor} flex items-center justify-center text-[14px] font-bold text-white shrink-0`}>
+                {lecturer.name.charAt(0)}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="text-[13.5px] font-bold text-neutral-text">{dosen.nama}</div>
-                    <div className="text-[11.5px] text-neutral-muted">{dosen.prodi}</div>
+                    <div className="text-[13.5px] font-bold text-neutral-text">{lecturer.name}</div>
+                    <div className="text-[11.5px] text-neutral-muted">{lecturer.department}</div>
                   </div>
                   <div className="text-right shrink-0 ml-3">
-                    <div className="text-[13px] font-bold text-neutral-text">{dosen.totalBimbingan} mhs</div>
+                    <div className="text-[13px] font-bold text-neutral-text">{lecturer.activeAdviseeCount} mhs</div>
                   </div>
                 </div>
               </div>
             </div>
           );
         })}
+        {lecturerList.length === 0 && (
+          <div className="text-center py-6 text-[13px] text-neutral-muted">Tidak ada dosen pembimbing.</div>
+        )}
       </div>
     </div>
   );
 }
+

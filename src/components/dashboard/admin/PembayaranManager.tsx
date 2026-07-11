@@ -21,133 +21,17 @@ interface PaymentRecord {
   payments: InstallmentItem[];
 }
 
-const INITIAL_PAYMENTS: PaymentRecord[] = [
-  {
-    registrationId: "registration-uuid-111",
-    studentId: "student-uuid-1234",
-    studentName: "Ahmad Maulana",
-    totalAmount: 5000000,
-    paidAmount: 2500000,
-    paymentOption: "installment",
-    status: "approved",
-    payments: [
-      {
-        id: "payment-uuid-222",
-        installment: 1,
-        amount: 2500000,
-        status: "paid",
-        paidAt: "2026-07-11T01:23:45.000Z"
-      },
-      {
-        id: "payment-uuid-333",
-        installment: 2,
-        amount: 2500000,
-        status: "processing",
-        paidAt: null
-      }
-    ]
-  },
-  {
-    registrationId: "registration-uuid-222",
-    studentId: "student-uuid-5678",
-    studentName: "Fina Indriani",
-    totalAmount: 5000000,
-    paidAmount: 5000000,
-    paymentOption: "full",
-    status: "approved",
-    payments: [
-      {
-        id: "payment-uuid-444",
-        installment: 1,
-        amount: 5000000,
-        status: "paid",
-        paidAt: "2026-07-10T09:15:30.000Z"
-      }
-    ]
-  },
-  {
-    registrationId: "registration-uuid-333",
-    studentId: "student-uuid-9999",
-    studentName: "Dewi Lestari",
-    totalAmount: 5000000,
-    paidAmount: 2500000,
-    paymentOption: "installment",
-    status: "approved",
-    payments: [
-      {
-        id: "payment-uuid-555",
-        installment: 1,
-        amount: 2500000,
-        status: "paid",
-        paidAt: "2026-07-08T11:02:11.000Z"
-      },
-      {
-        id: "payment-uuid-666",
-        installment: 2,
-        amount: 2500000,
-        status: "processing",
-        paidAt: null
-      }
-    ]
-  },
-  {
-    registrationId: "registration-uuid-444",
-    studentId: "student-uuid-4444",
-    studentName: "Hafiz Rahmat",
-    totalAmount: 5000000,
-    paidAmount: 0,
-    paymentOption: "installment",
-    status: "pending",
-    payments: [
-      {
-        id: "payment-uuid-777",
-        installment: 1,
-        amount: 2500000,
-        status: "processing",
-        paidAt: null
-      },
-      {
-        id: "payment-uuid-878",
-        installment: 2,
-        amount: 2500000,
-        status: "pending",
-        paidAt: null
-      }
-    ]
-  },
-  {
-    registrationId: "registration-uuid-555",
-    studentId: "student-uuid-5555",
-    studentName: "Rian Hidayat",
-    totalAmount: 5000000,
-    paidAmount: 5000000,
-    paymentOption: "installment",
-    status: "approved",
-    payments: [
-      {
-        id: "payment-uuid-991",
-        installment: 1,
-        amount: 2500000,
-        status: "paid",
-        paidAt: "2026-06-15T08:00:00.000Z"
-      },
-      {
-        id: "payment-uuid-992",
-        installment: 2,
-        amount: 2500000,
-        status: "paid",
-        paidAt: "2026-07-05T10:30:00.000Z"
-      }
-    ]
-  }
-];
+import { useAdminPayments, useUpdatePaymentStatus } from "@/hooks/useAdmin";
 
 export function PembayaranManager() {
-  const [paymentsList, setPaymentsList] = useState<PaymentRecord[]>(INITIAL_PAYMENTS);
-  const [selectedRecord, setSelectedRecord] = useState<PaymentRecord | null>(null);
+  const { data, isLoading, error, refetch } = useAdminPayments();
+  const updatePayment = useUpdatePaymentStatus();
 
-  // Verification toast feedback state
+  const [selectedRegId, setSelectedRegId] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const paymentsList = data?.payments || [];
+  const selectedRecord = paymentsList.find(r => r.registrationId === selectedRegId) || null;
 
   const formatRupiah = (num: number) => {
     return new Intl.NumberFormat("id-ID", {
@@ -174,51 +58,24 @@ export function PembayaranManager() {
   const totalReceivable = totalTarget - totalReceived;
   const collectionRate = totalTarget > 0 ? Math.round((totalReceived / totalTarget) * 100) : 0;
 
-
-
   const handleVerifyInstallment = (regId: string, paymentId: string) => {
-    setPaymentsList((prev) =>
-      prev.map((rec) => {
-        if (rec.registrationId === regId) {
-          const updatedPayments = rec.payments.map((p) => {
-            if (p.id === paymentId) {
-              return { ...p, status: "paid" as const, paidAt: new Date().toISOString() };
-            }
-            return p;
-          });
-
-          const newPaidAmount = updatedPayments.reduce(
-            (sum, p) => (p.status === "paid" ? sum + p.amount : sum),
-            0
-          );
-
-          const updatedRec = {
-            ...rec,
-            payments: updatedPayments,
-            paidAmount: newPaidAmount
-          };
-
-          // Update current modal view if open
-          if (selectedRecord?.registrationId === regId) {
-            setSelectedRecord(updatedRec);
-          }
-
-          return updatedRec;
-        }
-        return rec;
-      })
+    updatePayment.mutate(
+      { paymentId, status: "paid" },
+      {
+        onSuccess: () => {
+          setToastMessage("Pembayaran berhasil diverifikasi!");
+          setTimeout(() => setToastMessage(null), 3000);
+        },
+      }
     );
-
-    // Show Toast
-    setToastMessage("Pembayaran berhasil diverifikasi secara lokal!");
-    setTimeout(() => setToastMessage(null), 3000);
   };
+
 
   return (
     <div className="flex flex-col gap-6">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-5 right-5 z-50 bg-[#16A34A] text-white py-3 px-5 rounded-3 shadow-lg flex items-center gap-2.5 toast-enter">
+        <div className="fixed bottom-5 right-5 z-50 bg-success text-white py-3 px-5 rounded-3 shadow-lg flex items-center gap-2.5 toast-enter">
           <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 shrink-0">
             <path d="M20 6 9 17l-5-5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
@@ -311,132 +168,166 @@ export function PembayaranManager() {
                 <th className="py-3.5 px-4 text-[12px] font-bold text-neutral-muted uppercase tracking-wide">Metode</th>
                 <th className="py-3.5 px-4 text-[12px] font-bold text-neutral-muted uppercase tracking-wide">Total Biaya</th>
                 <th className="py-3.5 px-4 text-[12px] font-bold text-neutral-muted uppercase tracking-wide">Sudah Dibayar</th>
-                <th className="py-3.5 px-4 text-[12px] font-bold text-neutral-muted uppercase tracking-wide text-warning">Menunggu Verifikasi</th>
+                <th className="py-3.5 px-4 text-[12px] font-bold text-neutral-muted uppercase tracking-wide">Menunggu Verifikasi</th>
                 <th className="py-3.5 px-4 text-[12px] font-bold text-neutral-muted uppercase tracking-wide">Progres Pelunasan</th>
                 <th className="py-3.5 px-4 text-[12px] font-bold text-neutral-muted uppercase tracking-wide">Status</th>
                 <th className="py-3.5 px-6 text-[12px] font-bold text-neutral-muted uppercase tracking-wide text-right">Aksi</th>
               </tr>
             </thead>
             <tbody>
-              {paymentsList.map((record) => {
-                const isPaidInFull = record.paidAmount >= record.totalAmount;
-                const payPercent = record.totalAmount > 0 ? Math.round((record.paidAmount / record.totalAmount) * 100) : 0;
-                const hasProcessingPayment = record.payments.some((p) => p.status === "processing");
-                const pendingAmount = record.payments.reduce((sum, p) => p.status === "processing" ? sum + p.amount : sum, 0);
-
-                return (
-                  <tr
-                    key={record.registrationId}
-                    className="border-b border-neutral-border last:border-b-0 hover:bg-neutral-bg/20 transition-colors"
-                  >
-                    {/* Student Name */}
+              {isLoading ? (
+                [1, 2, 3].map((n) => (
+                  <tr key={n} className="border-b border-neutral-border animate-pulse">
                     <td className="py-4.5 px-6">
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-full bg-linear-to-br from-[#6FE3A6] to-brand-light flex items-center justify-center text-[13px] font-bold text-white shrink-0">
-                          {record.studentName.charAt(0)}
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <div className="text-[13.5px] font-bold text-neutral-text leading-tight">{record.studentName}</div>
-                            {hasProcessingPayment && (
-                              <span className="inline-flex items-center gap-0.75 text-[10px] font-extrabold bg-warning-bg text-warning py-0.5 px-1.75 rounded-md animate-pulse">
-                                <span className="w-1.25 h-1.25 rounded-full bg-warning animate-ping absolute inline-flex h-1.25 w-1.25 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-1.25 w-1.25 bg-warning"></span>
-                                Butuh ACC
-                              </span>
-                            )}
-                          </div>
-                          <div className="text-[11.5px] text-neutral-muted mt-0.5">ID: {record.studentId}</div>
+                        <div className="w-9 h-9 rounded-full bg-neutral-bg shrink-0" />
+                        <div className="space-y-2 flex-1">
+                          <div className="h-3.5 bg-neutral-bg rounded w-3/4" />
+                          <div className="h-2.5 bg-neutral-bg rounded w-1/2" />
                         </div>
                       </div>
                     </td>
-
-                    {/* Method */}
-                    <td className="py-4.5 px-4">
-                      <span className={`inline-flex items-center text-[11px] font-bold py-0.5 px-2 rounded-md ${
-                        record.paymentOption === "full"
-                          ? "bg-success-bg text-success"
-                          : "bg-warning-bg text-warning"
-                      }`}>
-                        {record.paymentOption === "full" ? "Penuh" : "Cicilan"}
-                      </span>
-                    </td>
-
-                    {/* Total Cost */}
-                    <td className="py-4.5 px-4 text-[13px] font-semibold text-neutral-text">
-                      {formatRupiah(record.totalAmount)}
-                    </td>
-
-                    {/* Paid Amount */}
-                    <td className="py-4.5 px-4 text-[13px] font-bold text-brand">
-                      {formatRupiah(record.paidAmount)}
-                    </td>
-
-                    {/* Pending Verification Amount */}
-                    <td className="py-4.5 px-4 text-[13px] font-bold">
-                      {pendingAmount > 0 ? (
-                        <span className="text-warning flex items-center gap-1.5">
-                          <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 shrink-0 animate-pulse">
-                            <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3Z" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                          </svg>
-                          {formatRupiah(pendingAmount)}
-                        </span>
-                      ) : (
-                        <span className="text-neutral-muted font-normal">-</span>
-                      )}
-                    </td>
-
-                    {/* Progress Bar */}
-                    <td className="py-4.5 px-4">
-                      <div className="flex items-center gap-2 max-w-32">
-                        <div className="flex-1 bg-neutral-bg h-1.5 rounded-full overflow-hidden">
-                          <div
-                            className={`h-full rounded-full ${payPercent === 100 ? "bg-success" : "bg-brand"}`}
-                            style={{ width: `${payPercent}%` }}
-                          ></div>
-                        </div>
-                        <span className="text-[11.5px] font-bold text-neutral-muted">{payPercent}%</span>
-                      </div>
-                    </td>
-
-                    {/* Status badge */}
-                    <td className="py-4.5 px-4">
-                      <span className={`inline-flex items-center gap-1.5 text-[11.5px] font-bold py-0.75 px-2.5 rounded-full ${
-                        isPaidInFull
-                          ? "bg-success-bg text-success"
-                          : hasProcessingPayment
-                          ? "bg-warning-bg text-warning"
-                          : record.paidAmount === 0
-                          ? "bg-danger-bg text-danger"
-                          : "bg-neutral-bg text-neutral"
-                      }`}>
-                        <span className={`w-1.5 h-1.5 rounded-full ${
-                          isPaidInFull ? "bg-success" : hasProcessingPayment ? "bg-warning" : record.paidAmount === 0 ? "bg-danger" : "bg-neutral"
-                        }`}></span>
-                        {isPaidInFull ? "Lunas" : hasProcessingPayment ? "Butuh ACC" : record.paidAmount === 0 ? "Belum Bayar" : "Mencicil"}
-                      </span>
-                    </td>
-
-                    {/* Actions */}
-                    <td className="py-4.5 px-6 text-right">
-                      <button
-                        type="button"
-                        onClick={() => setSelectedRecord(record)}
-                        className="bg-transparent border border-neutral-border text-neutral-text text-[12.5px] font-bold py-1.5 px-3.5 rounded-2.25 cursor-pointer hover:bg-neutral-bg transition-colors duration-150"
-                      >
-                        Detail & Termin
-                      </button>
-                    </td>
+                    <td className="py-4.5 px-4"><div className="h-4 bg-neutral-bg rounded w-12" /></td>
+                    <td className="py-4.5 px-4"><div className="h-3.5 bg-neutral-bg rounded w-20" /></td>
+                    <td className="py-4.5 px-4"><div className="h-3.5 bg-neutral-bg rounded w-20" /></td>
+                    <td className="py-4.5 px-4"><div className="h-3.5 bg-neutral-bg rounded w-16" /></td>
+                    <td className="py-4.5 px-4"><div className="h-1.5 bg-neutral-bg rounded w-24" /></td>
+                    <td className="py-4.5 px-4"><div className="h-5 bg-neutral-bg rounded w-16" /></td>
+                    <td className="py-4.5 px-6 text-right"><div className="h-8 bg-neutral-bg rounded w-24 ml-auto" /></td>
                   </tr>
-                );
-              })}
-
-              {paymentsList.length === 0 && (
+                ))
+              ) : error ? (
                 <tr>
-                  <td colSpan={7} className="py-12 text-center text-[13.5px] text-neutral-muted">
+                  <td colSpan={8} className="py-12 text-center">
+                    <p className="text-danger text-[13.5px] font-bold mb-2">Gagal mengambil data keuangan.</p>
+                    <button
+                      type="button"
+                      onClick={() => refetch()}
+                      className="bg-danger text-white border-none text-[12px] font-bold py-1.5 px-4 rounded-2 cursor-pointer hover:bg-danger-dark"
+                    >
+                      Coba Lagi
+                    </button>
+                  </td>
+                </tr>
+              ) : paymentsList.length === 0 ? (
+                <tr>
+                  <td colSpan={8} className="py-12 text-center text-[13.5px] text-neutral-muted">
                     Tidak ada data keuangan mahasiswa.
                   </td>
                 </tr>
+              ) : (
+                paymentsList.map((record) => {
+                  const isPaidInFull = record.paidAmount >= record.totalAmount;
+                  const payPercent = record.totalAmount > 0 ? Math.round((record.paidAmount / record.totalAmount) * 100) : 0;
+                  const hasProcessingPayment = record.payments?.some((p) => p.status === "processing");
+                  const pendingAmount = record.payments?.reduce((sum, p) => p.status === "processing" ? sum + p.amount : sum, 0) || 0;
+
+                  return (
+                    <tr
+                      key={record.registrationId}
+                      className="border-b border-neutral-border last:border-b-0 hover:bg-neutral-bg/20 transition-colors"
+                    >
+                      {/* Student Name */}
+                      <td className="py-4.5 px-6">
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-full bg-linear-to-br from-[#6FE3A6] to-brand-light flex items-center justify-center text-[13px] font-bold text-white shrink-0">
+                            {record.studentName ? record.studentName.charAt(0) : "?"}
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <div className="text-[13.5px] font-bold text-neutral-text leading-tight">{record.studentName || "-"}</div>
+                              {hasProcessingPayment && (
+                                <span className="inline-flex items-center gap-0.75 text-[10px] font-extrabold bg-warning-bg text-warning py-0.5 px-1.75 rounded-md animate-pulse">
+                                  <span className="rounded-full bg-warning animate-ping absolute inline-flex h-1.25 w-1.25 opacity-75"></span>
+                                  <span className="relative inline-flex rounded-full h-1.25 w-1.25 bg-warning"></span>
+                                  Butuh ACC
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-[11.5px] text-neutral-muted mt-0.5">ID: {record.studentId || "-"}</div>
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* Method */}
+                      <td className="py-4.5 px-4">
+                        <span className={`inline-flex items-center text-[11px] font-bold py-0.5 px-2 rounded-md ${
+                          record.paymentOption === "full"
+                            ? "bg-success-bg text-success"
+                            : "bg-warning-bg text-warning"
+                        }`}>
+                          {record.paymentOption === "full" ? "Penuh" : "Cicilan"}
+                        </span>
+                      </td>
+
+                      {/* Total Cost */}
+                      <td className="py-4.5 px-4 text-[13px] font-semibold text-neutral-text">
+                        {formatRupiah(record.totalAmount)}
+                      </td>
+
+                      {/* Paid Amount */}
+                      <td className="py-4.5 px-4 text-[13px] font-bold text-brand">
+                        {formatRupiah(record.paidAmount)}
+                      </td>
+
+                      {/* Pending Verification Amount */}
+                      <td className="py-4.5 px-4 text-[13px] font-bold">
+                        {pendingAmount > 0 ? (
+                          <span className="text-warning flex items-center gap-1.5">
+                            <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 shrink-0 animate-pulse">
+                              <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3Z" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                            {formatRupiah(pendingAmount)}
+                          </span>
+                        ) : (
+                          <span className="text-neutral-muted font-normal">-</span>
+                        )}
+                      </td>
+
+                      {/* Progress Bar */}
+                      <td className="py-4.5 px-4">
+                        <div className="flex items-center gap-2 max-w-32">
+                          <div className="flex-1 bg-neutral-bg h-1.5 rounded-full overflow-hidden">
+                            <div
+                              className={`h-full rounded-full ${payPercent === 100 ? "bg-success" : "bg-brand"}`}
+                              style={{ width: `${payPercent}%` }}
+                            ></div>
+                          </div>
+                          <span className="text-[11.5px] font-bold text-neutral-muted">{payPercent}%</span>
+                        </div>
+                      </td>
+
+                      {/* Status badge */}
+                      <td className="py-4.5 px-4">
+                        <span className={`inline-flex items-center gap-1.5 text-[11.5px] font-bold py-0.75 px-2.5 rounded-full ${
+                          isPaidInFull
+                            ? "bg-success-bg text-success"
+                            : hasProcessingPayment
+                            ? "bg-warning-bg text-warning"
+                            : record.paidAmount === 0
+                            ? "bg-danger-bg text-danger"
+                            : "bg-neutral-bg text-neutral"
+                        }`}>
+                          <span className={`w-1.5 h-1.5 rounded-full ${
+                            isPaidInFull ? "bg-success" : hasProcessingPayment ? "bg-warning" : record.paidAmount === 0 ? "bg-danger" : "bg-neutral"
+                          }`}></span>
+                          {isPaidInFull ? "Lunas" : hasProcessingPayment ? "Butuh ACC" : record.paidAmount === 0 ? "Belum Bayar" : "Mencicil"}
+                        </span>
+                      </td>
+
+                      {/* Actions */}
+                      <td className="py-4.5 px-6 text-right">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedRegId(record.registrationId)}
+                          className="bg-transparent border border-neutral-border text-neutral-text text-[12.5px] font-bold py-1.5 px-3.5 rounded-2.25 cursor-pointer hover:bg-neutral-bg transition-colors duration-150"
+                        >
+                          Detail & Termin
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>
@@ -454,7 +345,7 @@ export function PembayaranManager() {
               </h3>
               <button
                 type="button"
-                onClick={() => setSelectedRecord(null)}
+                onClick={() => setSelectedRegId(null)}
                 className="bg-transparent border-none text-neutral-muted hover:text-neutral-text cursor-pointer p-1"
               >
                 <svg viewBox="0 0 24 24" fill="none" className="w-5.5 h-5.5">
@@ -474,10 +365,10 @@ export function PembayaranManager() {
                   <div className="text-[14px] font-extrabold text-neutral-text">{selectedRecord.studentName}</div>
                   <div className="text-[12px] text-neutral-muted mt-px">Student ID: {selectedRecord.studentId}</div>
                   <div className="flex gap-2 mt-2">
-                    <span className="text-[11px] font-extrabold py-0.25 px-1.75 bg-brand-bg text-brand rounded">
+                    <span className="text-[11px] font-extrabold py-px px-1.75 bg-brand-bg text-brand rounded">
                       Registration ID: {selectedRecord.registrationId}
                     </span>
-                    <span className={`text-[11px] font-extrabold py-0.25 px-1.75 rounded ${
+                    <span className={`text-[11px] font-extrabold py-px px-1.75 rounded ${
                       selectedRecord.paymentOption === "full" ? "bg-success-bg text-success" : "bg-warning-bg text-warning"
                     }`}>
                       {selectedRecord.paymentOption === "full" ? "Bayar Penuh" : "Cicilan"}
@@ -553,7 +444,7 @@ export function PembayaranManager() {
             <div className="px-6 py-4 border-t border-neutral-border shrink-0 flex justify-end bg-neutral-bg/30">
               <button
                 type="button"
-                onClick={() => setSelectedRecord(null)}
+                onClick={() => setSelectedRegId(null)}
                 className="bg-transparent border border-neutral-border text-neutral-text text-[13px] font-bold py-2 px-4.5 rounded-2.25 cursor-pointer hover:bg-neutral-bg transition-colors"
               >
                 Tutup

@@ -1,6 +1,6 @@
 // ponytail: Server Component — pure presentation
 
-export function AdminStatCards({ stats }: { stats: { totalDosen: number; totalMahasiswa: number; bimbinganBerjalan: number; skripsiSelesai: number } }) {
+export function AdminStatCards({ stats }: { stats: { totalDosen: number; totalMahasiswa: number; totalBimbinganBerjalan: number; totalBimbingan: number } }) {
   const items = [
     {
       label: "Total Dosen",
@@ -18,7 +18,6 @@ export function AdminStatCards({ stats }: { stats: { totalDosen: number; totalMa
       label: "Total Mahasiswa",
       value: stats.totalMahasiswa,
       iconBg: "bg-success-bg",
-      subtitle: "↑ 12 mahasiswa baru",
       icon: (
         <svg viewBox="0 0 24 24" fill="none" className="w-5.5 h-5.5 text-success">
           <circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="1.8" />
@@ -28,7 +27,7 @@ export function AdminStatCards({ stats }: { stats: { totalDosen: number; totalMa
     },
     {
       label: "Bimbingan Berjalan",
-      value: stats.bimbinganBerjalan,
+      value: stats.totalBimbinganBerjalan,
       iconBg: "bg-warning-bg",
       icon: (
         <svg viewBox="0 0 24 24" fill="none" className="w-5.5 h-5.5 text-warning">
@@ -38,10 +37,9 @@ export function AdminStatCards({ stats }: { stats: { totalDosen: number; totalMa
       ),
     },
     {
-      label: "Skripsi Selesai",
-      value: stats.skripsiSelesai,
+      label: "Total Bimbingan",
+      value: stats.totalBimbingan,
       iconBg: "bg-success-bg",
-      subtitle: "↑ 8 dari semester lalu",
       icon: (
         <svg viewBox="0 0 24 24" fill="none" className="w-5.5 h-5.5 text-success">
           <path d="M22 10 12 5 2 10l10 5 10-5ZM6 12.5v5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
@@ -63,12 +61,10 @@ export function AdminStatCards({ stats }: { stats: { totalDosen: number; totalMa
           <div>
             <div className="font-display text-6 font-extrabold text-neutral-text leading-none mb-1">{item.value}</div>
             <div className="text-[12.5px] text-neutral-muted font-medium">{item.label}</div>
-            {item.subtitle ? (
-              <div className="text-[11px] text-success font-semibold mt-0.5">{item.subtitle}</div>
-            ) : null}
           </div>
         </div>
       ))}
     </div>
   );
 }
+

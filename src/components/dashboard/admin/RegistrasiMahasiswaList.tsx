@@ -1,280 +1,20 @@
 "use client";
 
 import { useState } from "react";
+import { useAdminRegistrations, useUpdateRegistrationStatus } from "@/hooks/useAdmin";
+import type { RegistrationItem, RegistrationDetailItem } from "@/services/admin";
 
-interface UserInfo {
-  id: string;
-  name: string;
-  email: string;
-  image: string | null;
-  role?: string;
-}
-
-interface StudentDetail {
-  userId: string;
-  nim: string;
-  studyProgram: string;
-  campus: string;
-  user: UserInfo;
-}
-
-interface FileItem {
-  id: string;
-  registrationId: string;
-  name: string;
-  url: string;
-  key: string;
-  createdAt: string;
-}
-
-interface PaymentItem {
-  id: string;
-  registrationId: string;
-  installment: number;
-  amount: number;
-  status: "paid" | "pending";
-  paidAt: string | null;
-  files: any[];
-}
-
-interface RegistrationItem {
-  id: string;
-  studentId: string;
-  status: "pending" | "approved" | "rejected";
-  totalAmount: number;
-  paymentOption: "installment" | "full";
-  createdAt: string;
-  approvedBy: string | null;
-  approvedAt: string | null;
-  rejectedReason?: string | null;
-  student: StudentDetail;
-  approver?: {
-    id: string;
-    name: string;
-    email: string;
-  } | null;
-  files: FileItem[];
-  payments: PaymentItem[];
-}
-
-const INITIAL_REGISTRATIONS: RegistrationItem[] = [
-  {
-    id: "registration-uuid-111",
-    studentId: "student-uuid-1234",
-    status: "pending",
-    totalAmount: 5000000,
-    paymentOption: "installment",
-    createdAt: "2026-07-11T01:23:45.000Z",
-    approvedBy: null,
-    approvedAt: null,
-    student: {
-      userId: "student-uuid-1234",
-      nim: "12345678",
-      studyProgram: "Teknik Informatika",
-      campus: "Kampus Utama",
-      user: {
-        id: "student-uuid-1234",
-        name: "Ahmad Maulana",
-        email: "ahmad.maulana@uin-mataram.ac.id",
-        image: null
-      }
-    },
-    files: [
-      {
-        id: "file-uuid-999",
-        registrationId: "registration-uuid-111",
-        name: "KRS_Semester_Akhir.pdf",
-        url: "#",
-        key: "krs.pdf",
-        createdAt: "2026-07-11T01:23:45.000Z"
-      },
-      {
-        id: "file-uuid-998",
-        registrationId: "registration-uuid-111",
-        name: "Bukti_Cicilan_1.jpg",
-        url: "#",
-        key: "bukti1.jpg",
-        createdAt: "2026-07-11T01:23:45.000Z"
-      }
-    ],
-    payments: [
-      {
-        id: "payment-uuid-222",
-        registrationId: "registration-uuid-111",
-        installment: 1,
-        amount: 2500000,
-        status: "paid",
-        paidAt: "2026-07-11T01:23:45.000Z",
-        files: []
-      },
-      {
-        id: "payment-uuid-333",
-        registrationId: "registration-uuid-111",
-        installment: 2,
-        amount: 2500000,
-        status: "pending",
-        paidAt: null,
-        files: []
-      }
-    ]
-  },
-  {
-    id: "registration-uuid-222",
-    studentId: "student-uuid-5678",
-    status: "pending",
-    totalAmount: 5000000,
-    paymentOption: "full",
-    createdAt: "2026-07-10T09:15:30.000Z",
-    approvedBy: null,
-    approvedAt: null,
-    student: {
-      userId: "student-uuid-5678",
-      nim: "210101105",
-      studyProgram: "Sistem Informasi",
-      campus: "Kampus Utama",
-      user: {
-        id: "student-uuid-5678",
-        name: "Fina Indriani",
-        email: "fina.indri@uin-mataram.ac.id",
-        image: null
-      }
-    },
-    files: [
-      {
-        id: "file-uuid-777",
-        registrationId: "registration-uuid-222",
-        name: "Bukti_Pembayaran_Lunas.pdf",
-        url: "#",
-        key: "bukti_lunas.pdf",
-        createdAt: "2026-07-10T09:15:30.000Z"
-      }
-    ],
-    payments: [
-      {
-        id: "payment-uuid-444",
-        registrationId: "registration-uuid-222",
-        installment: 1,
-        amount: 5000000,
-        status: "paid",
-        paidAt: "2026-07-10T09:15:30.000Z",
-        files: []
-      }
-    ]
-  },
-  {
-    id: "registration-uuid-333",
-    studentId: "student-uuid-9999",
-    status: "approved",
-    totalAmount: 5000000,
-    paymentOption: "installment",
-    createdAt: "2026-07-08T11:02:11.000Z",
-    approvedBy: "admin-uuid-5678",
-    approvedAt: "2026-07-10T08:12:02.000Z",
-    approver: {
-      id: "admin-uuid-5678",
-      name: "Admin SIBITA",
-      email: "admin@sibita.com"
-    },
-    student: {
-      userId: "student-uuid-9999",
-      nim: "210101067",
-      studyProgram: "Teknik Informatika",
-      campus: "Kampus Utama",
-      user: {
-        id: "student-uuid-9999",
-        name: "Dewi Lestari",
-        email: "dewi@mail.com",
-        image: null
-      }
-    },
-    files: [
-      {
-        id: "file-uuid-666",
-        registrationId: "registration-uuid-333",
-        name: "KRS_Approved.pdf",
-        url: "#",
-        key: "krs_approved.pdf",
-        createdAt: "2026-07-08T11:02:11.000Z"
-      }
-    ],
-    payments: [
-      {
-        id: "payment-uuid-555",
-        registrationId: "registration-uuid-333",
-        installment: 1,
-        amount: 2500000,
-        status: "paid",
-        paidAt: "2026-07-08T11:02:11.000Z",
-        files: []
-      },
-      {
-        id: "payment-uuid-556",
-        registrationId: "registration-uuid-333",
-        installment: 2,
-        amount: 2500000,
-        status: "pending",
-        paidAt: null,
-        files: []
-      }
-    ]
-  },
-  {
-    id: "registration-uuid-444",
-    studentId: "student-uuid-4444",
-    status: "rejected",
-    totalAmount: 5000000,
-    paymentOption: "installment",
-    createdAt: "2026-07-07T10:00:00.000Z",
-    approvedBy: "admin-uuid-5678",
-    approvedAt: "2026-07-08T15:30:00.000Z",
-    rejectedReason: "Bukti transfer tidak terbaca (gambar terlalu blur). Mohon upload ulang bukti pembayaran yang jelas.",
-    approver: {
-      id: "admin-uuid-5678",
-      name: "Admin SIBITA",
-      email: "admin@sibita.com"
-    },
-    student: {
-      userId: "student-uuid-4444",
-      nim: "210101041",
-      studyProgram: "Teknik Informatika",
-      campus: "Kampus Utama",
-      user: {
-        id: "student-uuid-4444",
-        name: "Hafiz Rahmat",
-        email: "hafiz@mail.com",
-        image: null
-      }
-    },
-    files: [
-      {
-        id: "file-uuid-333",
-        registrationId: "registration-uuid-444",
-        name: "KRS_Hafiz.pdf",
-        url: "#",
-        key: "krs_hafiz.pdf",
-        createdAt: "2026-07-07T10:00:00.000Z"
-      }
-    ],
-    payments: [
-      {
-        id: "payment-uuid-111",
-        registrationId: "registration-uuid-444",
-        installment: 1,
-        amount: 2500000,
-        status: "pending",
-        paidAt: null,
-        files: []
-      }
-    ]
-  }
-];
 
 export function RegistrasiMahasiswaList() {
-  const [registrations, setRegistrations] = useState<RegistrationItem[]>(INITIAL_REGISTRATIONS);
+  const { data, isLoading, error, refetch } = useAdminRegistrations();
+  const updateStatus = useUpdateRegistrationStatus();
+
   const [activeTab, setActiveTab] = useState<"pending" | "approved" | "rejected">("pending");
-  const [selectedReg, setSelectedReg] = useState<RegistrationItem | null>(null);
+  const [selectedReg, setSelectedReg] = useState<RegistrationItem | RegistrationDetailItem | null>(null);
   const [rejectReasonInput, setRejectReasonInput] = useState("");
   const [isRejecting, setIsRejecting] = useState(false);
+
+  const registrations = data?.registrations || [];
 
   // Filter registrations by active tab
   const filteredRegs = registrations.filter((reg) => {
@@ -282,66 +22,31 @@ export function RegistrasiMahasiswaList() {
   });
 
   const handleApprove = (id: string) => {
-    setRegistrations(prev =>
-      prev.map(reg => {
-        if (reg.id === id) {
-          return {
-            ...reg,
-            status: "approved" as const,
-            approvedBy: "admin-uuid-5678",
-            approvedAt: new Date().toISOString(),
-            approver: {
-              id: "admin-uuid-5678",
-              name: "Admin SIBITA",
-              email: "admin@sibita.com"
-            }
-          };
-        }
-        return reg;
-      })
+    updateStatus.mutate(
+      { id, status: "approved" },
+      {
+        onSuccess: (res) => {
+          if (selectedReg?.id === id) {
+            setSelectedReg(res.registration);
+          }
+        },
+      }
     );
-    // If modal is open, update its selection view
-    if (selectedReg?.id === id) {
-      setSelectedReg(prev => prev ? {
-        ...prev,
-        status: "approved" as const,
-        approvedBy: "admin-uuid-5678",
-        approvedAt: new Date().toISOString(),
-        approver: {
-          id: "admin-uuid-5678",
-          name: "Admin SIBITA",
-          email: "admin@sibita.com"
-        }
-      } : null);
-    }
   };
 
   const handleRejectSubmit = () => {
     if (!selectedReg || !rejectReasonInput.trim()) return;
 
-    setRegistrations(prev =>
-      prev.map(reg => {
-        if (reg.id === selectedReg.id) {
-          return {
-            ...reg,
-            status: "rejected" as const,
-            approvedBy: "admin-uuid-5678",
-            approvedAt: new Date().toISOString(),
-            rejectedReason: rejectReasonInput,
-            approver: {
-              id: "admin-uuid-5678",
-              name: "Admin SIBITA",
-              email: "admin@sibita.com"
-            }
-          };
-        }
-        return reg;
-      })
+    updateStatus.mutate(
+      { id: selectedReg.id, status: "rejected" },
+      {
+        onSuccess: () => {
+          setSelectedReg(null);
+          setRejectReasonInput("");
+          setIsRejecting(false);
+        },
+      }
     );
-    
-    setSelectedReg(null);
-    setRejectReasonInput("");
-    setIsRejecting(false);
   };
 
   const formatRupiah = (num: number) => {
@@ -361,6 +66,7 @@ export function RegistrasiMahasiswaList() {
       minute: "2-digit"
     });
   };
+
 
   return (
     <div className="flex flex-col gap-6">
@@ -418,95 +124,40 @@ export function RegistrasiMahasiswaList() {
               </tr>
             </thead>
             <tbody>
-              {filteredRegs.map((reg) => (
-                <tr
-                  key={reg.id}
-                  className="border-b border-neutral-border last:border-b-0 hover:bg-neutral-bg/30 transition-colors duration-150"
-                >
-                  {/* Mahasiswa */}
-                  <td className="py-3.5 px-6">
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-full bg-linear-to-br from-brand-light to-brand flex items-center justify-center text-[13px] font-bold text-white shrink-0">
-                        {reg.student.user.name.charAt(0)}
+              {isLoading ? (
+                [1, 2, 3].map((n) => (
+                  <tr key={n} className="border-b border-neutral-border animate-pulse">
+                    <td className="py-5 px-6">
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-full bg-neutral-bg shrink-0" />
+                        <div className="space-y-2 flex-1">
+                          <div className="h-3.5 bg-neutral-bg rounded w-3/4" />
+                          <div className="h-2.5 bg-neutral-bg rounded w-1/2" />
+                        </div>
                       </div>
-                      <div>
-                        <div className="text-[13.5px] font-bold text-neutral-text">{reg.student.user.name}</div>
-                        <div className="text-[11.5px] text-neutral-muted">NIM {reg.student.nim}</div>
-                      </div>
-                    </div>
-                  </td>
-
-                  {/* Prodi */}
-                  <td className="py-3.5 px-4 text-[13px] text-neutral-text font-medium">
-                    {reg.student.studyProgram}
-                  </td>
-
-                  {/* Tanggal Pengajuan */}
-                  <td className="py-3.5 px-4 text-[13px] text-neutral-muted">
-                    {formatDate(reg.createdAt)}
-                  </td>
-
-                  {/* Metode Pembayaran */}
-                  <td className="py-3.5 px-4">
-                    <span className={`inline-flex items-center text-[11.5px] font-bold py-0.5 px-2 rounded-md ${
-                      reg.paymentOption === "full"
-                        ? "bg-success-bg text-success"
-                        : "bg-warning-bg text-warning"
-                    }`}>
-                      {reg.paymentOption === "full" ? "Lunas" : "Cicilan"}
-                    </span>
-                  </td>
-
-                  {/* Jumlah Pembayaran */}
-                  <td className="py-3.5 px-4 text-[13px] font-bold text-neutral-text">
-                    {formatRupiah(reg.totalAmount)}
-                  </td>
-
-                  {/* Rejected Reason */}
-                  {activeTab === "rejected" && (
-                    <td className="py-3.5 px-4 text-[12.5px] text-danger max-w-50 truncate" title={reg.rejectedReason || ""}>
-                      {reg.rejectedReason}
                     </td>
-                  )}
-
-                  {/* Aksi */}
-                  <td className="py-3.5 px-6 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <button
-                        type="button"
-                        onClick={() => setSelectedReg(reg)}
-                        className="bg-transparent border border-neutral-border text-neutral-text text-[12.5px] font-bold py-1.5 px-3 rounded-2 cursor-pointer hover:bg-neutral-bg transition-colors duration-150"
-                      >
-                        Detail
-                      </button>
-                      
-                      {reg.status === "pending" && (
-                        <>
-                          <button
-                            type="button"
-                            onClick={() => handleApprove(reg.id)}
-                            className="bg-success text-white border-none text-[12.5px] font-bold py-1.5 px-3 rounded-2 cursor-pointer hover:bg-success-dark transition-colors duration-150"
-                          >
-                            Setujui
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setSelectedReg(reg);
-                              setIsRejecting(true);
-                            }}
-                            className="bg-danger text-white border-none text-[12.5px] font-bold py-1.5 px-3 rounded-2 cursor-pointer hover:bg-danger-dark transition-colors duration-150"
-                          >
-                            Tolak
-                          </button>
-                        </>
-                      )}
-                    </div>
+                    <td className="py-5 px-4"><div className="h-3 bg-neutral-bg rounded w-3/4" /></td>
+                    <td className="py-5 px-4"><div className="h-3 bg-neutral-bg rounded w-1/2" /></td>
+                    <td className="py-5 px-4"><div className="h-4 bg-neutral-bg rounded w-1/3" /></td>
+                    <td className="py-5 px-4"><div className="h-3.5 bg-neutral-bg rounded w-1/4" /></td>
+                    {activeTab === "rejected" && <td className="py-5 px-4"><div className="h-3 bg-neutral-bg rounded w-1/2" /></td>}
+                    <td className="py-5 px-6 text-right"><div className="h-8 bg-neutral-bg rounded w-20 ml-auto" /></td>
+                  </tr>
+                ))
+              ) : error ? (
+                <tr>
+                  <td colSpan={activeTab === "rejected" ? 7 : 6} className="py-12 text-center">
+                    <p className="text-danger text-[13.5px] font-bold mb-2">Gagal mengambil data registrasi.</p>
+                    <button
+                      type="button"
+                      onClick={() => refetch()}
+                      className="bg-danger text-white border-none text-[12px] font-bold py-1.5 px-4 rounded-2 cursor-pointer hover:bg-danger-dark"
+                    >
+                      Coba Lagi
+                    </button>
                   </td>
                 </tr>
-              ))}
-
-              {filteredRegs.length === 0 ? (
+              ) : filteredRegs.length === 0 ? (
                 <tr>
                   <td
                     colSpan={activeTab === "rejected" ? 7 : 6}
@@ -515,7 +166,97 @@ export function RegistrasiMahasiswaList() {
                     Tidak ada pendaftaran dengan status ini.
                   </td>
                 </tr>
-              ) : null}
+              ) : (
+                filteredRegs.map((reg) => (
+                  <tr
+                    key={reg.id}
+                    className="border-b border-neutral-border last:border-b-0 hover:bg-neutral-bg/30 transition-colors duration-150"
+                  >
+                    {/* Mahasiswa */}
+                    <td className="py-3.5 px-6">
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-full bg-linear-to-br from-brand-light to-brand flex items-center justify-center text-[13px] font-bold text-white shrink-0">
+                          {reg.student?.user?.name ? reg.student.user.name.charAt(0) : "?"}
+                        </div>
+                        <div>
+                          <div className="text-[13.5px] font-bold text-neutral-text">{reg.student?.user?.name || "-"}</div>
+                          <div className="text-[11.5px] text-neutral-muted">NIM {reg.student?.nim || "-"}</div>
+                        </div>
+                      </div>
+                    </td>
+
+                    {/* Prodi */}
+                    <td className="py-3.5 px-4 text-[13px] text-neutral-text font-medium">
+                      {reg.student?.studyProgram || "-"}
+                    </td>
+
+                    {/* Tanggal Pengajuan */}
+                    <td className="py-3.5 px-4 text-[13px] text-neutral-muted">
+                      {formatDate(reg.createdAt)}
+                    </td>
+
+                    {/* Metode Pembayaran */}
+                    <td className="py-3.5 px-4">
+                      <span className={`inline-flex items-center text-[11.5px] font-bold py-0.5 px-2 rounded-md ${
+                        reg.paymentOption === "full"
+                          ? "bg-success-bg text-success"
+                          : "bg-warning-bg text-warning"
+                      }`}>
+                        {reg.paymentOption === "full" ? "Lunas" : "Cicilan"}
+                      </span>
+                    </td>
+
+                    {/* Jumlah Pembayaran */}
+                    <td className="py-3.5 px-4 text-[13px] font-bold text-neutral-text">
+                      {formatRupiah(reg.totalAmount)}
+                    </td>
+
+                    {/* Rejected Reason */}
+                    {activeTab === "rejected" && (
+                      <td className="py-3.5 px-4 text-[12.5px] text-danger max-w-50 truncate" title={reg.rejectedReason || ""}>
+                        {reg.rejectedReason}
+                      </td>
+                    )}
+
+                    {/* Aksi */}
+                    <td className="py-3.5 px-6 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedReg(reg)}
+                          className="bg-transparent border border-neutral-border text-neutral-text text-[12.5px] font-bold py-1.5 px-3 rounded-2 cursor-pointer hover:bg-neutral-bg transition-colors duration-150"
+                        >
+                          Detail
+                        </button>
+                        
+                        {reg.status === "pending" && (
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => handleApprove(reg.id)}
+                              disabled={updateStatus.isPending}
+                              className="bg-success text-white border-none text-[12.5px] font-bold py-1.5 px-3 rounded-2 cursor-pointer hover:bg-success-dark transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              {updateStatus.isPending ? "..." : "Setujui"}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setSelectedReg(reg);
+                                setIsRejecting(true);
+                              }}
+                              disabled={updateStatus.isPending}
+                              className="bg-danger text-white border-none text-[12.5px] font-bold py-1.5 px-3 rounded-2 cursor-pointer hover:bg-danger-dark transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              Tolak
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
