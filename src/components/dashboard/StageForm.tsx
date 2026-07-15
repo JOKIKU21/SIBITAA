@@ -183,8 +183,8 @@ export function StageForm({
                     <div className="flex flex-col gap-3">
                       <FileUploader
                         id={`stage-file-${field.key}`}
-                        subLabel="Unggah file bimbingan (Format PDF, DOCX, ZIP, maksimal 10MB)"
-                        accept=".pdf,.docx,.doc,.zip"
+                        subLabel="Unggah file bimbingan (Format PDF, DOCX, MP4, maksimal 10MB)"
+                        accept=".pdf,.docx,.mp4"
                         disabled={isFormDisabled}
                         hideDropzone={isFormDisabled}
                         isLoading={createFileMut.isPending || isUploading}

@@ -1,5 +1,4 @@
-// ponytail: Server Component layout — no 'use client', no ProgressProvider needed
-import { DosenSidebar } from "@/components/dashboard/dosen/DosenSidebar";
+import { Sidebar } from "@/components/dashboard/Sidebar";
 import type { ReactNode } from "react";
 
 export default function DosenDashboardLayout({
@@ -9,7 +8,7 @@ export default function DosenDashboardLayout({
 }) {
   return (
     <div className="flex min-h-screen w-full">
-      <DosenSidebar />
+      <Sidebar />
       <div className="flex-1 min-w-0 bg-canvas max-[600px]:w-full">
         {children}
       </div>

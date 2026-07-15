@@ -36,7 +36,7 @@ function DaftarDosenTab() {
         <h3 className="font-display text-[15px] font-extrabold text-neutral-text">Semua Dosen</h3>
 
         {/* Search Bar */}
-        <div className="relative w-full max-w-[280px] max-[600px]:max-w-full">
+        <div className="relative w-full max-w-70 max-[600px]:max-w-full">
           <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-neutral-muted">
             <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="11" cy="11" r="8"></circle>

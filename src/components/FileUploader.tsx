@@ -4,13 +4,10 @@ import React, { useState, useRef } from "react";
 import { 
   Upload, 
   FileText, 
-  Trash2, 
   Loader2, 
-  FileArchive, 
-  FileImage, 
-  FileCode, 
   File,
-  AlertCircle
+  AlertCircle,
+  FileVideo
 } from "lucide-react";
 
 export interface UploadedFile {
@@ -46,7 +43,7 @@ export default function FileUploader({
   id = "file-uploader",
   label,
   subLabel,
-  accept,
+  accept = ".pdf,.docx,.mp4",
   disabled = false,
   isLoading = false,
   files = [],
@@ -72,17 +69,14 @@ export default function FileUploader({
   const getFileIcon = (fileName: string) => {
     const ext = fileName.split(".").pop()?.toLowerCase() || "";
     
-    if (["pdf"].includes(ext)) {
+    if (ext === "pdf") {
       return <FileText className="w-5 h-5 text-danger shrink-0" />;
     }
-    if (["zip", "rar", "tar", "gz", "7z"].includes(ext)) {
-      return <FileArchive className="w-5 h-5 text-warning shrink-0" />;
+    if (ext === "docx") {
+      return <FileText className="w-5 h-5 text-brand-light shrink-0" />;
     }
-    if (["png", "jpg", "jpeg", "gif", "svg", "webp"].includes(ext)) {
-      return <FileImage className="w-5 h-5 text-success shrink-0" />;
-    }
-    if (["js", "ts", "tsx", "jsx", "json", "html", "css"].includes(ext)) {
-      return <FileCode className="w-5 h-5 text-brand-light shrink-0" />;
+    if (ext === "mp4") {
+      return <FileVideo className="w-5 h-5 text-success shrink-0" />;
     }
     return <File className="w-5 h-5 text-brand shrink-0" />;
   };
@@ -98,15 +92,23 @@ export default function FileUploader({
       return;
     }
 
+    // Strictly enforce system-wide allowed formats: docx, pdf, mp4
+    const fileExtension = file.name.split(".").pop()?.toLowerCase() || "";
+    const allowedExtensions = ["docx", "pdf", "mp4"];
+    if (!allowedExtensions.includes(fileExtension)) {
+      setErrorMessage("Format file tidak didukung. Hanya file PDF, DOCX, dan MP4 yang diperbolehkan.");
+      return;
+    }
+
     // Validate accept type if provided
     if (accept) {
       const acceptedTypes = accept.split(",").map(t => t.trim().toLowerCase());
       const fileType = file.type.toLowerCase();
-      const fileExtension = `.${file.name.split(".").pop()?.toLowerCase()}`;
+      const fileExtensionWithDot = `.${fileExtension}`;
       
       const isAccepted = acceptedTypes.some(type => {
         if (type.startsWith(".")) {
-          return fileExtension === type;
+          return fileExtensionWithDot === type;
         }
         if (type.endsWith("/*")) {
           const prefix = type.replace("/*", "");

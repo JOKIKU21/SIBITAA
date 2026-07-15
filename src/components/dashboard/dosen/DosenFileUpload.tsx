@@ -65,7 +65,8 @@ export function DosenFileUpload({ existingFiles = [], studentId, stageId }: Dose
       <div className="p-6">
         <FileUploader
           id="dosen-file-uploader"
-          subLabel="Unggah file revisi, referensi, atau dokumen lain untuk mahasiswa (Max 10MB)."
+          subLabel="Unggah file revisi, referensi, atau dokumen lain untuk mahasiswa (Format PDF, DOCX, MP4, Max 10MB)."
+          accept=".pdf,.docx,.mp4"
           files={files}
           onFileSelect={handleUpload}
           onDeleteFile={handleDelete}

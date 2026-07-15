@@ -1,5 +1,4 @@
-// ponytail: Server Component layout — no 'use client'
-import { AdminSidebar } from "@/components/dashboard/admin/AdminSidebar";
+import { Sidebar } from "@/components/dashboard/Sidebar";
 import type { ReactNode } from "react";
 
 export default function AdminDashboardLayout({
@@ -9,7 +8,7 @@ export default function AdminDashboardLayout({
 }) {
   return (
     <div className="flex min-h-screen w-full">
-      <AdminSidebar />
+      <Sidebar />
       <div className="flex-1 min-w-0 bg-canvas max-[600px]:w-full">
         {children}
       </div>

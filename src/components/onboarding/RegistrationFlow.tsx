@@ -344,7 +344,7 @@ export default function RegistrationFlow() {
 
   if (initLoading) {
     return (
-      <div className="w-full max-w-[800px] mx-auto text-center py-20 flex flex-col items-center justify-center">
+      <div className="w-full max-w-200 mx-auto text-center py-20 flex flex-col items-center justify-center">
         <div className="w-12 h-12 border-4 border-brand border-t-transparent rounded-full animate-spin mb-4" />
         <p className="text-neutral-muted text-[14px]">Memuat data registrasi...</p>
       </div>
@@ -353,7 +353,7 @@ export default function RegistrationFlow() {
 
   if (currentStep === 3) {
     return (
-      <div className="w-full max-w-[800px] mx-auto text-center py-10 animate-[slideUp_0.3s_ease]">
+      <div className="w-full max-w-200 mx-auto text-center py-10 animate-[slideUp_0.3s_ease]">
         <div className="bg-white rounded-5 shadow-[0_4px_24px_rgba(43,59,175,0.06)] border border-[#e0e7ff] p-12">
           <div className="w-24 h-24 bg-success-bg rounded-full mx-auto mb-6 flex items-center justify-center">
             <svg viewBox="0 0 24 24" fill="none" className="w-12 h-12 text-success">
@@ -374,7 +374,7 @@ export default function RegistrationFlow() {
   }
 
   return (
-    <div className="w-full max-w-[800px] mx-auto flex flex-col items-center animate-[fadeIn_0.3s_ease]">
+    <div className="w-full max-w-200 mx-auto flex flex-col items-center animate-[fadeIn_0.3s_ease]">
       {/* Header & Progress Bar */}
       <div className="mb-10 w-full text-center">
         <h1 className="text-[32px] font-extrabold text-[#0B1536] mb-3 tracking-tight">Registrasi Mahasiswa</h1>
@@ -383,7 +383,7 @@ export default function RegistrationFlow() {
         </p>
 
         {/* Progress Timeline */}
-        <div className="flex items-center justify-between max-w-[460px] mx-auto relative px-6">
+        <div className="flex items-center justify-between max-w-115 mx-auto relative px-6">
           {/* Connecting Line background */}
           <div className="absolute top-5 left-10 right-10 h-[1.5px] bg-[#e2e8f0] -translate-y-1/2 z-0" />
           
@@ -432,7 +432,7 @@ export default function RegistrationFlow() {
                 label={<span>Nama Lengkap <span className="text-danger">*</span></span> as any}
                 placeholder="Masukkan nama lengkap sesuai ijazah"
                 leftIcon={<BookUser size={18} className="text-neutral-muted" />}
-                className="bg-[#f8fafc] border-none py-3.5 h-[50px] shadow-sm rounded-2.5"
+                className="bg-[#f8fafc] border-none py-3.5 h-12.5 shadow-sm rounded-2.5"
                 value={formData.nama}
                 onChange={(e) => setFormData({ ...formData, nama: e.target.value })}
               />
@@ -442,7 +442,7 @@ export default function RegistrationFlow() {
                   id="nim"
                   label={<span>Nomor Induk Mahasiswa (NIM) <span className="text-danger">*</span></span> as any}
                   placeholder="Masukkan NIM"
-                  className="bg-[#f8fafc] border-none py-3.5 h-[50px] shadow-sm rounded-2.5"
+                  className="bg-[#f8fafc] border-none py-3.5 h-12.5 shadow-sm rounded-2.5"
                   value={formData.nim}
                   onChange={(e) => setFormData({ ...formData, nim: e.target.value })}
                 />
@@ -451,7 +451,7 @@ export default function RegistrationFlow() {
                   id="prodi"
                   label={<span>Program Studi <span className="text-danger">*</span></span> as any}
                   placeholder="Contoh: Teknologi Informasi"
-                  className="bg-[#f8fafc] border-none py-3.5 h-[50px] shadow-sm rounded-2.5"
+                  className="bg-[#f8fafc] border-none py-3.5 h-12.5 shadow-sm rounded-2.5"
                   value={formData.prodi}
                   onChange={(e) => setFormData({ ...formData, prodi: e.target.value })}
                 />
@@ -463,7 +463,7 @@ export default function RegistrationFlow() {
                   label={<span>Nomor HP <span className="text-danger">*</span></span> as any}
                   placeholder="Contoh: 081234567890"
                   leftIcon={<Phone size={18} className="text-neutral-muted" />}
-                  className="bg-[#f8fafc] border-none py-3.5 h-[50px] shadow-sm rounded-2.5"
+                  className="bg-[#f8fafc] border-none py-3.5 h-12.5 shadow-sm rounded-2.5"
                   value={formData.phoneNumber}
                   onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
                 />
@@ -477,7 +477,7 @@ export default function RegistrationFlow() {
                       <GraduationCap size={18} />
                     </div>
                     <select
-                      className="w-full bg-[#f8fafc] border-none rounded-2.5 h-[50px] pl-11 pr-10 text-[13.5px] font-medium text-neutral-text outline-none appearance-none transition-colors duration-200 focus:ring-2 focus:ring-brand-light shadow-sm"
+                      className="w-full bg-[#f8fafc] border-none rounded-2.5 h-12.5 pl-11 pr-10 text-[13.5px] font-medium text-neutral-text outline-none appearance-none transition-colors duration-200 focus:ring-2 focus:ring-brand-light shadow-sm"
                       value={formData.education}
                       onChange={(e) => setFormData({ ...formData, education: e.target.value })}
                     >
@@ -499,7 +499,7 @@ export default function RegistrationFlow() {
                 label={<span>Asal Kampus <span className="text-danger">*</span></span> as any}
                 placeholder="Contoh: Universitas Mataram"
                 leftIcon={<Building size={18} className="text-neutral-muted" />}
-                className="bg-[#f8fafc] border-none py-3.5 h-[50px] shadow-sm rounded-2.5"
+                className="bg-[#f8fafc] border-none py-3.5 h-12.5 shadow-sm rounded-2.5"
                 value={formData.asalKampus}
                 onChange={(e) => setFormData({ ...formData, asalKampus: e.target.value })}
               />
@@ -509,7 +509,7 @@ export default function RegistrationFlow() {
                 label={<span>Judul Tugas Akhir / Topik</span> as any}
                 placeholder="Masukkan judul tugas akhir / topik skripsi Anda (opsional)"
                 leftIcon={<BookUser size={18} className="text-neutral-muted" />}
-                className="bg-[#f8fafc] border-none py-3.5 h-[50px] shadow-sm rounded-2.5"
+                className="bg-[#f8fafc] border-none py-3.5 h-12.5 shadow-sm rounded-2.5"
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               />
@@ -551,7 +551,7 @@ export default function RegistrationFlow() {
                 </label>
                 <div className="relative">
                   <select
-                    className="w-full bg-[#f8fafc] border-none rounded-2.5 h-[50px] px-4 text-[13.5px] font-medium text-neutral-text outline-none appearance-none transition-colors duration-200 focus:ring-2 focus:ring-brand-light shadow-sm"
+                    className="w-full bg-[#f8fafc] border-none rounded-2.5 h-12.5 px-4 text-[13.5px] font-medium text-neutral-text outline-none appearance-none transition-colors duration-200 focus:ring-2 focus:ring-brand-light shadow-sm"
                     value={formData.pembayaran}
                     onChange={(e) => setFormData({ ...formData, pembayaran: e.target.value })}
                   >
@@ -572,8 +572,8 @@ export default function RegistrationFlow() {
               {formData.pembayaran !== "bayar-diakhir" && (
                 <FileDropzone
                   label={<span>Upload Bukti Transfer <span className="text-danger">*</span></span> as any}
-                  subLabel="Format JPG/PNG/PDF, Maksimal 5MB"
-                  accept=".jpg,.jpeg,.png,.pdf"
+                  subLabel="Format PDF, Maksimal 5MB"
+                  accept=".pdf"
                   files={paymentFile ? [{ id: paymentFile.id, fileName: paymentFile.fileName, fileSize: paymentFile.fileSize }] : []}
                   onFileSelect={handleUploadPayment}
                   onDeleteFile={() => setPaymentFile(null)}

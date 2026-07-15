@@ -144,8 +144,8 @@ export function ReferensiManager() {
             <FileUploader
               id="referensi-file-uploader"
               label={<span>Dokumen <span className="text-danger">*</span></span>}
-              subLabel="PDF, DOCX, ZIP, maksimal 10MB"
-              accept=".pdf,.docx,.doc,.zip"
+              subLabel="PDF, DOCX, MP4, maksimal 10MB"
+              accept=".pdf,.docx,.mp4"
               files={selectedFile ? [{ id: "temp-selected", fileName: selectedFile.name, fileSize: selectedFile.size }] : []}
               onFileSelect={(file) => setSelectedFile(file)}
               onDeleteFile={() => setSelectedFile(null)}

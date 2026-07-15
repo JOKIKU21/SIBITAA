@@ -155,7 +155,7 @@ export function ManajemenPenggunaTabs() {
       {/* Modal Tambah Admin */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-          <div className="bg-white rounded-4 w-full max-w-[500px] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-white rounded-4 w-full max-w-125 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between px-6 py-5 border-b border-neutral-border">
               <h3 className="font-display text-[16px] font-extrabold text-neutral-text">Tambahkan Admin Baru</h3>
               <button 
