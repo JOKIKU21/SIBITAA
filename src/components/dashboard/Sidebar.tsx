@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { authService } from "@/services/auth";
 import { authClient } from "@/lib/auth-client";
 import Button from "@/components/Button";
@@ -14,17 +14,21 @@ interface MenuItem {
 }
 
 export function Sidebar() {
-  const router = useRouter();
+
   const pathname = usePathname() || "";
 
   const { data: session, isPending } = authClient.useSession();
 
   async function handleLogout() {
     try {
+      // authService.signOut() does a hard redirect to /masuk via
+      // fetchOptions.onSuccess after the session is invalidated.
       await authService.signOut();
-      router.push("/masuk");
     } catch (error) {
       console.error("Gagal keluar:", error);
+      // Fallback: if signOut itself threw, force-redirect anyway
+      // so the user isn't stuck on a dashboard with a broken session.
+      window.location.href = "/masuk";
     }
   }
 

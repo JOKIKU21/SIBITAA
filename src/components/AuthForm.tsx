@@ -51,10 +51,16 @@ export default function AuthForm({ mode }: { mode: "masuk" | "daftar" }) {
     setError("");
     setLoading(true);
 
+    let didHardRedirect = false;
+
     try {
       if (isLogin) {
         await authService.signIn(email, password);
-        router.push("/dashboard");
+        // Hard redirect to force middleware to run with the fresh session cookie.
+        // router.push() does soft client-side navigation that can race with
+        // cookie propagation and serve cached unauthenticated state.
+        didHardRedirect = true;
+        window.location.href = "/dashboard";
       } else {
         await authService.signUp(nama, email, password);
         router.push(`/verifikasi?email=${encodeURIComponent(email)}`);
@@ -73,7 +79,11 @@ export default function AuthForm({ mode }: { mode: "masuk" | "daftar" }) {
         router.push(`/verifikasi?email=${encodeURIComponent(email)}`);
       }
     } finally {
-      setLoading(false);
+      // Keep the button in loading state during a hard redirect to avoid
+      // a flash of the enabled button while the page is transitioning.
+      if (!didHardRedirect) {
+        setLoading(false);
+      }
     }
   }
 

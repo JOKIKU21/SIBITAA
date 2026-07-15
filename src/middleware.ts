@@ -18,6 +18,7 @@ export async function middleware(request: NextRequest) {
           cookie: cookieHeader,
         },
         credentials: "include",
+        cache: "no-store",
       });
 
       const session = res.ok ? await res.json() : null;

@@ -9,7 +9,6 @@ export const authService = {
       email,
       password,
       name,
-      callbackURL: typeof window !== "undefined" ? window.location.origin : undefined,
     });
 
     if (error) {
@@ -25,7 +24,6 @@ export const authService = {
     const { data, error } = await authClient.signIn.email({
       email,
       password,
-      callbackURL: typeof window !== "undefined" ? window.location.origin : undefined,
     });
 
     if (error) {
@@ -38,7 +36,14 @@ export const authService = {
    * Logout the current user session.
    */
   async signOut() {
-    const { error } = await authClient.signOut();
+    const { error } = await authClient.signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          // Hard redirect to ensure middleware runs and all client state is cleared
+          window.location.href = "/masuk";
+        },
+      },
+    });
     if (error) {
       throw new Error(error.message || "Gagal keluar.");
     }
