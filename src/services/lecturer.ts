@@ -170,6 +170,16 @@ export const lecturerService = {
     });
   },
 
+  /** Approve a bimbingan stage and advance progress. */
+  approveStage(studentId: string, stageId: string) {
+    return apiFetch<{ message: string; currentStageOrder: number; status: string }>(
+      `/api/lecturer/bimbingan/${studentId}/${stageId}/approve`,
+      {
+        method: "POST",
+      }
+    );
+  },
+
   /** Update lecturer profile. */
   updateProfile(payload: {
     name?: string;

@@ -110,3 +110,24 @@ export function useLecturerChatThreads() {
     queryFn: () => lecturerService.getChatThreads(),
   });
 }
+
+/** Mutation to approve a student's stage bimbingan and advance progress. */
+export function useLecturerApproveStage() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      studentId,
+      stageId,
+    }: {
+      studentId: string;
+      stageId: string;
+    }) => lecturerService.approveStage(studentId, stageId),
+    onSuccess: (_, { studentId, stageId }) => {
+      // Invalidate both the stage details and student progress / lists
+      queryClient.invalidateQueries({ queryKey: [...lecturerKeys.students(), studentId, "detail", stageId] });
+      queryClient.invalidateQueries({ queryKey: [...lecturerKeys.students(), studentId] });
+      queryClient.invalidateQueries({ queryKey: lecturerKeys.students() });
+    },
+  });
+}

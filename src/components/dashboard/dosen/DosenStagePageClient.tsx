@@ -105,7 +105,11 @@ export function DosenStagePageClient({ userId, stageId: urlStageId }: DosenStage
             />
             <DosenNoteInput initialNote={existingNote?.comment || ""} />
             <DosenFileUpload existingFiles={lecturerFiles} studentId={userId} stageId={urlStageId} />
-            <ApprovalCheckbox initialApproved={isApproved} />
+            <ApprovalCheckbox
+              studentId={userId}
+              stageId={urlStageId}
+              initialApproved={isApproved}
+            />
           </div>
 
           {/* Kolom Kanan: Chat Panel */}

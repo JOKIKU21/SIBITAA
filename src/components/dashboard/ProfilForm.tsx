@@ -380,7 +380,7 @@ export default function ProfilForm({ initialRole }: ProfilFormProps = {}) {
                     strokeWidth="1.7"
                   />
                 </svg>
-                <Input
+                <input
                   type="file"
                   accept="image/*"
                   className="hidden"
