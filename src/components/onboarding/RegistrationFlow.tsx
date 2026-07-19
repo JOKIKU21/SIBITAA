@@ -668,16 +668,7 @@ export default function RegistrationFlow() {
         )}
 
         {/* Footer Navigation */}
-        <div className="mt-10 pt-8 border-t border-[#e2e8f0] flex items-center justify-between">
-          <Button
-            type="button"
-            variant="link"
-            className="text-brand font-bold text-[13.5px] hover:underline px-0 transition-opacity hover:opacity-80"
-            onClick={() => toast.success("Draft berhasil disimpan!")}
-          >
-            Simpan Draft
-          </Button>
-
+        <div className="mt-10 pt-8 border-t border-[#e2e8f0] flex items-center justify-end">
           <div className="flex gap-4">
             <Button
               variant="brand"
