@@ -12,6 +12,8 @@ import {
 export const studentKeys = {
   all: ["student"] as const,
   profile: () => [...studentKeys.all, "profile"] as const,
+  payments: () => [...studentKeys.all, "payments"] as const,
+  paymentDetail: (paymentId: string) => [...studentKeys.all, "payments", paymentId] as const,
 };
 
 /** Centralised query keys for student bimbingan data. */
@@ -161,6 +163,99 @@ export function useSendChatMessage() {
     }) => studentService.sendChatMessage(stageId, payload),
     onSuccess: (_, { stageId }) => {
       queryClient.invalidateQueries({ queryKey: ["student", "chat", stageId] });
+    },
+  });
+}
+
+/** Get student's installment payments */
+export function useStudentPayments() {
+  return useQuery({
+    queryKey: studentKeys.payments(),
+    queryFn: () => studentService.getPayments(),
+  });
+}
+
+/** Get details of a specific payment installment */
+export function useStudentPaymentDetail(paymentId?: string) {
+  return useQuery({
+    queryKey: studentKeys.paymentDetail(paymentId || ""),
+    queryFn: () => studentService.getPaymentDetail(paymentId!),
+    enabled: !!paymentId,
+  });
+}
+
+/** Upload a registration file (ukt, contract, payment proof) */
+export function useUploadRegistrationFile() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: {
+      type: "ukt" | "contract" | "payment_proof";
+      fileName: string;
+      fileUrl: string;
+      fileType: string;
+      fileSize: number;
+      registrationPaymentId?: string | null;
+    }) => studentService.uploadRegistrationFile(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: studentKeys.payments() });
+    },
+  });
+}
+
+/** Upload payment proof for a specific installment */
+export function useUploadPaymentProof() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      paymentId,
+      file,
+      amount,
+    }: {
+      paymentId: string;
+      file: File;
+      amount?: number;
+    }) => studentService.uploadPaymentProof(paymentId, file, amount),
+    onSuccess: (_, { paymentId }) => {
+      queryClient.invalidateQueries({ queryKey: studentKeys.payments() });
+      queryClient.invalidateQueries({ queryKey: studentKeys.paymentDetail(paymentId) });
+    },
+  });
+}
+
+/** Edit an unapproved installment payment */
+export function useEditPayment() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      paymentId,
+      payload,
+    }: {
+      paymentId: string;
+      payload: {
+        installment?: number;
+        amount?: number;
+        note?: string;
+        file?: File;
+      };
+    }) => studentService.editPayment(paymentId, payload),
+    onSuccess: (_, { paymentId }) => {
+      queryClient.invalidateQueries({ queryKey: studentKeys.payments() });
+      queryClient.invalidateQueries({ queryKey: studentKeys.paymentDetail(paymentId) });
+    },
+  });
+}
+
+/** Delete an unapproved installment payment */
+export function useDeletePayment() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (paymentId: string) => studentService.deletePayment(paymentId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: studentKeys.payments() });
     },
   });
 }

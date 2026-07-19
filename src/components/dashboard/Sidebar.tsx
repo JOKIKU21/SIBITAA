@@ -102,6 +102,29 @@ export function Sidebar() {
         ),
       },
       {
+        label: "Pembayaran",
+        href: "/dashboard/mahasiswa/pembayaran",
+        match: (p) => p.startsWith("/dashboard/mahasiswa/pembayaran"),
+        icon: (active) => (
+          <svg viewBox="0 0 24 24" fill="none" className={iconClass(active)}>
+            <path
+              d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <path
+              d="M12 6v12M15 9H11.5a2.5 2.5 0 0 0 0 5H13a2.5 2.5 0 0 1 0 5H9"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        ),
+      },
+      {
         label: "Profil",
         href: "/dashboard/mahasiswa/profil",
         match: (p) => p === "/dashboard/mahasiswa/profil",

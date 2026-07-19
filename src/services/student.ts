@@ -90,6 +90,46 @@ export interface GetStageDetailResponse {
   files: StageFile[];
 }
 
+export interface RegistrationPaymentFile {
+  id: string;
+  type: string;
+  fileName: string;
+  fileUrl: string;
+  fileSize?: number;
+}
+
+export interface RegistrationPayment {
+  id: string;
+  registrationId: string;
+  installment: number;
+  amount: number;
+  status: string;
+  paidAt: string | null;
+  note: string | null;
+  createdAt: string;
+  updatedAt?: string;
+  files?: RegistrationPaymentFile[];
+}
+
+export interface StudentPaymentGroup {
+  registrationId: string;
+  studentId: string;
+  studentName: string;
+  totalAmount: number;
+  paidAmount: number;
+  paymentOption: string;
+  status: string;
+  payments: RegistrationPayment[];
+}
+
+export interface GetStudentPaymentsResponse {
+  payments: StudentPaymentGroup[];
+}
+
+export interface GetStudentPaymentDetailResponse {
+  payment: RegistrationPayment;
+}
+
 export interface ChatMessage {
   id: string;
   studentId: string;
@@ -299,5 +339,87 @@ export const studentService = {
       method: "POST",
       body: JSON.stringify(payload),
     });
+  },
+
+  /** Fetch student's installment payments */
+  getPayments() {
+    return apiFetch<GetStudentPaymentsResponse>("/api/student/payments", { method: "GET" });
+  },
+
+  /** Fetch details of a specific installment payment */
+  getPaymentDetail(paymentId: string) {
+    return apiFetch<GetStudentPaymentDetailResponse>(`/api/student/payments/${paymentId}`, { method: "GET" });
+  },
+
+  /** Upload proof of payment for a specific installment */
+  uploadPaymentProof(paymentId: string, file: File, amount?: number) {
+    const formData = new FormData();
+    formData.append("file", file);
+    if (amount !== undefined) {
+      formData.append("amount", String(amount));
+    }
+
+    return apiFetch<{ payment: RegistrationPayment; file: any }>(
+      `/api/student/payments/${paymentId}/proof`,
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
+  },
+
+  /** Edit installment payment (unapproved) */
+  editPayment(
+    paymentId: string,
+    payload: {
+      installment?: number;
+      amount?: number;
+      note?: string;
+      file?: File;
+    }
+  ) {
+    if (payload.file) {
+      const formData = new FormData();
+      if (payload.installment !== undefined) {
+        formData.append("installment", String(payload.installment));
+      }
+      if (payload.amount !== undefined) {
+        formData.append("amount", String(payload.amount));
+      }
+      if (payload.note !== undefined) {
+        formData.append("note", payload.note);
+      }
+      formData.append("file", payload.file);
+
+      return apiFetch<{ payment: RegistrationPayment; file: any }>(
+        `/api/student/payments/${paymentId}`,
+        {
+          method: "PATCH",
+          body: formData,
+        }
+      );
+    } else {
+      return apiFetch<{ payment: RegistrationPayment; file: any }>(
+        `/api/student/payments/${paymentId}`,
+        {
+          method: "PATCH",
+          body: JSON.stringify({
+            installment: payload.installment,
+            amount: payload.amount,
+            note: payload.note,
+          }),
+        }
+      );
+    }
+  },
+
+  /** Delete installment payment (unapproved) */
+  deletePayment(paymentId: string) {
+    return apiFetch<{ success: boolean; message: string }>(
+      `/api/student/payments/${paymentId}`,
+      {
+        method: "DELETE",
+      }
+    );
   },
 };
