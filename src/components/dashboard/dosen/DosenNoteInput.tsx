@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Button from "@/components/Button";
 
-export function DosenNoteInput({ initialNote = "" }: { initialNote?: string }) {
+export function DosenNoteInput({ initialNote = "", readOnly = false }: { initialNote?: string; readOnly?: boolean }) {
   const [note, setNote] = useState(initialNote);
   const [saving, setSaving] = useState(false);
 
@@ -28,21 +28,25 @@ export function DosenNoteInput({ initialNote = "" }: { initialNote?: string }) {
         <textarea
           value={note}
           onChange={(e) => setNote(e.target.value)}
-          placeholder="Tulis catatan, masukan, atau arahan untuk mahasiswa..."
-          className="w-full bg-neutral-bg border-[1.5px] border-transparent rounded-2 py-3 px-3.5 text-[13.5px] text-neutral-text outline-none font-sans transition-[border-color,background] duration-200 focus:border-brand-light focus:bg-[#f8f9ff] resize-y min-h-24 mb-4"
+          placeholder={readOnly ? "" : "Tulis catatan, masukan, atau arahan untuk mahasiswa..."}
+          className={`w-full bg-neutral-bg border-[1.5px] border-transparent rounded-2 py-3 px-3.5 text-[13.5px] text-neutral-text outline-none font-sans transition-[border-color,background] duration-200 focus:border-brand-light focus:bg-[#f8f9ff] resize-y min-h-24 mb-4${readOnly ? " opacity-60 cursor-not-allowed" : ""}`}
+          disabled={readOnly}
+          readOnly={readOnly}
         />
-        <div className="flex justify-end">
-          <Button
-            type="button"
-            variant="brand"
-            size="custom"
-            className="py-2.5 px-5 rounded-2.25 text-[13px]"
-            isLoading={saving}
-            onClick={handleSave}
-          >
-            Simpan Catatan
-          </Button>
-        </div>
+        {!readOnly && (
+          <div className="flex justify-end">
+            <Button
+              type="button"
+              variant="brand"
+              size="custom"
+              className="py-2.5 px-5 rounded-2.25 text-[13px]"
+              isLoading={saving}
+              onClick={handleSave}
+            >
+              Simpan Catatan
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

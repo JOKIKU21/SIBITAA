@@ -103,8 +103,8 @@ export function DosenStagePageClient({ userId, stageId: urlStageId }: DosenStage
               readOnly={true}
               stageName={metadata.name}
             />
-            <DosenNoteInput initialNote={existingNote?.comment || ""} />
-            <DosenFileUpload existingFiles={lecturerFiles} studentId={userId} stageId={urlStageId} />
+            <DosenNoteInput initialNote={existingNote?.comment || ""} readOnly={isApproved} />
+            <DosenFileUpload existingFiles={lecturerFiles} studentId={userId} stageId={urlStageId} readOnly={isApproved} />
             <ApprovalCheckbox
               studentId={userId}
               stageId={urlStageId}
@@ -114,7 +114,7 @@ export function DosenStagePageClient({ userId, stageId: urlStageId }: DosenStage
 
           {/* Kolom Kanan: Chat Panel */}
           <div className="flex flex-col">
-            <DosenChatPanel stageId={urlStageId} studentId={userId} />
+            <DosenChatPanel stageId={urlStageId} studentId={userId} readOnly={isApproved} />
           </div>
         </div>
       </div>

@@ -10,9 +10,10 @@ interface DosenFileUploadProps {
   existingFiles?: StageFile[];
   studentId?: string;
   stageId?: string;
+  readOnly?: boolean;
 }
 
-export function DosenFileUpload({ existingFiles = [], studentId, stageId }: DosenFileUploadProps) {
+export function DosenFileUpload({ existingFiles = [], studentId, stageId, readOnly = false }: DosenFileUploadProps) {
   const [files, setFiles] = useState<StageFile[]>(existingFiles);
   const [isUploading, setIsUploading] = useState(false);
   const toast = useToast();
@@ -65,13 +66,15 @@ export function DosenFileUpload({ existingFiles = [], studentId, stageId }: Dose
       <div className="p-6">
         <FileUploader
           id="dosen-file-uploader"
-          subLabel="Unggah file revisi, referensi, atau dokumen lain untuk mahasiswa (Format PDF, DOCX, MP4, Max 10MB)."
+          subLabel={readOnly ? "Tahapan telah disetujui. Unggah file tidak tersedia." : "Unggah file revisi, referensi, atau dokumen lain untuk mahasiswa (Format PDF, DOCX, MP4, Max 10MB)."}
           accept=".pdf,.docx,.mp4"
           files={files}
           onFileSelect={handleUpload}
           onDeleteFile={handleDelete}
           isLoading={isUploading}
           maxSizeMB={10}
+          disabled={readOnly}
+          hideDropzone={readOnly}
         />
       </div>
     </div>

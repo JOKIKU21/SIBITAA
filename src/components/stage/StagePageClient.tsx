@@ -56,6 +56,11 @@ export function StagePageClient({ stageId: urlStageId }: StagePageClientProps) {
 
   const progress = bimbinganData?.progress;
   const isCurrentStage = progress?.currentStageOrder === stageOrder && (progress?.status === "in_progress" || progress?.status === "in progress");
+  // Stage is approved if the student has progressed past it or all stages are completed
+  const isStageApproved = progress ? (
+    progress.status === "completed" ||
+    (progress.currentStageOrder !== undefined && progress.currentStageOrder > stageOrder)
+  ) : false;
   // Use accumulated durationDays (window.end) for deadline calculation
   const remainingDays = isCurrentStage && progress?.startedAt
     ? calculateRemainingDays(progress.startedAt, windows[stageOrder].end)
@@ -110,12 +115,13 @@ export function StagePageClient({ stageId: urlStageId }: StagePageClientProps) {
                 stageId={urlStageId}
                 existingNote={existingNote}
                 existingFiles={existingFiles}
+                readOnly={isStageApproved}
                 stageName={metadata.name}
               />
             </div>
 
             <div className="flex flex-col gap-5">
-              <MahasiswaChatPanel stageId={urlStageId} />
+              <MahasiswaChatPanel stageId={urlStageId} readOnly={isStageApproved} />
             </div>
           </div>
         )}

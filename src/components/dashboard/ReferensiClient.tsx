@@ -224,27 +224,40 @@ export default function ReferensiClient() {
                     <span>{formatUploadDate(r.createdAt)}</span>
                   </div>
                 </div>
-                <Button
-                  variant="brand"
-                  size="custom"
-                  className="inline-flex items-center gap-1.5 py-2 px-4 rounded-2 text-[13px] font-bold no-underline whitespace-nowrap shrink-0 self-start"
-                  href={r.fileUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  leftIcon={
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                      <path
-                        d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  }
-                >
-                  Unduh
-                </Button>
+                <div className="flex items-center gap-2 self-start shrink-0">
+                  <Button
+                    variant="neutral"
+                    size="custom"
+                    className="inline-flex items-center gap-1.5 py-2 px-4 rounded-2 text-[13px] font-bold no-underline whitespace-nowrap"
+                    href={r.fileUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Lihat
+                  </Button>
+                  <Button
+                    variant="brand"
+                    size="custom"
+                    className="inline-flex items-center gap-1.5 py-2 px-4 rounded-2 text-[13px] font-bold no-underline whitespace-nowrap"
+                    href={r.fileUrl}
+                    download
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    leftIcon={
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                        <path
+                          d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    }
+                  >
+                    Unduh
+                  </Button>
+                </div>
               </div>
             ))
           )}

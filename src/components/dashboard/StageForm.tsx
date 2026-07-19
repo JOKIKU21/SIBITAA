@@ -36,24 +36,41 @@ export function StageForm({
   const deleteFileMut = useDeleteFile();
   const [isUploading, setIsUploading] = useState(false);
 
+  // Filter student and lecturer files at the top
+  const studentFiles = existingFiles.filter((file) => file.uploadedById === file.studentId);
+  const lecturerFiles = existingFiles.filter((file) => file.uploadedById !== file.studentId);
+
   const loading = createNoteMut.isPending || updateNoteMut.isPending;
 
   const name = stageName ?? `Tahap ${stage.n}`;
 
-  const hasExistingData = !!(existingNote?.data && Object.keys(existingNote.data).length > 0);
+  // Check if student has inputted any form note data or uploaded files
+  const hasExistingData = (() => {
+    const hasNoteData = !!existingNote?.data && Object.values(existingNote.data).some(
+      (val) => val !== undefined && val !== null && String(val).trim() !== ""
+    );
+    const hasFiles = studentFiles.length > 0;
+    return hasNoteData || hasFiles;
+  })();
+
   const [isEditing, setIsEditing] = useState(!hasExistingData);
 
-  // Initialize form data from existing note in backend
+  // Initialize form data and auto-toggle isEditing based on data presence
   useEffect(() => {
+    const hasNoteData = !!existingNote?.data && Object.values(existingNote.data).some(
+      (val) => val !== undefined && val !== null && String(val).trim() !== ""
+    );
+    const hasFiles = existingFiles.some((file) => file.uploadedById === file.studentId);
+    const hasAnyData = hasNoteData || hasFiles;
+
     if (existingNote?.data) {
       setFormData(existingNote.data as Record<string, string>);
-      const hasData = Object.keys(existingNote.data).length > 0;
-      setIsEditing(!hasData);
     } else {
       setFormData({});
-      setIsEditing(true);
     }
-  }, [existingNote]);
+    
+    setIsEditing(!hasAnyData);
+  }, [existingNote, existingFiles]);
 
   const handleInputChange = (fieldKey: string, value: string) => {
     setFormData((prev) => ({
@@ -154,10 +171,6 @@ export function StageForm({
   };
 
   const otherFields = stage.fields.filter((f) => f.type !== "readonly-list");
-  
-  // Filter student and lecturer files
-  const studentFiles = existingFiles.filter((file) => file.uploadedById === file.studentId);
-  const lecturerFiles = existingFiles.filter((file) => file.uploadedById !== file.studentId);
 
   const isFormDisabled = readOnly || !isEditing;
   const hasLecturerFeedback = !!(existingNote?.comment || lecturerFiles.length > 0);
@@ -341,15 +354,25 @@ export function StageForm({
                           </span>
                         </div>
                       </div>
-                      <a
-                        href={file.fileUrl}
-                        download
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-brand hover:text-brand-dark text-[12px] font-bold bg-neutral-bg border border-neutral-border py-1.5 px-3 rounded-1.5 cursor-pointer hover:bg-white transition-all shrink-0"
-                      >
-                        Unduh
-                      </a>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <a
+                          href={file.fileUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-brand hover:text-brand-dark text-[12px] font-bold bg-neutral-bg border border-neutral-border py-1.5 px-3 rounded-1.5 cursor-pointer hover:bg-white transition-all"
+                        >
+                          Lihat
+                        </a>
+                        <a
+                          href={file.fileUrl}
+                          download
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-brand hover:text-brand-dark text-[12px] font-bold bg-neutral-bg border border-neutral-border py-1.5 px-3 rounded-1.5 cursor-pointer hover:bg-white transition-all"
+                        >
+                          Unduh
+                        </a>
+                      </div>
                     </div>
                   ))}
                 </div>

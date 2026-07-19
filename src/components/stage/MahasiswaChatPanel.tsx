@@ -9,9 +9,10 @@ import Input from "@/components/Input";
 
 interface MahasiswaChatPanelProps {
   stageId?: string;
+  readOnly?: boolean;
 }
 
-export function MahasiswaChatPanel({ stageId }: MahasiswaChatPanelProps) {
+export function MahasiswaChatPanel({ stageId, readOnly = false }: MahasiswaChatPanelProps) {
   const [msg, setMsg] = useState("");
   const { data: session } = authClient.useSession();
   const currentUserId = session?.user?.id;
@@ -119,39 +120,47 @@ export function MahasiswaChatPanel({ stageId }: MahasiswaChatPanelProps) {
         )}
       </div>
 
-      <div className="py-3.5 px-6 pb-5 border-t border-neutral-border flex items-center gap-2.5">
-        <Button
-          variant="neutral"
-          size="icon"
-          className="w-8.5 h-8.5 rounded-full shrink-0"
-          type="button"
-        >
-          <Plus size={18} />
-        </Button>
-        <Input
-          type="text"
-          variant="custom"
-          className="w-full bg-neutral-bg border-none rounded-full py-2.5 px-4 text-[13.5px] outline-none font-sans"
-          placeholder="Tulis pesan bimbingan..."
-          value={msg}
-          onChange={(e) => setMsg(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSend()}
-          fullWidth={false}
-          wrapperClassName="flex-1"
-          disabled={!stageId || isPending}
-        />
-        <Button
-          variant="brand"
-          size="icon"
-          onClick={handleSend}
-          className="w-9 h-9 rounded-full shrink-0"
-          isLoading={isPending}
-          disabled={!stageId || !msg.trim()}
-          type="button"
-        >
-          <ArrowUp size={18} />
-        </Button>
-      </div>
+      {readOnly ? (
+        <div className="py-3.5 px-6 pb-5 border-t border-neutral-border">
+          <div className="bg-neutral-bg rounded-full py-2.5 px-4 text-[13px] text-neutral-muted text-center font-medium">
+            Tahapan telah disetujui. Chat tidak dapat ditambahkan.
+          </div>
+        </div>
+      ) : (
+        <div className="py-3.5 px-6 pb-5 border-t border-neutral-border flex items-center gap-2.5">
+          <Button
+            variant="neutral"
+            size="icon"
+            className="w-8.5 h-8.5 rounded-full shrink-0"
+            type="button"
+          >
+            <Plus size={18} />
+          </Button>
+          <Input
+            type="text"
+            variant="custom"
+            className="w-full bg-neutral-bg border-none rounded-full py-2.5 px-4 text-[13.5px] outline-none font-sans"
+            placeholder="Tulis pesan bimbingan..."
+            value={msg}
+            onChange={(e) => setMsg(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSend()}
+            fullWidth={false}
+            wrapperClassName="flex-1"
+            disabled={!stageId || isPending}
+          />
+          <Button
+            variant="brand"
+            size="icon"
+            onClick={handleSend}
+            className="w-9 h-9 rounded-full shrink-0"
+            isLoading={isPending}
+            disabled={!stageId || !msg.trim()}
+            type="button"
+          >
+            <ArrowUp size={18} />
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

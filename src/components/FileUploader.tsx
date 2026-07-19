@@ -260,24 +260,37 @@ export default function FileUploader({
                 </div>
               </div>
 
-              {onDeleteFile && (
-                <button
-                  type="button"
-                  disabled={disabled || isDeleting}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onDeleteFile(file.id);
-                  }}
-                  className="text-danger hover:text-danger-dark text-[12px] font-semibold bg-transparent border-none cursor-pointer disabled:opacity-50"
-                  title="Hapus file"
-                >
-                  {isDeleting ? (
-                    <Loader2 className="w-4.5 h-4.5 animate-spin text-danger" />
-                  ) : (
-                    "Hapus"
-                  )}
-                </button>
-              )}
+              <div className="flex items-center gap-3.5 shrink-0">
+                {file.fileUrl && file.fileUrl !== "#" && (
+                  <a
+                    href={file.fileUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-brand hover:text-brand-dark text-[12.5px] font-bold bg-neutral-bg border border-neutral-border py-1.25 px-3 rounded-1.5 cursor-pointer hover:bg-white transition-all shrink-0"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    Lihat
+                  </a>
+                )}
+                {onDeleteFile && (
+                  <button
+                    type="button"
+                    disabled={disabled || isDeleting}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDeleteFile(file.id);
+                    }}
+                    className="text-danger hover:text-danger-dark text-[12.5px] font-bold bg-transparent border-none cursor-pointer disabled:opacity-50 shrink-0"
+                    title="Hapus file"
+                  >
+                    {isDeleting ? (
+                      <Loader2 className="w-4.5 h-4.5 animate-spin text-danger" />
+                    ) : (
+                      "Hapus"
+                    )}
+                  </button>
+                )}
+              </div>
             </div>
           ))}
         </div>

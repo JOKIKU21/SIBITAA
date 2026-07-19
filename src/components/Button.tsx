@@ -33,6 +33,7 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   // If rendering as a Link, we might pass anchor attributes
   target?: string;
   rel?: string;
+  download?: boolean | string;
 }
 
 const variantStyles: Record<ButtonVariant, string> = {

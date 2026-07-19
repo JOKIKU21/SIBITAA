@@ -122,9 +122,16 @@ export function DosenBimbinganDetailClient({ userId }: { userId: string }) {
   const avatarColor = getAvatarColor(student.studentId);
 
   const completedStages = new Set<number>();
-  const activeOrder = student.currentStage?.order ?? 0;
-  for (let i = 1; i < activeOrder; i++) {
-    completedStages.add(i);
+  const isAllCompleted = student.progressPercentage === 100 || progressData?.progress?.status === "completed";
+  if (isAllCompleted) {
+    for (let i = 1; i <= 17; i++) {
+      completedStages.add(i);
+    }
+  } else {
+    const activeOrder = student.currentStage?.order ?? 0;
+    for (let i = 1; i < activeOrder; i++) {
+      completedStages.add(i);
+    }
   }
 
   // Merge the student's stages and durations from the backend

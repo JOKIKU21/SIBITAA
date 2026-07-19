@@ -32,13 +32,26 @@ export function FileListDisplay({
                     <span className="text-[12px] text-neutral-muted">{file.size}</span>
                   </div>
                 </div>
-                <a
-                  href={file.url}
-                  className="flex items-center gap-1.5 text-[12.5px] font-bold text-brand hover:text-brand-dark px-3 py-1.5 rounded-2 hover:bg-brand-bg transition-colors"
-                >
-                  <Download size={14} />
-                  Download
-                </a>
+                <div className="flex items-center gap-2.5">
+                  <a
+                    href={file.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-brand hover:text-brand-dark text-[12.5px] font-bold bg-neutral-bg border border-neutral-border py-1.5 px-3 rounded-2 cursor-pointer hover:bg-white transition-all shrink-0"
+                  >
+                    Lihat
+                  </a>
+                  <a
+                    href={file.url}
+                    download
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 text-[12.5px] font-bold text-brand hover:text-brand-dark px-3 py-1.5 rounded-2 hover:bg-brand-bg transition-colors"
+                  >
+                    <Download size={14} />
+                    Download
+                  </a>
+                </div>
               </div>
             ))}
           </div>
