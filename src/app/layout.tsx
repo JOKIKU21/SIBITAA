@@ -27,6 +27,19 @@ export const metadata: Metadata = {
   },
   description:
     "Platform terintegrasi yang membantu mahasiswa dan dosen menyelesaikan skripsi dengan proses yang lebih cepat, rapi, dan terstruktur.",
+  openGraph: {
+    type: "website",
+    locale: "id_ID",
+    siteName: "SIBITA",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "SIBITA - Sistem Bimbingan Tugas Akhir",
+      },
+    ],
+  },
 };
 
 export default function RootLayout({

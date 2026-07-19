@@ -40,3 +40,22 @@
 
 ## Issues or Concerns
 - None. The setup works cleanly and eliminates Next.js build warnings related to missing `metadataBase`.
+
+## Reviewer Feedback & Post-Review Fixes (2026-07-19)
+
+### 1. Base URL Trailing Slash Vulnerability
+- **Finding**: Interpolating `process.env.NEXT_PUBLIC_SITE_URL` directly in `sitemap.ts` and `robots.ts` could cause double slashes (e.g. `https://domain.com//masuk`) if the site URL is configured with a trailing slash.
+- **Fix**: Added trailing-slash-stripping to `baseUrl` in both files using `.replace(/\/$/, "")`.
+
+### 2. Robots Disallow Trailing Slashes
+- **Finding**: Disallowing paths with a trailing slash in `robots.ts` (e.g., `/dashboard/`) might still allow crawlers to scan the route segment without a slash.
+- **Fix**: Updated the `disallow` array to target paths without trailing slashes: `["/dashboard", "/registrasi", "/verifikasi"]`.
+
+### 3. Missing OG Images Configuration
+- **Finding**: The OG Images configuration was missing from `src/app/layout.tsx` metadata.
+- **Fix**: Added a default OpenGraph configuration with `type`, `locale`, `siteName`, and an `images` array targeting `/og-image.png`.
+
+### Verification & Build Status
+- The application was built cleanly using `npm run build` with zero compilation errors.
+- **Commit**: `0f03e07` - `fix(seo): resolve trailing slash vulnerability and enhance metadata`
+
