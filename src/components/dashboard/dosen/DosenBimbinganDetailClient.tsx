@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { useLecturerStudents, useLecturerStudentProgress } from "@/hooks/useLecturer";
 import { STAGES, calculateRemainingDays, getStageMetadata } from "@/lib/stages";
 import { computeStageWindows, getStageStatus } from "@/lib/stage-status";
@@ -101,20 +102,7 @@ export function DosenBimbinganDetailClient({ userId }: { userId: string }) {
   const student = (studentsData?.students ?? []).find((s) => s.studentId === userId);
 
   if (!student) {
-    return (
-      <div className="block">
-        <div className="p-7 max-[600px]:p-4 text-center">
-          <h3 className="font-display font-extrabold text-neutral-text text-[17px] mb-2">Mahasiswa Tidak Ditemukan</h3>
-          <p className="text-neutral-muted text-[13.5px] mb-4.5">Mahasiswa dengan ID tersebut tidak terdaftar dalam bimbingan Anda.</p>
-          <Link
-            href="/dashboard/dosen/bimbingan"
-            className="inline-flex items-center gap-1.5 bg-brand text-white text-[13px] font-semibold py-2 px-4 rounded-2.5 hover:bg-brand-dark transition-colors duration-150"
-          >
-            Kembali ke Daftar Bimbingan
-          </Link>
-        </div>
-      </div>
-    );
+    notFound();
   }
 
   const statusKey = mapStatus(student.status);
