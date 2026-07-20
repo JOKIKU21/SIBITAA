@@ -56,7 +56,10 @@ export const getServerSession = cache(async (): Promise<Session | null> => {
       return data as Session;
     }
     return null;
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.digest === "DYNAMIC_SERVER_USAGE" || error?.message?.includes("Dynamic server usage")) {
+      throw error;
+    }
     console.error("getServerSession failed:", error);
     return null;
   }
