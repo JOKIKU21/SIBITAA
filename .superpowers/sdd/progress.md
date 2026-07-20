@@ -16,7 +16,7 @@ This ledger tracks the progress of the SIBITA project optimization using Subagen
 - [x] Task 10: Accessibility Quick Wins
 - [x] Task 11: Next.js Config Enhancement
 - [x] Task 12: Konsolidasi CSS Design Tokens
-- [ ] Task 13: Hapus/Gate Hardcoded Dummy Data
+- [x] Task 13: Hapus/Gate Hardcoded Dummy Data
 
 ## Completed Logs
 
@@ -32,6 +32,8 @@ Task 9: complete (commits 9e3ae25..a9831c5, review clean)
 Task 10: complete (commits a14aa1c..b6c7130, review clean)
 Task 11: complete (commits 51c3c45..ce9d767, review clean)
 Task 12: complete (commits 51c3c45..7b1f91b, review clean)
+Task 13: complete (commits 418ff9d..578d23f, review clean)
+
 
 
 
