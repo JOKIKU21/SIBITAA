@@ -27,25 +27,25 @@
 
 
 :root {
-  --blue-primary: #2B3BAF;
-  --blue-dark: #1A2580;
-  --blue-light: #4A5CDB;
-  --blue-stat: #2B3BAF;
-  --text-dark: #111827;
-  --text-muted: #6B7280;
-  --text-light: #9CA3AF;
+  --blue-primary: var(--color-brand);
+  --blue-dark: var(--color-brand-dark);
+  --blue-light: var(--color-brand-light);
+  --blue-stat: var(--color-brand);
+  --text-dark: var(--color-neutral-text);
+  --text-muted: var(--color-neutral-muted);
+  --text-light: var(--color-neutral-light);
   --bg-white: #ffffff;
-  --bg-gray: #F3F4F6;
-  --border: #E5E7EB;
+  --bg-gray: var(--color-neutral-bg);
+  --border: var(--color-neutral-border);
   --radius: 12px;
   --shadow: 0 4px 24px rgba(43, 59, 175, 0.10);
-  --font-display: 'Plus Jakarta Sans', 'Segoe UI', system-ui, sans-serif;
-  --font-body: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
 }
 
 body {
   font-family: var(--font-body);
-  color: var(--text-dark);
+  color: var(--color-neutral-text);
   background: var(--bg-white);
 }
 
