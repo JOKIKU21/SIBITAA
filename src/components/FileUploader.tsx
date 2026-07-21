@@ -7,7 +7,9 @@ import {
   Loader2, 
   File,
   AlertCircle,
-  FileVideo
+  FileVideo,
+  FileAudio,
+  Image as ImageIcon
 } from "lucide-react";
 
 export interface UploadedFile {
@@ -43,7 +45,7 @@ export default function FileUploader({
   id = "file-uploader",
   label,
   subLabel,
-  accept = ".pdf,.docx,.mp4",
+  accept = ".pdf,.docx,.png,.jpg,.jpeg,.mp4,.mp3,.m4a",
   disabled = false,
   isLoading = false,
   files = [],
@@ -78,6 +80,12 @@ export default function FileUploader({
     if (ext === "mp4") {
       return <FileVideo className="w-5 h-5 text-success shrink-0" />;
     }
+    if (["mp3", "m4a", "wav", "aac", "ogg"].includes(ext)) {
+      return <FileAudio className="w-5 h-5 text-purple-500 shrink-0" />;
+    }
+    if (["png", "jpg", "jpeg", "webp"].includes(ext)) {
+      return <ImageIcon className="w-5 h-5 text-warning shrink-0" />;
+    }
     return <File className="w-5 h-5 text-brand shrink-0" />;
   };
 
@@ -92,11 +100,11 @@ export default function FileUploader({
       return;
     }
 
-    // Strictly enforce system-wide allowed formats: docx, pdf, mp4
+    // System-wide allowed formats: docx, pdf, mp4, mp3, m4a, png, jpg, jpeg, webp
     const fileExtension = file.name.split(".").pop()?.toLowerCase() || "";
-    const allowedExtensions = ["docx", "pdf", "mp4"];
+    const allowedExtensions = ["docx", "pdf", "mp4", "mp3", "m4a", "wav", "aac", "ogg", "png", "jpg", "jpeg", "webp"];
     if (!allowedExtensions.includes(fileExtension)) {
-      setErrorMessage("Format file tidak didukung. Hanya file PDF, DOCX, dan MP4 yang diperbolehkan.");
+      setErrorMessage("Format file tidak didukung. Hanya file PDF, DOCX, PNG, JPG, JPEG, MP4, MP3, dan M4A yang diperbolehkan.");
       return;
     }
 
